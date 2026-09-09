@@ -82,8 +82,7 @@ typedef char CHA;
 typedef char16_t CHB;
 typedef char32_t CHC;
 typedef wchar_t CHN;
-typedef char CHR;  //< Unicode character at least 8 bits wide (1,2,4).
-typedef char CHL;  //< Largest char type (CHA or CHC).
+// CHR and CHL are defined conditionally in _ConfigFooter.h based on USING_STR/LARGEST_CHAR.
 typedef char CHS;  //< Character type of the string.
 
 typedef int8_t ISA;
