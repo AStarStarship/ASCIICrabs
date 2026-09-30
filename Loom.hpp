@@ -7,12 +7,13 @@
 #include "Array.h"
 #include "Stack.hpp"
 #include "AType.hpp"
+#include "BigInt.h"
 #if SEAM == CRABS_LOOM
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
-#define LOM_A typename CHS = CHR, typename CHT = CHE, typename ISZ = ISR, typename ISY = ISQ
+#define LOM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, typename ISY = ISQ
 #define LOM_P CHS, CHT, ISZ, ISY
 #define LOM TLoom<LOM_P>
 namespace _ {
@@ -47,8 +48,8 @@ struct TLoom {
 };
 
 template<LOM_A>
-constexpr ISY TLoomCountMin() {
-  return 8 / sizeof(ISZ);
+constexpr ISZ TLoomCountMin() {
+  return static_cast<ISZ>(8 / sizeof(ISZ));
 }
 
 template<LOM_A>
@@ -57,15 +58,15 @@ constexpr ISZ TLoomBytesMin() {
     CountMin = TLoomCountMin(),
     SizeMin = sizeof(TLoom<LOM_P>) + CountMin * (sizeof(ISZ) + 2),
   };
-  return SizeMin;
+  return static_cast<ISZ>(SizeMin);
 }
 
 /* Calculates the minimum size of a Loom of empty strings with the given 
 total. */
 template<LOM_A>
 ISZ TLoomBytesMin(ISZ total, ISZ average_string_length = 0) {
-  return sizeof(TLoom<LOM_P>) + 
-    total * (sizeof(ISY) + (average_string_length + 1) * sizeof(CHS));
+  return static_cast<ISZ>(sizeof(TLoom<LOM_P>) + 
+    total * (sizeof(ISY) + (average_string_length + 1) * sizeof(CHS)));
 }
 
 /* The default length of a key. */
@@ -76,7 +77,7 @@ constexpr ISZ TLoomKeyLengthDefault() {
 
 /* Default number of strings in a Loom. */
 template<LOM_A>
-constexpr ISY TLoomCountDefault() {
+constexpr ISZ TLoomCountDefault() {
   return 32;
 }
 
@@ -334,7 +335,7 @@ BOL TLoomWrite(TLoom<LOM_P>* destination, TLoom<LOM_P>* source) {
 @note dest is an ASCII Object at this point and is not initialized. */
 template<LOM_A>
 TLoom<LOM_P>* TLoomClone(TLoom<LOM_P>* dest, const TLoom<LOM_P>* src,
-    ISZ src_bytes, ISY src_total, ISY total_new = src_total) {
+    ISZ src_bytes, ISY src_total, ISY total_new /* = src_total */) {
   D_COUT("\n\nTLoomClone:\n  dest_bytes:" << dest->bytes << " src_bytes:" <<
          src_bytes << " src_total:" << src_total << " total_new:" << total_new);
   if (IsError(src) || IsError(dest) || total_new <= 0)
@@ -487,7 +488,7 @@ class ALoom {
   }
 
   /* Gets the ASCII Object. */
-  inline TLoom<LOM_P>* This() { return obj_.As<TLoom<LOM_P>>(); }
+  inline TLoom<LOM_P>* This() { return this->obj_.template As<TLoom<LOM_P>>(); }
 
   /* Gets the Auto-Array. */
   inline Autoject& AJT() { return obj_.AJT(); }

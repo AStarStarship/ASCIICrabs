@@ -1,4 +1,4 @@
-# B-Sequences
+|# B-Sequences
 
 B-Sequences (BSQ), as in the B in `A*B`, is a data structure that describes byte sequences using ASCII Data Types. BSQs are similar *scanf* and *printf* format strings only you just use the % format tokens). BSQs are the ideal solution for serializing almost any type of data to save and load from drives, networks or any serial data stream. BSQs may be nested.
 
@@ -7,6 +7,12 @@ BSQs are composed of a header that defines the byte stream layout. There are 5 c
 All BSQ start with the number of preallocated elements as a VUC (32-bit unsigned varint).
 
 If the number of observed parameters is less than the number of specified parameters the rest of the types are implied to be NIL. If the number of observed parameters is greater than the number of specified parameters it's an error.
+
+### RPC Wire Format
+
+When BSQs are transmitted over the RPC protocol, composite map types (BO0-BO8, DI0-DI5, TB0-TB3, LS0-LS2) in the BSQ header are transmitted using the **decomposed 3-byte format** defined in [RPCProtocol.md](../Protocol/RPCProtocol.md#52-map-type-decomposition), not as single-byte EM type codes.
+
+See also: [RPC Protocol Specification](../Protocol/RPCProtocol.md)
 
 ## POD and Object Headers
 

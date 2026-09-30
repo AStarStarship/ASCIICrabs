@@ -106,7 +106,7 @@ inline const CHA* ItoS(const CHA* args) {
 
   for (ISN i = 0; i < 1 << 6; ++i) {
     expected_iud = IUDRandom();
-    sprintf_s(socket, Size, "%llu", expected_iud);
+    sprintf(socket, "%llu", static_cast<unsigned long long>(expected_iud));
     const CHA* test = TSScanUnsigned<IUD, CHA>(socket, result_ui8);
     A_ASSERT(test);
     A_AVOW(expected_iud, result_ui8);
@@ -119,7 +119,7 @@ inline const CHA* ItoS(const CHA* args) {
 
   for (ISN i = 0; i < count; ++i) {
     expected_iud = problem_child[i];
-    sprintf_s(expecting, 24, "%llu", expected_iud);
+    sprintf(expecting, "%llu", static_cast<unsigned long long>(expected_iud));
     static const CHA PuffDebugHeader[] =
         "\n\n    "
         "|6666555555555544444444443333333333222222222211111111110000000000|\n"

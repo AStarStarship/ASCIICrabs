@@ -4,6 +4,14 @@
 #define CRABS_FILE_DECL
 #include <_Config.h>
 #if SEAM >= CRABS_FILE
+#ifndef _MSC_VER
+#include <dirent.h>
+#define _TINYDIR_DIR DIR
+#define _og_dirent dirent
+#define _og_opendir opendir
+#define _og_readdir readdir
+#define _og_closedir closedir
+#endif
 #include "Uniprinter.hpp"
 namespace _ {
 
@@ -14,6 +22,13 @@ struct File {
 
   /* Constructs a File from the given URI string. */
   File(const CHR* uri);
+
+  /* Default constructor (for directory-scan scratch entries). */
+  File() : uri_(NILP), extension(NILP), is_directory_(0), is_reg_(0),
+           last_time_modified_(0) {
+    path[0] = 0;
+    name[0] = 0;
+  }
 
   /* Returns reference to this. */
   File& Star();
@@ -72,14 +87,19 @@ struct File {
   File& Write(FPC item);
   File& Write(FPD item);
 
- private:
-  const CHR* uri_;          //< Uniform Resource Identifier.
-
-  CHR* extension;
+  /* Accessors (data members). */
+  CHR* Path() { return path; }
+  const CHR* Path() const { return path; }
+  CHR* Name() { return name; }
+  const CHR* Name() const { return name; }
   CHR is_directory_,  //< flag for if this is a directory.
-    is_reg_;
+    is_reg_;          //< flag for if this is a regular file.
   CHR path[URIPathLengthMax];
   CHR name[URLFilenameLengthMax];
+
+ private:
+  const CHR* uri_;          //< Uniform Resource Identifier.
+  CHR* extension;
   TMC last_time_modified_;  //< Last time the URL was modified.
 };
 
@@ -147,6 +167,12 @@ struct TextFile {
   TextFile& Print(Indentf& item);
   TextFile& Print(Charsf& item);
   //TextFile& Print(TypeWordValue item);
+
+  /* Stream operator (for TPrint compatibility). */
+  template<typename T>
+  TextFile& operator<<(const T& item) {
+    return Print(*const_cast<T*>(&item));
+  }
 
   /* Prints a new line followed by the given item to the stdout. */
   TextFile& NL();
@@ -227,10 +253,7 @@ struct Folder {
    ISC _f[148]; //< WIN32_FIND_DATA
 #else
    _TINYDIR_DIR* _d;
-   struct _tinydir_dirent* _e;
-#ifndef _TINYDIR_USE_READDIR
-   struct _tinydir_dirent* _ep;
-#endif
+   struct _og_dirent* _e;
 #endif
 };
 

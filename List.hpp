@@ -687,15 +687,15 @@ class AList {
 
   /* Constructs a list with a given total with estimated bytes. */
   AList(ISY total)
-      : obj_(BytesInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+      : obj_(BytesInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     TListInit<LST_P>(This(), total);
   }
 
   /* Constructs a List with the given bytes and total. */
   //AList(ISY total, ISZ bytes)
   //    : obj_(TListNew<LST_P>(bytes, total,
-  //           TObjectFactory<ISZ>().Init<BOF>()),
-  //           TObjectFactory<ISZ>().Init<BOF>()) {}
+  //           TObjectFactory<ISZ>().template Init<BOF>()),
+  //           TObjectFactory<ISZ>().template Init<BOF>()) {}
 
   /* Maximum count of the item in the List. */
   inline ISY Total() { return ISY(This()->map.total); }

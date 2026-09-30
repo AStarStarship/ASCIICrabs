@@ -140,6 +140,6 @@
 #define D_CHECK_PTR_RETURN_NIL(ptr)\
   if (IUW(ptr) < IUW(AErrorTotal)) return;
 
-#if SEAM < CRABS_SCRIPT
+#if SEAM <= 0
 #define CRABS_FAIL D_FAIL
 #endif

@@ -14,7 +14,7 @@
 #define D_COUT_STRING(s)
 #endif
 
-#define STR_A typename T=CHR, typename CHT = CHE, typename ISZ=ISW, typename ISY=ISZ
+#define STR_A typename T=CHR, typename CHT = CHD, typename ISZ=ISW, typename ISY=ISZ
 #define STR_P T, CHT, ISZ, ISY
 #define STR TString<T, CHT, ISZ, ISY>
 
@@ -233,20 +233,20 @@ class AString {
 
   /* Constructs a String that auto-grows from stack to heap.
   @param factory RAMFactory to call when the String overflows. */
-  AString() : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString() : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
   }
 
   /* Constructs a String and prints the given item. */
   AString(CHA item) : 
-      asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+      asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
   AString(const CHA* item) : 
-      asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+      asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
@@ -254,7 +254,7 @@ class AString {
 #if USING_STB == YES_0
   /* Constructs a String and prints the given item. */
   AString(const CHB* item) : 
-    asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+    asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
@@ -262,89 +262,89 @@ class AString {
 
 #if USING_STC == YES_0
   /* Constructs a String and prints the given item. */
-  AString(CHC item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(CHC item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 #endif
   /* Constructs a String and prints the given item. */
   AString(const CHC* item) : 
-    asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+    asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(ISA item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(ISA item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(IUA item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(IUA item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(ISB item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(ISB item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(IUB item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(IUB item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(ISC item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(ISC item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(IUC item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(IUC item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(ISD item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(ISD item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(IUD item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(IUD item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
 #if USING_FPC == YES_0
   /* Constructs a String and prints the given item. */
-  AString(FPC item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(FPC item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 #endif
 #if USING_FPD == YES_0
   /* Constructs a String and prints the given item. */
-  AString(FPD item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(FPD item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 #endif
 
   /* Constructs a String and prints the given item. */
-  AString(Hexf item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(Hexf item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }
 
   /* Constructs a String and prints the given item. */
-  AString(Binaryf item) : asck_(TotalInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+  AString(Binaryf item) : asck_(TotalInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     Init();
     Print(item);
   }

@@ -58,6 +58,17 @@ There are two sets of Extended Types, EM (Extended Mappable) Types and EB (Exten
 | 48 |   LS0   |    List    | TList<ISB, ISA, DTB>.                 |
 | 49 |   LS1   |    List    | TList<ISC, ISB, DTB>.                 |
 | 50 |   LS2   |    List    | TList<ISD, ISC, DTB>.                 |
+
+### Wire Format Note
+
+Composite map types (BO0-BO8, DI0-DI5, TB0-TB3, LS0-LS2) are **not transmitted as single-byte type codes** on the RPC wire. Instead, they are decomposed into the fundamental type format defined in [RPCProtocol.md](../Protocol/RPCProtocol.md#52-map-type-decomposition).
+
+Old wire format (single byte EM type code, e.g., `0x20` for BO0): **deprecated for RPC transmission**.
+
+New wire format (3-byte decomposed format): `[MapKind:2][KeyType:5][ValueType:5][SizeType:5][DataType:5]` = 22 bits packed into 3 bytes, big-endian.
+
+The EM type codes (IDs 12-15, 32-40, 41-46, 48-50) are retained for **internal use** and **local type identification** only. The RPC shim layer translates between EM type codes and the decomposed 3-byte format during serialization/deserialization.
+
 | 52 |   R11   |  Reserved  | Reserved.                             |
 | 53 |   R12   |  Reserved  | Reserved.                             |
 | 54 |   R13   |  Reserved  | Reserved.                             |
@@ -92,7 +103,7 @@ Remapping ASCII Data Type bit pattern to the Extended Types **shall** be fast as
 | Type   | N I I C F I I C F I I C T I I F  F I I T P P P P P P P P P P P P |
 | SW:VT  | I U S H P U S H P U S H M U S P  P U S M C C C C C C C C C C C C |
 | b8:b5  | L A A A B B B B C C C C D D D D  E E E E a b c d e f g h i j k l |
-+--------+------------------------------------------------------------------|
++--------+------------------------------------------------------------------+
 |  8_VH1 | 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 |
 |  8_ARY | 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0  0 0 0 0 ? ? ? ? ? ? ? ? ? ? ? ? |
 |  8_SCK | 0 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0  0 0 0 0 ? ? ? ? ? ? ? ? ? ? ? ? |
@@ -109,7 +120,7 @@ Remapping ASCII Data Type bit pattern to the Extended Types **shall** be fast as
 | 64_ARY | 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 |
 | 64_SCK | 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 |
 | 64_MTX | 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 |
-+--------+------------------------------------------------------------------|
++--------+------------------------------------------------------------------+
 | Total  | 0 1 2 3 4 5 6 7 8 9 1 1 1 1 1 1  1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 |
 |  512   |      Type 0-31      0 1 2 3 4 5  6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 |
 ```
@@ -121,7 +132,7 @@ Types are remapped in blocks in order A through I in the table bellow. The colum
 | Type   | N I I C F I I C F I I C F I I T  F I I T P P P P P P P P P P P P |
 | SW:VT  | I U I H P U S H P U S H P U S M  P U S M C C C C C C C C C C C C |
 | b8:b5  | L A A A B B B B C C C C D D D D  E E E E a b c d e f g h i j k l |
-+--------+------------------------------------------------------------------|
++--------+------------------------------------------------------------------+
 |   0/A  | . . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . |
 |   1/C  | A . . . I I I I H H H H G G G G  G G G G C C C C B B B B B B B B |
 |   2/C  | A . . . . . . . H H H H G G G G  G G G G C C C C B B B B B B B B |
@@ -138,7 +149,7 @@ Types are remapped in blocks in order A through I in the table bellow. The colum
 |  13/N  | A . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . |
 |  14/O  | A . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . |
 |  15/P  | A . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . |
-+--------+------------------------------------------------------------------|
++--------+------------------------------------------------------------------+
 | Total  | 0 1 2 3 4 5 6 7 8 9 1 1 1 1 1 1  1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 |
 |  512   |      Type 0-31      0 1 2 3 4 5  6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 |
 ```
@@ -150,7 +161,7 @@ To convert the blocks above to contiguous Repacked Extended Mappable Types or Re
 ```AsciiArt
 | Total | 0 1 2 3 4 5 6 7 8 9 1 1 1 1 1 1  1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 |
 |  60   | Extended Type 0-31  0 1 2 3 4 5  6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 |
-+-------+------------------------------------------------------------------|
++-------+------------------------------------------------------------------+
 | 00/0  | . A A A A A A A A A A A A A A A  G G G G G G G G G G G G G G G G |
 | 01/1  | G G G G G G G G I I I I I I I I  G G G G G G G G H H H H H H H H |
 | 10/2  | H H H H . . . . . . . . . . . .  . . . . . . . . . . . . . . . . |
@@ -161,7 +172,7 @@ To convert the blocks above to contiguous Repacked Extended Mappable Types or Re
 ```AsciiArt
 | Total | 0 1 2 3 4 5 6 7 8 9 1 1 1 1 1 1  1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 |
 |  72   | Extended Type 0-31  0 1 2 3 4 5  6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 |
-+-------+------------------------------------------------------------------|
++-------+------------------------------------------------------------------+
 | 00/0  | B B B B B B B B B B B B B B B B  B B B B B B B D D D D D D D D D |
 | 01/1  | B B B B B B B B B B B B B B B B  B B B B B B B E E E E E E E E E |
 | 10/2  | B B B B B B B B B B B B B B B B  B B B B B B B C C C C C C C C C |

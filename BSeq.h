@@ -7,7 +7,7 @@
 namespace _ {
 
 /*< Returns the requested parameter number_. */
-ISC BSeqParamNumber(const DTB* params, ISN param_number);
+IUC BSeqParamNumber(const DTB* params, ISN param_number);
 
 }  //< namespace _
 

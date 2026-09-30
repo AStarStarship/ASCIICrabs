@@ -431,33 +431,33 @@ inline CHS* TSPrintUnsigned(CHS* socket, ISW size, IU value) {
   return TSPrintUnsigned<IU, CHS>(socket, socket + size - 1, value);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, IUD value) {
   return TSPrintUnsigned<IUD, CHS>(start, stop, value);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, IUD value) {
   return TSPrintUnsigned<IUD, CHS>(start, size, value);
 }
 
 #if CPU_SIZE < 64
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, IUC value) {
   return TSPrintUnsigned<IUC, CHS>(start, stop, value);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, IUC value) {
   return TSPrintUnsigned<IUC, CHS>(start, size, value);
 }
 #else
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, IUC value) {
   return TSPrint<CHS, CHT>(start, stop, IUD(value));
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, IUC value) {
   return TSPrint<CHS, CHT>(start, size, IUD(value));
 }
@@ -487,30 +487,30 @@ inline CHS* TSPrintSigned(CHS* start, ISW size, IS value) {
   return TSPrintSigned<IS, IU, CHS>(start, start + size - 1, value);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, ISD value) {
   return TSPrintSigned<ISD, IUD, CHS>(start, stop, value);
 }
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, ISD value) {
   return TSPrintSigned<ISD, IUD, CHS>(start, size, value);
 }
 
 #if CPU_SIZE < 64
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, ISC value) {
   return TSPrintSigned<ISC, IUC, CHS>(start, stop, value);
 }
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, ISC value) {
   return TSPrintSigned<ISC, IUC, CHS>(start, size, value);
 }
 #else
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, ISC value) {
   return TSPrint<CHS, CHT>(start, stop, (ISD)value);
 }
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, ISC value) {
   return TSPrint<CHS, CHT>(start, size, (ISD)value);
 }
@@ -756,8 +756,8 @@ public:
       h++;
     return TDecimalFloat(h, e + rhs_e + 64);
 #elif USING_GCC
-    IUE p = static_cast<IUE>(f) * static_cast<IUE>(rhs_f);
-    IUD h = p >> 64;
+    unsigned __int128 p = static_cast<unsigned __int128>(f) * static_cast<unsigned __int128>(rhs_f);
+    IUD h = static_cast<IUD>(p >> 64);
     IUD l = static_cast<IUD>(p);
     if (l & (IUD(1) << 63))  // rounding
       h++;
@@ -854,8 +854,8 @@ private:
       res.f <<= 1;
       --res.e;
     }
-    res.f <<= (DiySignificandSize - CoefficientSize - 2);
-    res.e = res.e - (DiySignificandSize - CoefficientSize - 2);
+    res.f <<= (CoefficientSize - CoefficientSize - 2);
+    res.e = res.e - (CoefficientSize - CoefficientSize - 2);
     return res;
 #endif
   }
@@ -1139,23 +1139,23 @@ private:
 using Binary32 = TDecimalFloat<FPC, ISC, IUC>;
 using Binary64 = TDecimalFloat<FPD, ISC, IUD>;
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, CHS* stop, FPC value) {
   return start;
   //return TSPrint<CHS>(start, stop, value);
 }
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, ISW size, FPC value) {
   return start;
   //return TSPrint<CHS>(start, start + size - 1, value);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, CHS* stop, FPD value) {
   return start;
   //return TSPrint<CHS>(start, stop, value);
 }
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, ISW size, FPD value) {
   return start;
   //return TSPrint<CHS>(start, start + size - 1, value);

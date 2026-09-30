@@ -215,41 +215,40 @@ typedef FPD FPW;
 
 #if USING_STR == STRING_TYPE_A
 typedef CHA CHR;
-typedef CHC CHE;
+typedef CHC CHD;
 typedef CHA* STR;
 #elif USING_STR == STRING_TYPE_B
 typedef CHB CHR;
 typedef CHB* STR;
-typedef CHC CHE;
+typedef CHC CHD;
 #elif USING_STR == STRING_TYPE_C
 typedef CHC CHR;
 typedef CHC* STR;
-typedef CHC CHE;
+typedef CHC CHD;
 #else
 typedef CHA CHR;
-typedef CHA CHE;
+typedef CHA CHD;
 typedef CHA* STR;
 #endif
 
 #if DEFAULT_INT_SIZE == ATYPE_8BIT || DEFAULT_INT_SIZE == ATYPE_16BIT
 typedef ISB ISR;
 typedef IUB IUR;
-typedef ISA ISQ;
-typedef IUA IUQ;
 typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
 #elif DEFAULT_INT_SIZE == ATYPE_32BIT
 typedef ISC ISR;
 typedef IUC IUR;
-typedef ISB ISQ;
-typedef IUB IUQ;
 typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
 #elif DEFAULT_INT_SIZE == ATYPE_64BIT
 typedef ISD ISR;
 typedef IUD IUR;
-typedef ISC ISQ;
-typedef IUC IUQ;
 typedef double FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
 #endif
+
+// ISQ and IUQ are arbitrary-precision integers (JavaScript BigInt-style).
+// Defined via BigInt.h / BigInt.hxx — included by Crabs.h.
+// Forward-declared here to keep the config chain intact.
+namespace _ { class ISQ; class IUQ; }
 
 typedef uint64_t TMS;  //< Seconds-since-epoch timestamp (4,8 bytes).
 

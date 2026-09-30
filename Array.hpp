@@ -4,6 +4,10 @@
 #define CRABS_ARRAY_HPP
 #include "Array.h"
 #if SEAM >= CRABS_ARRAY
+#define ARY_A typename T = CHA, typename ISZ = ISN
+#define ARY_P T, ISZ
+#define ARY TArray<T, ISZ>
+#define AARY AArray<T, ISZ>
 #include "Autoject.hpp"
 #include "Stringf.hpp"
 #if SEAM == CRABS_ARRAY
@@ -11,11 +15,11 @@
 #else
 #include "_Release.h"
 #endif
-#define ARY_A typename T = CHA, typename ISZ = ISN
-#define ARY_P T, ISZ
+namespace _ {
+
 #define ARY TArray<T, ISZ>
 #define AARY AArray<T, ISZ>
-namespace _ {
+
 /* An ASCII Array.
 Please see the ASCII Data Specification for DRY documentation.
 @link ./Spec/Data/VectorTypes/Array.md
@@ -522,7 +526,7 @@ class AArray {
   inline ISZ SizeWords() { return CBytes() >> ACPUBytesLog2; }
 
   /* Gets the 16-bit ASCII Data Type for this Stack. */
-  constexpr DTB CType() { VTSCKBits | CATypePOD<T>(); }
+  constexpr DTB CType() { return VTSCKBits | CATypePOD<T>(); }
 
   /* Gets this auto-object. */
   inline Autoject& AJT() { return aobj_.AJT(); }
@@ -537,8 +541,8 @@ class AArray {
   }
 
   /* Return the Origin base pointer as type T. */
-  template<typename T = ARY>
-  inline T* As() { return TPtr<T>(Origin()); }
+  template<typename T_ = ARY>
+  inline T_* As() { return TPtr<T_>(Origin()); }
 
   /* Creates a clone on the heap.
   @return NILP if the inputs are invalue */
@@ -603,9 +607,10 @@ class AArray {
     if (count_new > this_total) {
       Resize(count_new, count_new);
     }
-    ARY* ths = This();
-    TArrayCopy<ISZ>(TArrayStart<ARY_P>(ths), this_total,
+    ARY* ths2 = This();
+    TArrayCopy<ISZ>(TArrayStart<ARY_P>(ths2), this_total,
                     TArrayStart<ARY_P>(src), src_count);
+    return ths2;
   }
 
   /* Resizes the Array to the new total, growing if necessary. */
@@ -623,7 +628,7 @@ class AArray {
     Autoject growth = { NILP, ajt.ram };
     Clone(growth, ths, total_new);
     IUW* origin_new = growth.origin;
-    if (PtrIsValid(origin_new)) {
+    if (this->PtrIsValid(origin_new)) {
       Delete(ajt);
       ajt.origin = growth.origin;
       ajt.ram = growth.ram;

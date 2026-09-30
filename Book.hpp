@@ -20,7 +20,7 @@ Please see the ASCII List documentation for information about
 #undef  BOK_P
 #define BOK_P CHS, CHT, ISZ, ISY, DT
 #undef  BOK_A
-#define BOK_A typename CHS = CHR, typename CHT = CHE, typename ISZ = ISN,\
+#define BOK_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISN,\
   typename ISY = ISM, typename DT = DTB
 
 /* @defgroup Book
@@ -731,7 +731,7 @@ class ABook {
 
   ABook(ISY total = BookDefaultTotalFractionShift,
         ISZ size_keys = BookDefaultKeysFractionShift)
-    : obj_(SizeInit, TObjectFactory<ISZ>().Init<BOF>()) {
+    : obj_(SizeInit, TObjectFactory<ISZ>().template Init<BOF>()) {
     TBookInit<BOK_P>(This(), total, size_keys);
   }
 
@@ -843,7 +843,7 @@ class ABook {
   inline AArray<IUA, ISZ, BOF>& AJT() { return obj_; } */
 
   /* Gets the ASCII Object. */
-  inline BOK* This() { return obj_.As<BOK>(); }
+  inline BOK* This() { return this->obj_.template As<BOK>(); }
 
   /* Prints this object to the Printer. */
   template<typename Printer>

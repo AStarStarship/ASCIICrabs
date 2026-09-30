@@ -5,6 +5,8 @@
 #include <_Config.h>
 #if SEAM >= CRABS_ROOM
 #include "Crabs.h"
+#include "BIn.h"
+#include "BigInt.h"
 #include "Slot.h"
 #include "Stack.hpp"
 #include "String.hpp"
@@ -37,7 +39,7 @@ template<typename ISZ>
 class TDoor : public Operand {
  public:
   enum {
-    DoorCount = DoorTotal_, //< Initial (or static) Door count.
+    DoorCount = 1,          //< Initial (or static) Door count.
     SlotSizeDefault = 512,  //< Default.
     BytesMin = 128,         //< Min size of the door socket in bytes.
   };
@@ -98,12 +100,13 @@ class TDoor : public Operand {
   /* Executes all of the queued escape sequences.
   @return Nil upon success or an Error Op upon failure. */
   const Op* Exec(Crabs* crabs) {
-    TStack<ISZ>* slots = slots_;
+    TStack<Slot, ISZ, ISZ>* slots = slots_;
     ISZ scan_total = scan_total_;
-    for (ISZ i = 0; i < slots->Count(); ++i) {
-      BIn* bin = Slot(i);
+    for (ISZ i = 0; i < slots->count; ++i) {
+      Slot* slot = slots->Element(i);
+      BIn* bin = TPtr<BIn>(slot);
       for (ISZ count = scan_total; count > 0; --count) {
-        ISZ value = BInNextByte(bin);
+        ISN value = BInStreamByte(bin);
         if (value < 0) break;
         //const Op* result = crabs->SScan(value);
       }
@@ -127,7 +130,7 @@ class TDoor : public Operand {
       NILP
     };
     if (index == '?') {
-      return CrabsQuery(crabs, This);
+      return CrabsQuery(crabs, This, 0);
     }
     index -= ' ';
     if (ISZ(index) >= slots_->count) {

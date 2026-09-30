@@ -1,23 +1,28 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CONFIG_HEADER_H
+#define _CONFIG_HEADER_H
 
 #include <_Seams.h>
 
 #pragma warning(disable: 26440) // Nag message that Function can be declared 'const'
 
 // Windows compatibility macros for Linux/POSIX
+// NOTE: MSVC's secure CRT functions take a size arg (buf, size, fmt, ...).
+// The POSIX equivalents do not, so map them explicitly.
 #ifdef _WIN32
-#define snprintf_s snprintf
-#define sscanf_s sscanf
-#define sprintf_s sprintf
+#define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
+#define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
+#define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
 #else
 #ifndef snprintf_s
 #define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
 #endif
 #ifndef sscanf_s
-#define sscanf_s sscanf
+#define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
 #endif
 #ifndef sprintf_s
-#define sprintf_s sprintf
+#define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
 #endif
 #endif
 
@@ -246,7 +251,7 @@ enum ASCIIC0 {
 };
 
 /* List of the 32 ASCII POD Data Types.
-@link ./Spec/Data/ReadMe.md */
+@link ./Spec/Data/README.md */
 enum {
   NIL = 0,    //< 00. Nil/void.
   _NIL = 0,   //< 00. Nil/void.
@@ -611,3 +616,5 @@ enum {
 };
 
 }  //< namespace _
+
+#endif  // _CONFIG_HEADER_H

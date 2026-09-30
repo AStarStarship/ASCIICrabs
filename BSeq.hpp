@@ -156,32 +156,25 @@ void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value,
     return TPtr<ISA>(begin) + bytes;
   }
   else {
-    switch (vt) {
-    case 0: {
-      auto bytes = *TPtr<ISA>(value);
-      if (freespace <= bytes) return NILP;
-      *TPtr<ISA>(begin) = bytes;
-      return TPtr<ISA>(begin) + bytes;
+    /* Write varint length as VUC (32-bit unsigned varint).
+     * Each byte: bit 7 = continuation (0=last byte), bits 0-6 = data. */
+    IUC length = IUC(value);
+    /* Calculate how many varint bytes this length needs. */
+    IUC tmp = length;
+    IUC varint_bytes = 1;
+    while (tmp > 0x7F) {
+      tmp >>= 7;
+      ++varint_bytes;
     }
-    case 1: {
-      auto bytes = *TPtr<ISB>(value);
-      if (freespace <= bytes) return NILP;
-      *TPtr<ISB>(begin) = bytes;
-      return TPtr<ISA>(begin) + bytes;
+    if (freespace < varint_bytes) return NILP;
+    IUA* ptr = TPtr<IUA>(begin);
+    for (IUC i = 0; i < varint_bytes; ++i) {
+      IUA byte = IUA(length & 0x7F);
+      length >>= 7;
+      if (length > 0) byte |= 0x80;
+      *ptr++ = byte;
     }
-    case 2: {
-      auto bytes = *TPtr<DTB>(value);
-      if (freespace <= bytes) return NILP;
-      *TPtr<DTB>(begin) = bytes;
-      return TPtr<ISA>(begin) + bytes;
-    }
-    case 3: {
-      auto bytes = *TPtr<ISD>(value);
-      if (freespace <= bytes) return NILP;
-      *TPtr<ISD>(begin) = bytes;
-      return TPtr<ISA>(begin) + bytes;
-    }
-    }
+    return ptr;
   }
   return NILP;
 }
@@ -241,8 +234,18 @@ Printer& TBSeqPrint(Printer& o, const DTB* params) {
   if (IsError(params)) {
     return o;
   }
-  ISN param_count = *params++,
-      i     = 0;
+  /* Read param_count as VUC (32-bit unsigned varint).
+   * Each byte: bit 7 = continuation, bits 0-6 = data. */
+  IUC param_count = 0;
+  IUC shift = 0;
+  DTB byte;
+  do {
+    byte = *params++;
+    param_count |= IUC(byte & 0x7F) << shift;
+    shift += 7;
+  } while (byte & 0x80);
+
+  ISN i     = 0;
   DTB type  = 0,
       value = 0;
   if (param_count == 0) {

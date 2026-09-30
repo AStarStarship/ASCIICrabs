@@ -13,7 +13,7 @@
 #else
 #include "_Release.h"
 #endif
-#define TBL_A typename CHS = CHR, typename CHT = CHE, typename ISZ = ISR, \
+#define TBL_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, \
   typename ISY = ISQ, typename HSH = IUN
 #define TBL_P CHS, CHT, ISZ, ISY, HSH
 #define TBL TTable<CHS, CHT, ISZ, ISY, HSH>
@@ -897,7 +897,7 @@ class ATable {
   }
 
   /* Gets the ASCII Object. */
-  inline TBL* This() { return obj_.As<TBL>(); }
+  inline TBL* This() { return this->obj_.template As<TBL>(); }
 
   /* Gets the Autoject. */
   inline Autoject AJT() { return obj_.AJT(); }

@@ -139,7 +139,7 @@ IS TClockTimestamp(ISN year, ISN month, ISN day, ISN hour, ISN minute,
 }
 
 /*
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* Print(CHS* cursor, CHS* stop, TME& t) {
   AClock c (t.seconds);
   cursor = SPrint(cursor, stop, c);
@@ -149,7 +149,7 @@ CHS* Print(CHS* cursor, CHS* stop, TME& t) {
 
 #if USING_STR
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* cursor, CHS* stop, const AClock& clock, 
     TMC epoch = ClockEpoch()) {
   // The way the utf functions are setup, we return a nil-term CHA so we
@@ -190,14 +190,14 @@ Printer& TClockPrint(Printer& o, const ::_::AClock& clock) {
            << clock.second;
 }
 
-template<typename CHS = CHR, typename CHT = CHE, typename IS = ISD>
+template<typename CHS = CHR, typename CHT = CHD, typename IS = ISD>
 CHS* TClockSPrint(CHS* cursor, CHS* stop, IS t) {
   AClock clock = {};
   ClockInit(clock, t);
   return SPrint(cursor, stop, clock);
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* cursor, CHS* stop, const TMT& t) {
   // The way the utf functions are setup, we return a nil-term CHA so we
   // don't have to check to write a single CHA in this
@@ -221,7 +221,7 @@ Printer& TSPrint(Printer& o, TMT& t) {
 }
 
 /* Scans a time in seconds from the given string. */
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
   if (element == NILP)
     return NILP;
@@ -393,7 +393,7 @@ const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
 }
 
 /* Scans the given string for a timestamp. */
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* element, AClock& clock) {
   D_ASSERT(element);
   D_COUT("\n    Scanning AClock:\"" << element << "\n    Scanning: ");
@@ -640,7 +640,7 @@ const CHS* TSScan(const CHS* origin, TMD& result) {
   return stop;
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* origin, TMT& result) {
   origin = TSScan<CHS, CHT, ISC>(origin, result.seconds);
   if (IsError(origin)) return NILP;
@@ -688,9 +688,10 @@ struct TClock {
   TClock(IS t) { ClockInit(clock, t); }
 
   /* Prints the given */
-  template<typename Printer, typename IS>
+  template<typename Printer, typename IS_>
   Printer& Print(Printer& o) {
-    return o << clock.Clock();
+    return o << clock.year << '/' << clock.month + 1 << '/' << clock.day 
+             << '@' << clock.hour << ':' << clock.minute << ':' << clock.second;
   }
 };
 

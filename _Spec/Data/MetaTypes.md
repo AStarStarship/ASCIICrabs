@@ -9,5 +9,6 @@ Meta Types are ASCII Data Types required to implement the specification but are 
 |:-------:|:------------:|:-------------------------------------------|
 |   CHL   | Char Largest | The largest char type, either CHA or CHC.  |
 |   CHS   | Char String  | The character type of the string.          |
+|   CHD   | Char Default | Default app string type.                   |
 |   ISN   |  signed int  | C++ int type.                              |
 |   IUN   | unsigned int | C++ unsigned int type.                     |

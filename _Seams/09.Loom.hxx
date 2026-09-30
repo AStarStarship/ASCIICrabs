@@ -11,7 +11,7 @@
 using namespace ::_;
 namespace CRTest {
 
-template<typename CHS = CHR, typename CHT = CHE, typename ISZ = ISN, typename ISY = ISN>
+template<typename CHS = CHR, typename CHT = CHD, typename ISZ = ISN, typename ISY = ISN>
 void TestLoom() {
   D_COUT(Linef("\n\n---\n\n"));
 
@@ -38,7 +38,7 @@ void TestLoom() {
   for (; i < Count; ++i) {
     TSPrint<CHS, CHT>(element, str_end, i);
     D_COUT("\nstr:" << element);
-    A_AVOW(ISY(i), loom.Insert<CHS>(element));
+    A_AVOW(ISY(i), loom.Insert(element));
   }
 
   D_COUT("\n\nTesting Factory.Grow...\n");

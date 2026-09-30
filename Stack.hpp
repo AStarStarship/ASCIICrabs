@@ -87,12 +87,12 @@ inline const T* TStackEnd(const void* sck, ISY total) {
 }
 template<SCK_A>
 inline T* TStackEnd(void* sck) {
-  if(sck) return TStackBegin<SCK_P>(sck, sck->total);
+  if(sck) return TStackBegin<SCK_P>(TPtr<SCK>(sck)) + TPtr<SCK>(sck)->total;
   return NILP;
 }
 template<SCK_A>
 inline const T* TStackEnd(const void* sck) {
-  if (sck) return TStackBegin<SCK_P>(sck, sck->total);
+  if (sck) return TStackBegin<SCK_P>(TPtr<const SCK>(sck)) + TPtr<const SCK>(sck)->total;
   return NILP;
 }
 
@@ -498,7 +498,7 @@ class AStack {
   inline ISZ SizeWords() { return CBytes() >> ACPUBytesLog2; }
 
   /* Gets the 16-bit ASCII Data Type for this Stack. */
-  constexpr DTB CType() { VTSCKBits | CATypePOD<T>(); }
+  constexpr DTB CType() { return VTSCKBits | CATypePOD<T>(); }
 
   /* Gets this auto-object. */
   inline Autoject& AJT() { return aobj_.AJT(); }
@@ -513,8 +513,8 @@ class AStack {
   }
 
   /* Return the Origin base pointer as type T. */
-  template<typename T = SCK>
-  inline T* As() { return TPtr<T>(Origin()); }
+  template<typename T_ = SCK>
+  inline T_* As() { return TPtr<T_>(Origin()); }
 
   /* Adds the given item to the stop of the obj.
   @return The index of the newly stacked item or -1 upon failure.
@@ -637,8 +637,8 @@ class AStack {
     if (count_new > this_total) {
       Resize(count_new, count_new);
     }
-    SCK* ths = This();
-    TArrayCopy<ISZ>(TStackBegin<SCK_P>(ths), this_total,
+    SCK* ths2 = This();
+    TArrayCopy<ISZ>(TStackBegin<SCK_P>(ths2), this_total,
                     TStackBegin<SCK_P>(src), src_count);
   }
 
@@ -662,7 +662,7 @@ class AStack {
   AttemptToResize:
     Clone(growth, ths, total_new, 0, count_new);
     IUW* origin_new = growth.origin;
-    if (PtrIsValid(origin_new)) {
+    if (this->PtrIsValid(origin_new)) {
       Delete(ajt);
       ajt.origin = growth.origin;
       ajt.ram = growth.ram;

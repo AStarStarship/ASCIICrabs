@@ -28,7 +28,6 @@ struct IUE {
 };
 #endif
 
-
 namespace _ {
 
 /* Remaps a Plain Context Type to another POD type 1-19.
