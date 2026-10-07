@@ -148,10 +148,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AGENTS.md" />
-    <None Include="ReadMe.md" />
+    <None Include="README.md" />
     <None Include="Tasks.json" />
     <None Include="_Seams\Test.crabs" />
-    <None Include="_Seams\ReadMe.md" />
+    <None Include="_Seams\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />

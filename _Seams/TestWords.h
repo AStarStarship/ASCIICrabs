@@ -5,7 +5,7 @@
 #define CRABS_TESTWORDS
 
 /* A basic list of test words. */
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 struct TTestWords {
   enum {
     CharsMax = 16,   //< The max characters in a word including term char.

@@ -12,7 +12,7 @@
 using namespace ::_;
 namespace CRTest { 
 #if SEAM >= CRABS_UNIPRINTER
-template<typename CHS = CHR, typename CHT = CHE, typename IS = ISR>
+template<typename CHS = CHR, typename CHT = CHD, typename IS = ISR>
 static const CHA* TestSPrinterCH() {
   D_COUT(Linef('-') << "\n\n\nTesting UTF<CH" << CSizeCodef<CHS>() << ",IS"
                     << sizeof(IS) << ">\n\n"

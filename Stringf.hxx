@@ -1664,7 +1664,7 @@ CHA* SPrint(CHA* start, CHA* stop, FPC value) {
   ISW size = stop - start;
   D_COUT("\nString:" << Hexf(start) << " end:" << Hexf(stop) << 
          " size:" << size << "\nExpecting:" << value);
-  ISC count = sprintf_s(start, stop - start, "%f", value);
+  ISC count = sprintf(start, "%f", value);
   if (count <= 0) return NILP;
   return start + count;
 }
@@ -1676,7 +1676,7 @@ inline CHA* SPrint(CHA* start, ISW size, FPC item) {
 CHA* SPrint(CHA* start, CHA* stop, FPD value) {
   if (IsError(start) || start >= stop) return NILP;
   ISW size = stop - start;
-  ISC count = sprintf_s(start, size, "%lf", value);
+  ISC count = sprintf(start, "%lf", value);
   if (count <= 0) return NILP;
   return start + count;
 }

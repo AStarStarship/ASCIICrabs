@@ -103,3 +103,23 @@ SCRIPT devices shall be required to:
 70. Implement contiguous memory layouts with 16/32/64-bit signed integer size headers at beginning.
 71. Support standard Object types: Array, Stack, Matrix, Loom, Book, Dictionary, Map, Socket.
 72. Support various hash table implementations optimized for microcontrollers and embedded systems.
+
+## 11. Integrity Requirements
+
+73. **SHA256 (or equivalent) as a first-class Crabs Machine operation.**
+    The Crabs Machine shall provide tamper-evident hashing as a built-in
+    operation, exposed as a type-value entry on the contiguous stack.
+    This is required by the Freedom Voting Machine (FVM), which needs
+    hash-chain integrity at each stage of the voting pipeline (ballot
+    cast, ledger line, block commit, count agreement). The hash
+    operation belongs in the core so all Crabs applications benefit,
+    not in individual applications.
+
+    **Status (2026-09-30):** Deferred. The FVM uses FNV-1a as a
+    SLOP-SHORTCUT placeholder until this requirement is implemented.
+    The FVM shall NOT implement SHA256 directly — it shall consume the
+    Crabs Machine's hash operation once available.
+
+    **Application:** Freedom Voting Machine (FVM), blockchain
+    hash-chain integrity, ballot tamper detection, audit trail
+    verification.

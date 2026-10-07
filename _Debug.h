@@ -23,7 +23,7 @@
 #define D_COUT_BSQ(item) ::_::TBSeqPrint<::_::COut>(::StdOut(), item)
 #define D_COUT_BIN(item) ::_::TBInPrint<::_::COut>(::StdOut(), item)
 #define D_COUT_BOUT(item) ::_::TBOutPrint<::_::COut>(::StdOut(), item)
-#define D_COUT_OBJ(obj) obj.PrintTo<::_::COut>(::StdOut())
+#define D_COUT_OBJ(obj) obj.template PrintTo<::_::COut>(::StdOut())
 #define D_COUT_FUNCTION ::_::COut("\n", __FUNCTION__)
 #define D_COUT_FUNCTION_LINE \
   ::_::COut().NL();          \

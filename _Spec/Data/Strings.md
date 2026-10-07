@@ -11,8 +11,7 @@ struct TString {
       count;  //< Count of characters in the boofer.
 };
 
-/* A UTF-8 or UTF-16 ASCII string created from an ASCII Stack that keeps track 
-of the number of Unicode characters. */
+/* A UTF-8 or UTF-16 ASCII string created from an ASCII Stack that keeps track of the number of Unicode characters. */
 template<STR_A>
 struct TSRope {
   ISZ datum,  //< Memory alignment datum can be used for multiple purposes.

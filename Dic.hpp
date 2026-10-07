@@ -698,7 +698,7 @@ public:
 
   ADic(ISY total = DicDefaultTotalFractionShift,
     ISZ size_keys = DicDefaultKeysFractionShift)
-    : aary_(BytesInit_, TObjectFactory<ISZ>().Init<BOF>()) {
+    : aary_(BytesInit_, TObjectFactory<ISZ>().template Init<BOF>()) {
     TDicInit<DIC_P>(This(), total, size_keys);
   }
 
@@ -805,7 +805,7 @@ public:
   inline AArray<IUA, ISZ, BytesInit_, BOF>& AJT_ARY() { return aary_; }
 
   /* Gets the ASCII Object. */
-  inline DIC* This() { return aary_.As<DIC>(); }
+  inline DIC* This() { return this->aary_.template As<DIC>(); }
 
   /* Prints this object to the Printer. */
   template<typename Printer>

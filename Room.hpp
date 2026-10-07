@@ -7,7 +7,7 @@
 #include "Interrupts.h"
 #include "BOut.hpp"
 #include "Wall.hpp"
-#define ROM_A typename CHS = CHR, typename CHT = CHE, typename ISZ = ISR, \
+#define ROM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, \
   typename ISY = ISQ, typename DT = DTB, typename HSH = IUN
 #define ROM_P CHS, CHT, ISZ, ISY, DT, HSH
 #define ROM TRoom<ROM_P>
@@ -40,7 +40,7 @@ namespace _ {
   /* Gets the response CHA corresponding to the given request. */
   const CHA* CRRequests(CRRequest r);
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 const CHS** TCRStates() {
   static const CHS* Strings[CRStateInvalid][16] = {
     "Initializing",
@@ -53,13 +53,13 @@ const CHS** TCRStates() {
   return Strings;
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline const CHS* CRStates(CRRequest r) {
   if (r < 0 || r > CRStateInvalid) r = CRStateInvalid;
   return TCRRequests()[r];
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 inline const CHS** TCRRequests() {
   static const CHS* Strings[CRRequestInvalid][16] = {
     "Open door",
@@ -69,7 +69,7 @@ inline const CHS** TCRRequests() {
   return Strings;
 }
 
-template<typename CHS = CHR, typename CHT = CHE>
+template<typename CHS = CHR, typename CHT = CHD>
 const CHS* CRRequests(CRRequest r) {
   if (r < 0 || r > CRRequestInvalid) r = CRRequestInvalid;
   return TCRRequests()[r];
@@ -203,7 +203,7 @@ class TRoom : public Operand {
     if (IsError(name)) {
       return false;
     }
-		CHR* TSPrint<CHR, CHL>(name_, CrabsRoomNameLengthMax, name);
+		TSPrint<CHR, CHL>(name_, CrabsRoomNameLengthMax, name);
     return true;
   }
 
@@ -224,40 +224,40 @@ class TRoom : public Operand {
   }
 
   /* Gets the wall_count_. */
-  ISN WallCount() { return walls_->count; }
+  ISN WallCount() { return walls_.origin ? TStackGet<ISN, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), 0) : 0; }
 
   /* Gets the given wall by index.
   @return Nil if the index is invalid  */
   TWall<ISZ, ISY>* GetWall(ISN wall_number) {
-    if (wall_number < 0) return NILP;
-    if (wall_number >= walls_->count) return NILP;
-    return TStackGet<TWall<ISZ, ISY>*, ISC, ISB>(walls_, wall_number);
+    if (wall_number < 0 || !walls_.origin) return NILP;
+    if (wall_number >= TStackGet<ISN, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), 0)) return NILP;
+    return TStackGet<TWall<ISZ, ISY>*, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), wall_number);
   }
 
   /* Ads a wall to the room.
   @return The inputted new_wall pointer upon success or nil upon failure. */
   TWall<ISZ, ISY>* AddWall(TWall<ISZ, ISY>* new_wall) {
-    if (new_wall == NILP) return NILP;
-    if (walls_->count >= walls_->total) return NILP;
-    TStackInsert<TWall<ISZ, ISY>*, ISC, ISB>(walls_, new_wall);
+    if (new_wall == NILP || !walls_.origin) return NILP;
+    if (TStackGet<ISN, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), 0) >= TStackGet<ISN, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), 1)) return NILP;
+    TStackInsert<TWall<ISZ, ISY>*, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), new_wall);
     return new_wall;
   }
 
   /* Removes the given Wall by index.
   @return False upon failure.  */
   BOL RemoveWall(ISN wall_number) {
-    return TStackRemove<TWall<ISZ, ISY>*, ISC, ISB>(walls_, wall_number);
+    return TStackRemove<TWall<ISZ, ISY>*, ISC, ISB>(TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), wall_number);
   }
 
   /* Gets the entire Room size, including dynamic memory, in bytes. */
   IUW GetBytes() {
     IUW count = FloorSize;
-    for (ISN i = 0; i < walls_->count; ++i) {
-      //count += TStackGet<TWall<ISZ, ISY>*, ISC, ISB>(walls_, i)->GetSizeBytes();
+    for (ISN i = 0; i < WallCount(); ++i) {
+      count += TStackGet<TWall<ISZ, ISY>*, ISC, ISB>(
+          TPtr<TStack<ISN, ISC, ISB>>(walls_.origin), i)->GetSizeBytes();
     }
-    // @todo Add all memory we used in bytes here.
     return count;
-}
+  }
 
   /* Function run every main loop cycle to check the system status. */
   virtual void DiagnoseProblems() {

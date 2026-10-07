@@ -12,7 +12,7 @@
 using namespace ::_;
 namespace CRTest {
 #if SEAM >= CRABS_STRING
-template<typename T = CHR, typename CHT = CHE, typename ISZ = ISR, 
+template<typename T = CHR, typename CHT = CHD, typename ISZ = ISR, 
   typename ISY=ISZ>
 void TestStringN() {
   D_COUT(Linef("\n\n\n---\nTesting TString<CH") << CSizeCodef<T>() << ", IS" <<

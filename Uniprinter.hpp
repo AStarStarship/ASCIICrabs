@@ -11,7 +11,7 @@ A collection of abstract print functions that can be remapped to print to any so
 */
 
 /* Prints the given string to the Printer. */
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 Printer& TPrint(Printer& p, const CHS* element) {
   if (IsError(element)) return p;
   CHT c = 0;
@@ -25,7 +25,7 @@ Printer& TPrint(Printer& p, const CHS* element) {
 
 /* Prints the given string to the Printer and returns the count of characters
 printed. */
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 ISN TPrintAndCount(Printer& p, const CHS* element) {
   if (IsError(element)) return 0;
   ISN print_count = 0;
@@ -228,7 +228,7 @@ inline Printer& TPrint(Printer& p, TSizeCodef<T, CHS>& value) {
 pointer to the nil-term CHA upon success.
 @param token  The token to utf.
 @param column_count The number_ of columns to align right to. */
-template<typename Printer, typename CHS = CHR, typename CHT = CHE, typename IS = ISR>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD, typename IS = ISR>
 Printer& TPrintCenter(Printer& p, const CHS* element, IS column_count = 80) {
   if (IsError(element) || column_count < 1) 
     return p;
@@ -316,7 +316,7 @@ inline Printer& TPrint(Printer& p, Centerf& value) {
 pointer to the nil-term CHA upon success.
 @param str  The string to print.
 @param column_count The number_ of columns to align right to. */
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 Printer& TPrintRight(Printer& p, const CHS* element, ISW column_count = 80) {
   if (IsError(element) || column_count < 1)
     return p;
@@ -416,7 +416,7 @@ Printer& TPrintRepeat(Printer& p, CHS c, ISW count) {
   return p;
 }
 
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 Printer& TPrintLine(Printer& p, CHS token = '-', ISW column_count = 80) {
   p << '\n';
   TPrintRepeat<Printer, CHS>(p, token, column_count);
@@ -448,7 +448,7 @@ TPrintBreak<CHA> ("- \n---\n---\n\n   Foo\n\n---\n---", 10);
 //>>> -----------
 @endcode
 */
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 const CHS* TPrintLinef(Printer& p, const CHS* style = NILP,
                        ISW column_count = 80) {
   enum {
@@ -625,7 +625,7 @@ Printer& TPrint(Printer& p, Headingf& value) {
   return p;
 }
 
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 Printer& TPrintChars(Printer& p, const CHS* start, const CHS* stop) {
   if (IsErrorSocket(start, stop)) return p;
 
@@ -653,7 +653,7 @@ Printer& TPrintChars(Printer& p, const CHS* start, const CHS* stop) {
   return p << STAPrintCharsBorder() << "Bytes printed:" << bytes;
 }
 
-template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 inline Printer& TPrintChars(Printer& p, const CHS* start, ISW count) {
   return TPrintChars<Printer, CHS>(p, start, start + count - 1);
 }
@@ -1065,7 +1065,7 @@ Printer& TPrintATypeValue(Printer& p, DTD type, const void* base_ptr,
 }
 
 /* Prints ASCII type and the value tuple in CSV format. */
-//template<typename Printer, typename CHS = CHR, typename CHT = CHE>
+//template<typename Printer, typename CHS = CHR, typename CHT = CHD>
 //Printer& TPrintATypeCSV(Printer& o, const CHS* types) {
 //  const CHS* token_start = types;
 //  ISW state = 0;
@@ -1078,7 +1078,7 @@ Printer& TPrintATypeValue(Printer& p, DTD type, const void* base_ptr,
 
 /* A dumb fast templated String Printer.
 Dumb means that it does not count up the number of Unicode characters. */
-template<typename CHS = CHR, typename CHT = CHE, typename IS = ISW>
+template<typename CHS = CHR, typename CHT = CHD, typename IS = ISW>
 struct TSPrinter {
   CHS* start,  //< Start address.
     * stop;    //< Stop address.

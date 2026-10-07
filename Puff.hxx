@@ -224,16 +224,16 @@ const void* Binary32Pow10IntegralPortions() { return IEEE754Pow10F4; }
 const void* Binary64Pow10IntegralPortions() { return IEEE754Pow10F8; }
 
 BOL IsFinite(FPC value) {
-  return static_cast<FPC>(isfinite(static_cast<FPD>(value)));
+  return static_cast<FPC>(std::isfinite(static_cast<FPD>(value)));
 }
 
-BOL IsFinite(FPD value) { return isfinite(value); }
+BOL IsFinite(FPD value) { return std::isfinite(value); }
 
 BOL IsInfinite(FPC value) {
-  return static_cast<FPC>(isinf(static_cast<FPD>(value)));
+  return static_cast<FPC>(std::isinf(static_cast<FPD>(value)));
 }
 
-BOL IsInfinite(FPD value) { return isinf(value); }
+BOL IsInfinite(FPD value) { return std::isinf(value); }
 
 FPD Ceiling(FPD value) { return ceil(value); }
 

@@ -27,6 +27,11 @@ inline const T* TPtr(const void* ptr) {
 inline BOL IsError(const void* ptr) {
   return IUW(ptr) < AErrorTotal;
 }
+/* Checks if the function pointer is an ASCII Error Code. */
+template<typename R, typename... Args>
+inline BOL IsError(R(*)(Args...)) {
+  return false;
+}
 /* Checks if the start is an ASCII Error Code and start < stop. */
 inline BOL IsErrorSocket(const void* start, const void* stop) {
   return IUW(start) < AErrorTotal || start >= stop;

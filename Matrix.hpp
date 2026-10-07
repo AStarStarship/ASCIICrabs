@@ -690,23 +690,22 @@ class AMatrix {
     return This();
   }
 
-  template<MTX_A>
-  TMatrix<MTX_P>* CloneDelta(const ISZ* dimensions_delta) {
+  template<typename TMTX_, typename ISZMTX_, typename ISYMTX_, typename IUYMTX_>
+  TMatrix<TMTX_, ISZMTX_, ISYMTX_, IUYMTX_>* CloneDelta(const ISZ* dimensions_delta) {
     Autoject& ajt = AJT();
-    auto matrix = TMatrixPtr<ISZ>(ajt);
-    TMatrix<MTX_P>* matrix = TMatrixPtr<ISZ>(ajt.origin);
+    TMatrix<T, ISZ, ISY, IUY>* matrix = TMatrixPtr<ISZ>(this->AJT().origin);
     ISZ* a_dimensions = &matrix->dimensions.count;
     ISZ dimension_count = *a_dimensions;
     if (IsError(dimensions_delta) || dimension_count == 0) {
-      ISZ bytes = TMatrixSize<MTX_P>(matrix);
+      ISZ bytes = TMatrixSize<T, ISZ, ISY, IUY>(matrix);
       if (bytes < 0) return NILP;
       IUW* origin_new = ajt.ram(NILP, bytes);
       if (IsError(origin_new)) return NILP;
       IUW* origin = ajt.origin;
-      ISZ bytes = TMatrixSize<MTX_P>(&matrix->dimensions.count);
-      ArrayCopy(origin_new, TPtr<CHA>(origin_new) + bytes,
-        origin, TPtr<CHA>(origin) + bytes);
-      return TPtr<TMatrix<MTX_P>>(origin_new);
+      ISZ bytes_copy = TMatrixSize<T, ISZ, ISY, IUY>(&matrix->dimensions.count);
+      ArrayCopy(origin_new, TPtr<CHA>(origin_new) + bytes_copy,
+        origin, TPtr<CHA>(origin) + bytes_copy);
+      return TPtr<TMatrix<T, ISZ, ISY, IUY>>(origin_new);
     }
     ISZ dimensions_delta_count = *dimensions_delta++;
     if (dimension_count != dimensions_delta_count) return -1;
@@ -735,13 +734,12 @@ class AMatrix {
   }
 
   /* Clones the other object; up-sizing the socket only if required. */
-  inline TMatrix<MTX_P>* Copy(AMatrix<MTX_P>& other,
-                              RAMFactory ram = obj_.AJT().ram) {
+  inline TMatrix<MTX_P>* Copy(AMatrix<MTX_P>& other) {
     return NILP;// TMatrixCopy<MTX_P>(obj_.This(), other.This());
   }
 
-  template<MTX_A>
-  inline TMatrix<MTX_P>* Resize(const ISZ* dimensions_delta) {
+  template<typename T_, typename ISZ_, typename ISY_, typename IUY_>
+  inline TMatrix<T_, ISZ_, ISY_, IUY_>* Resize(const ISZ_* dimensions_delta) {
 		//Autoject& ajt = AJT();
   //  auto matrix = Clone<ISZ>(dimensions_delta);
   //  if (IsError(matrix)) return matrix;

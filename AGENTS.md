@@ -1,5 +1,9 @@
 # Agent Rules for Crabs
 
+## Kanban board
+
+This project belongs to the **AStarship** organization; its Kanban board slug is `astarship` (see `~/AStarStarship/AGENTS.md`). Always target `astarship` explicitly (`--board astarship` / `board="astarship"`). Never rely on the current-board pointer. If a task's assigned board differs, report the mismatch before acting — do not silently switch.
+
 This file contains rules and guidelines for AI agents operating in the Crabs repository.
 
 ## 1. Build, Lint, and Test Commands
@@ -12,10 +16,10 @@ This file contains rules and guidelines for AI agents operating in the Crabs rep
 The project uses a custom seam tree testing framework located in `_Seams/`. You change the SEAM macro to one of the seams in the `_Seams.h` file, then all the debug information changes and a different unit test is runs.
 
 - **Run All Tests:** `./Crabs` (Runs the compiled executable)
-- **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_main.cpp` or set breakpoints in `Test.hpp` as described in `ReadMe.md`.
+- **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_main.cpp` or set breakpoints in `Test.hpp` as described in `README.md`.
 - **Debugging:**
   - Breakpoints: `Test.hpp` contains a `TBRK` function intended for one breakpoints.
-  - Setup: Copy `_Seams` directory to workspace if needed (per `ReadMe.md`).
+  - Setup: Copy `_Seams` directory to workspace if needed (per `README.md`).
 
 ### Lint / Standards
 - **Style Check:** There is no automated linter configured (e.g., clang-format) visible in the root.
@@ -95,3 +99,61 @@ This naming convention is called Chimera case due to the mix of snake_case and C
 - **Verify before Implement:** Always read `_StyleGuide` files if unsure about a naming or structural convention.
 - **Mimic Context:** The codebase uses heavily customized types. Do NOT introduce standard `int`, `char`, `float` without checking if a project specific type (`ISN`, `CHR`, `FPC`) should be used instead.
 - **Seam Tests:** When adding functionality, look for the corresponding "Seam" (test file) in `_Seams/` and add a test case there.
+
+## Code Style — Chimera+ (AStarship Standard)
+
+All **code and filenames** in the AStarship ecosystem follow the **Chimera+** style guide
+(`~/AStarStarship/ASCIICrabs/__ChimeraPlus.md`). The naming philosophy applies to code
+identifiers and filenames fleet-wide.
+
+### Core Rule: immutable vs mutable
+- **Immutable** (can't change after init) → **CamelCase**
+- **Mutable** (changes at runtime) → **lower_snake_case**
+
+### Naming Summary
+| Element | Convention | Example |
+|---|---|---|
+| Type aliases (fixed-width) | 3-letter CAPS codes | `CHA` char8, `ISC` int32, `IUD` uint64, `BOL` bool, `FPC` float32, `FPD` double64 |
+| Structs / classes | CamelCase + T(POD)/A(utoject) prefix | `TArray`, `AMap`, `Crabs` |
+| Struct members (mutable) | lower_snake_case | `socket_bytes`, `header_bytes` |
+| Struct members (immutable) | CamelCase | `StackTotalMin`, `ColumnWidth` |
+| Free functions / methods | CamelCase, type-prefixed | `CrabsInit`, `TArrayBytes`, `TMapFind` |
+| Function suffixes | `_NC` (no-check), `C` (const/count), `T` (POD), `A` (autoject) | `TArrayInsert_NC`, `CSizeMin` |
+| Local variables | lower_snake_case (always) | `bytes_data`, `read_cursor` |
+| Macros / #define | UPPER_SNAKE_CASE | `CRABS_RUN_TESTS`, `CPU_X64` |
+| Private/protected members | trailing underscore | `aobj_`, `array_` |
+| Namespaces | `namespace _ { ... }` | single shared underscore namespace |
+| DB names / tables / columns | lower_snake_case (mutable) | `user_sessions`, `order_items` |
+| Client-facing API / headers | CamelCase (immutable contract) | `OrderService`, `PaymentGateway` |
+| Filenames (client contract) | CamelCase | `OrderService.h` |
+| Filenames (host/storage) | lower_snake_case | `user_sessions.py` |
+
+### Header Boilerplate (C/C++)
+```
+// Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef CRABS_<NAME>_<H|HPP>
+#define CRABS_<NAME>_<H|HPP>
+#include "..."
+#if SEAM >= CRABS_<NAME>
+... body ...
+#endif
+#endif
+```
+
+### Formatting
+- 2-space indent
+- Opening brace same line (functions/control), next line (structs/classes)
+- `D_ASSERT()`, `D_COUT()`, `D_RETURNT(type, val)` for debug/assert/return
+- `NILP` = nullptr
+- `alignas(ACPUCacheLineSize)` for hot structs
+- Doxygen `/** @param @return @pre @link @see @code */` comments
+
+### The One-Sentence Version
+**Immutable → CamelCase, mutable → lower_snake_case; macros UPPER_SNAKE; private/protected
+get a trailing `_`; types are short CAPS width-codes (CHA/ISC/IUD/BOL); structs are
+CamelCase with T(POD)/A(utoject) prefix; functions are CamelCase with T/A kind prefixes
+and _NC/C markers; locals are snake_case; everything lives in `namespace _`; every file
+starts with AStarship copyright, `#pragma once`, a `CRABS_*` guard, and `#if SEAM >= CRABS_*`
+gating.** The name tells you the kind, width, access level, and mutability — before you
+read the body.

@@ -3,20 +3,26 @@
 #if SEAM >= CRABS_OP
 namespace _ {
 
-ISC BSeqParamNumber(const DTB* params, ISN param_number) {
+IUC BSeqParamNumber(const DTB* params, ISN param_number) {
   enum {
     StateNormal = 0,
     StateVarint = 1,
   };
   if (IsError(params))
     return 0;
-  ISC param_count = ISC(*params++);
+  /* Read param_count as VUC (32-bit unsigned varint).
+   * Each byte: bit 7 = continuation, bits 0-6 = data.
+   * Max 5 bytes for 32-bit value. */
+  IUC param_count = 0;
+  IUC shift = 0;
+  DTB byte;
+  do {
+    byte = *params++;
+    param_count |= IUC(byte & 0x7F) << shift;
+    shift += 7;
+  } while (byte & 0x80);
   if (param_number > param_count)
     return _NIL;
-  if (param_count < 0) {
-    param_count ^= DTB(1) << 15;
-    param_count |= ISC(*params++) << 15;
-  }
   ISC state = 0,
     bits_shift = 0;
   ISC i;

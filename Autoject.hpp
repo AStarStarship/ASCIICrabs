@@ -48,9 +48,9 @@ class TBOF {
   inline IUW* WordsStop() { return WordsEnd() - 1; } */
 
   /* Gets the origin element of the socket. */
-  template<typename T = CHA>
-  inline T* Begin() {
-    return TPtr<T>(words_);
+  template<typename T_ = CHA>
+  inline T_* Begin() {
+    return TPtr<T_>(words_);
   }
 
   /* Returns the first element of the ASCII Object data section. */
@@ -67,15 +67,15 @@ class TBOF {
   inline T* Stop() { return Start<>() + Size() - 1; } */
 
   /* Gets the origin of the socket. */
-  template<typename T = CHA, typename ISZ = ISW>
-  inline T& Element(ISZ index) {
+  template<typename T_ = CHA, typename ISZ_ = ISW>
+  inline T_& Element(ISZ_ index) {
     if (index < 0 || index >= Size()) return NILP;
     return Begin()[index];
   }
 
   /* Sets the size to the new value. */
-  template<typename ISW>
-  inline IUW* SizeSet(ISW size) {
+  template<typename ISW_>
+  inline IUW* SizeSet(ISW_ size) {
     A_ASSERT((size & ACPUWordMask) == 0);
     *TPtr<ISZ>(words_) = size;
     return words_;
@@ -338,7 +338,7 @@ class Autoboofer {
   /* Constructs. */
   Autoboofer() {
     Init(bof_.Words(), ISZ(bof_.Size()),
-         TObjectFactory<ISZ>().Init<BOF>());
+         TObjectFactory<ISZ>().template Init<BOF>());
   }
 
   /* Creates a autoject with either statically or dynamically allocated
@@ -347,7 +347,7 @@ class Autoboofer {
   dynamic memory will be created. */
   Autoboofer(ISZ size, RAMFactory ram = NILP) {
     Init(bof_.Words(), size,
-         TObjectFactory<ISZ>().Init<BOF>(ram));
+         TObjectFactory<ISZ>().template Init<BOF>(ram));
   }
 
   /* Stores the origin and ram to the obj_. */
@@ -373,15 +373,15 @@ class Autoboofer {
   inline ISZ Size() { return TSize<ISZ>(ajt_.origin); }
 
   /* Gets the total ASCII Object size in bytes. */
-  template<typename Class = ARY>
+  template<typename Class_ = void>
   inline ISZ CBytes() {
-    return TSizeBytes<T, ISZ, Class>(AJT());
+    return TSizeBytes<T, ISZ, Class_>(AJT());
   }
 
   /* Gets the total ASCII Object size in words. */
-  template<typename Class = ARY>
+  template<typename Class_ = void>
   inline ISZ SizeWords() {
-    return TSizeWords<T, ISZ, Class>(AJT());
+    return TSizeWords<T, ISZ, Class_>(AJT());
   }
 
   /* Returns the begin of the OBJ. */

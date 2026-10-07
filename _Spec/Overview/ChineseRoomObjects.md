@@ -7,6 +7,7 @@
 |       Bout | BOU  | A *B-Output Sequence*, or *B-Output*, is an A*B B-Output Stream. |
 |      Clock | CLK  | Used for 32-bit and 64-bit timestamps. |
 |       Door | DOR  | A door in a Chinese Room that leads to another Chinese Room or Agent. |
+|      Floor | FLR  | A Floor in a Chinese Room. **[PENDING DEFINITION — see `Crabs/ASCIIListChineseRoom.md` (Floor, NEEDS CAPTAIN DEFINITION).]** |
 |  Interrupt | INT  | An Interrupt that causes the Room to Reset.  |
 | Expression | EXP  | An asynchronous Group structured expression. |
 |        Log | LOG  | A EXP used for a log. |

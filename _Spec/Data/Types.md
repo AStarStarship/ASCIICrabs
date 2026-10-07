@@ -115,12 +115,12 @@ A Map Type maps from of one POD type to other set, such as a Dictionary that map
 
 The Modifier (MOD) Bits turn in the 13 LSb into either a SEC, FPV (Void Floating-point), CHV (Unsigned Void Character), or ISV Void Signed Integer numbers.
 
-| Value | Type | Description            |
-|:-----:|:----:|:-----------------------|
-| 00/0  | SEC  | Standard, Extended, and Context Types. |
-| 01/1  | FPV  | r-bit Void float. |
-| 10/2  | CHV  | r-bit Void unsigned char. |
-| 11/3  | ISV  | (r-1)-bit Void signed integer or Extended Block Type. |
+| MOD | Description            |
+|:---:|:-----------------------|
+|  0  | Unsigned char void type. |
+|  1  | Signed integer void type. |
+|  2  | ASCII Data Types Block 1. |
+|  3  | ASCII Data Types Block 2. |
 
 ## Bit Pattern
 
@@ -169,34 +169,19 @@ Variable Byte Length (VBL) Types 1 to 2048 bytes long are created when the five 
 
 ## Plain Context Types
 
-Plain Context Types PCa through PCl are implementation defined and may be 8, 16, 32, 64, or 128-bits wide. Plain types must be sorted descending by width, which is reverse order from POD types 1 through 18. All Plain Context Types except for 8-bit Plain Context Types can be deleted, which would make all of the Plain Data types 8-bit, hence why they are reverse sorted.
+Plain Context (PC) Types PCa through PCl are implementation defined and may be 8, 16, 32, 64, or 128-bits wide. Plain types must be sorted descending by width, which is reverse order from POD types 1 through 18. All Plain Context Types except for 8-bit Plain Context Types can be deleted, which would make all of the Plain Data types 8-bit, hence why they are reverse sorted. PC Types are remapped using one single 64-bit iteger that stores each mapping using five bits packed contiguously such that there are four unused bits, which we will repurpose later ( a through l is 12 letters and 12 * 5 bits is 60 bits). The Crabs Machine always passes the Context Word to ever Crabs Expression call, and by passing 0 or the lower 60 bits set to 0 turns off PC Types because 0 is NIL.
 
-### Concrete Type Definitions
+PC Types are set by defining the last Plain Type index of that size such that `CT0 = 31 >= CT1 >= CT2 >= CT3 >= CT4 >= CT5 > 19`.
 
-The following concrete definitions are recommended for Plain Context Types:
+PC Types are disabled by remapping it to a NIL type.
 
-| Type | Width | Purpose | Usage |
-|:----:|:-----:|:--------|:------|
-| PCa | 128-bit | Extended Context Storage | Large-scale context data for complex operations |
-| PCb | 64-bit | Context Pointer | Pointer to context data structures |
-| PCc | 32-bit | Context Index | Index into context tables |
-| PCd | 16-bit | Context Tag | Tag for context classification |
-| PCe | 8-bit | Context Flag | Boolean flag for context state |
-| PCf | 8-bit | Context Modifier | Additional context modifier bits |
-| PCg | 8-bit | Context Reserved | Reserved for future use |
-| PCh | 8-bit | Context Reserved | Reserved for future use |
-| PCi | 8-bit | Context Reserved | Reserved for future use |
-| PCj | 8-bit | Context Reserved | Reserved for future use |
-| PCk | 8-bit | Context Reserved | Reserved for future use |
-| PCl | 8-bit | Context Reserved | Reserved for future use |
-
-### Configuration and Deletion
-
-Plain Context Types are set by defining the last Plain Type index of that size such that `CT0 = 31 >= CT1 >= CT2 >= CT3 >= CT4 >= CT5 > 19`. When the machine is configured these values are CT0_STOP, CT1_STOP, CT2_STOP, CT3_STOP, CT4_STOP, and CT5_STOP respectively. After the machine has been configured the codes then turn into integer values _CT0, _CT1, _CT2, _CT3, _CT4, and _CT5.
-
-To delete all 128-bit Plain Context Types set CT4_STOP to BOL (19). To delete all 64-bit Plain Context Types set CT3_STOP to CT4_STOP. To delete all 32-bit Plain Context Types set CT2_STOP to CT3_STOP. To delete all 16-bit Plain Context Types set CT1_STOP to CT2_STOP. All unspecified Plain Context Types are then 8-bit types that cannot be deleted.
-
-To add Promise types (PMS, RES, VAL, ERR) after configuration, set _CT5_STOP to 35.
+The Plain Context system is an escape-sequence mechanism analogous to XON/XOFF
+flow control. The PC remap word is the escape sequence: it tells the Crabs
+Machine how to interpret the 12 PC type codes in the current context. Swapping
+PC types is a single 64-bit write to the Context Word — no state machine, no
+multi-byte sequences, no ambiguity. Historical reports of systems "going nuts"
+with XON/XOFF trace to buggy 1970s implementations, not a flaw in the
+escape-sequence principle. We use UTF-8, not 1970s terminal protocols.
 
 ### Usage Examples
 
@@ -219,3 +204,51 @@ struct Promise {
   ERR rejectionReason;    // Error reason if rejected
 };
 ```
+
+## Global Arbitrary-Width POD Types
+
+The 12 5-bit values 20-31 are invalid as PC remap targets (they *are* the PC
+types). These 12 values are repurposed as **Global POD Types** of arbitrary
+bit width — not restricted to 8, 16, 32, 64, or 128 bits. Unlike PC types,
+Global POD Types are not per-context: the 5-bit value 20-31 in any PC slot
+is a direct reference to the global type, no remap lookup needed.
+
+The 12 global types can be swapped out per-context by remapping them, just
+like PC types. If a global type is remapped to a non-binary byte count
+(a valid POD type 0-19), it takes on that type's width for the current
+context. If a global type is remapped to an invalid value, the Crabs
+Machine shall throw an error.
+
+| 5-bit value | Type | Default width | Description |
+|:-----------:|:----:|:-------------:|:------------|
+| 20 | GWA | 1-bit | 1-bit boolean/flag. |
+| 21 | GWB | 2-bit | 2-bit enum (4 states). |
+| 22 | GWC | 3-bit | 3-bit enum (8 states). |
+| 23 | GWD | 4-bit | 4-bit nibble (16 states). |
+| 24 | GWE | 5-bit | 5-bit (32 states). |
+| 25 | GWF | 6-bit | 6-bit (64 states). |
+| 26 | GWG | 7-bit | 7-bit (128 states). |
+| 27 | GWH | 9-bit | 9-bit (512 states). |
+| 28 | GWI | 10-bit | 10-bit (1024 states). |
+| 29 | GWJ | 11-bit | 11-bit (2048 states). |
+| 30 | GWK | 12-bit | 12-bit (4096 states). |
+| 31 | GWL | 13-bit | 13-bit (8192 states). |
+
+The default widths above fill the gaps between the core POD types (which
+cover 8, 16, 32, 64, and 128 bits). The global types provide sub-byte and
+odd-width access for packed data, bitfields, and hardware register access.
+The Captain may reassign any of the 12 widths; the type names (GWA-GWL)
+follow the existing A/B/C/D/E suffix convention and are stable.
+
+### Context Swapping
+
+Because the global types occupy the same 5-bit values as the PC types
+(20-31), the PC remap word can swap a global type with a context-specific
+POD type. For example, remapping _PCa (value 20, GWA) to _IUC (value 9)
+makes _PCa a 32-bit unsigned integer in the current context. Remapping
+_PCa to 0 (NIL) disables it. Remapping _PCa to an invalid value (e.g. 100)
+shall cause the Crabs Machine to throw an error.
+
+This means the 12 global types are the *default* behavior when the PC remap
+word is 0 (all PC types disabled), and they can be overridden per-context
+without consuming additional remap slots.
