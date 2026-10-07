@@ -28,7 +28,7 @@ void TestMap() {
                      << " codomain:" << TDelta<>(map.This(), map.Codomain()));
   D domain[Size_] = { 0 };
 
-  D_COUT(Headingf("Generating random domain values..."));
+  D_COUT(Headingf("Generating sorted domain values..."));
 
   for (ISZ i = 0; i < Size_; ++i) {
     D d = 0;
@@ -36,6 +36,16 @@ void TestMap() {
     domain[i] = d;
     D_COUT("\n" << i << ".) " << d);
   }
+  // Sort the domain values so insertion order == sorted order.
+  // (TMap is a sorted-domain map; the test must insert in sorted order
+  //  for Find to return the original array index.)
+  for (ISZ i = 0; i < Size_ - 1; ++i)
+    for (ISZ j = i + 1; j < Size_; ++j)
+      if (domain[j] < domain[i]) {
+        D tmp = domain[i];
+        domain[i] = domain[j];
+        domain[j] = tmp;
+      }
 
   for (ISZ i = 0; i < Size_; ++i)
     map.Add(domain[i]);

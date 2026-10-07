@@ -13,7 +13,7 @@
 namespace _ {
 
 #undef  MAP_A
-#define MAP_A typename D = ISR, typename ISZ = ISQ
+#define MAP_A typename D = ISR, typename ISZ = ISN
 #undef  MAP_P
 #define MAP_P D, ISZ
 #define MAP TMap<MAP_P>
@@ -169,9 +169,10 @@ constexpr ISZ CMapSizeRequired(ISZ count) {
 };
 
 template<MAP_A>
-inline MAP* TMapInit(MAP* map, ISZ count) {
+inline MAP* TMapInit(MAP* map, ISZ total) {
   D_ASSERT(map);
-  D_ASSERT(count >= 0);
+  D_ASSERT(total >= 0);
+  map->total = total;
   map->count = 0;
   return map;
 }
@@ -197,7 +198,7 @@ ISZ TMapAdd(MAP* map, D domain_value, ISZ codomain_mapping) {
     return count;
   };
   D_COUT("\n\n  Searching for index in the domain... ");
-  ISZ low = 0, mid = 0, high = count;
+  ISZ low = 0, mid = 0, high = count - 1;
   D current_domain_value = 0;
   while (low <= high) {
     mid = (low + high) >> 1;
@@ -214,25 +215,24 @@ ISZ TMapAdd(MAP* map, D domain_value, ISZ codomain_mapping) {
       return CAInvalidIndex<ISZ>();
     }
   }
-  if (domain_value > current_domain_value) {
-    if (mid == count) {
-      *(domain + count) = domain_value;
-      *(codomain + count) = codomain_mapping;
-      map->count = count + 1;
-      D_COUT_MAP(map);
-      return count;
-    }
-    ++mid;
+  // After the loop, low is the insertion point.
+  // If domain_value is greater than all existing, low == count.
+  ISZ insert_at = low;
+  if (insert_at > 0) {
+    // Not inserting at the start; the new element goes after domain[insert_at-1].
   }
-  D_COUT(" mid:" << mid);
-  TArrayInsert_NC<D, ISZ>(domain, count, mid, domain_value);
-  TArrayInsert_NC<ISZ, ISZ>(codomain, count, mid, codomain_mapping);
-  D_COUT("\n      Inserted domain[mid-1], mid, mid+1]: = [" << 
-         *(domain + mid - 1) << ", " << *(domain + mid) << ", " << 
-         *(domain + mid + 1) << ']');
+  if (insert_at < count) {
+    TArrayInsert_NC<D, ISZ>(domain, count, insert_at, domain_value);
+    TArrayInsert_NC<ISZ, ISZ>(codomain, count, insert_at, codomain_mapping);
+  } else {
+    // Insert at the end.
+    *(domain + count) = domain_value;
+    *(codomain + count) = codomain_mapping;
+  }
+  D_COUT(" mid:" << insert_at);
   map->count = count + 1;
   D_COUT_MAP(map);
-  return count;
+  return insert_at;
 }
 
 /* Returns the size of th map in bytes. */
@@ -246,7 +246,9 @@ inline ISZ TMapSizeBytes(ISZ size) {
 }
 
 /* Attempts to find the domain_member index.
-@return An invalid index upon failure or a valid index upon success. */
+@return An invalid index upon failure or a valid index (position in the
+         domain array) upon success. Use TMapMapping to get the codomain
+         value at that index. */
 template<MAP_A>
 ISZ TMapFind(const MAP* map, const D& domain_member) {
   D_ASSERT(map);
@@ -258,7 +260,7 @@ ISZ TMapFind(const MAP* map, const D& domain_member) {
   while (low <= high) {
     mid = (low + high) >> 1;
     D x_i = domain[mid];
-    D_COUT("\n   low:" << low << " mid:" << mid << " high:" << high << 
+    D_COUT("\n   low:" << low << " mid:" << mid << " high:" << high <<
            " x_i:" << x_i);
     if (x_i > domain_member) {
       high = mid - 1;
@@ -266,11 +268,20 @@ ISZ TMapFind(const MAP* map, const D& domain_member) {
       low = mid + 1;
     } else {
       D_COUT(". Hit!");
-      return TMapCodomain<MAP_P>(domain, size)[mid];
+      return mid;
     }
   }
   D_COUT("\n  Domain does not contain domain_member.");
   return CAInvalidIndex<ISZ>();
+}
+
+/* Finds the domain_member and returns its codomain value in one call.
+@return The codomain mapping or an invalid index if not found. */
+template<MAP_A>
+ISZ TMapFindValue(const MAP* map, const D& domain_member) {
+  ISZ index = TMapFind<MAP_P>(map, domain_member);
+  if (index < 0) return index;
+  return TMapMapping<MAP_P>(map, index);
 }
 
 /* Attempts to find the codomain_mapping index.
@@ -347,9 +358,20 @@ class AMap {
   }
 
   /* Searches for the domain_member in the domain.
-  @return True if the pointer lies in this socket. */
+  @return The index (position) of the domain_member or an invalid index. */
   inline ISZ Find(D domain_member) {
     return TMapFind<MAP_P>(This(), domain_member);
+  }
+
+  /* Searches for the domain_member and returns its codomain value.
+  @return The codomain mapping or an invalid index if not found. */
+  inline ISZ FindValue(D domain_member) {
+    return TMapFindValue<MAP_P>(This(), domain_member);
+  }
+
+  /* Gets the codomain value at the given domain index. */
+  inline ISZ Mapping(ISZ index) {
+    return TMapMapping<MAP_P>(This(), index);
   }
 
   /* Searches for the domain_member in the domain.
