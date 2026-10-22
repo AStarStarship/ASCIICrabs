@@ -47,7 +47,7 @@ const CHA* FtoS(const CHA* args) {
       value = IUDRandom();
       dbl_expected = static_cast<FPD>(value);
     } while (!IsFinite(dbl_expected));
-    sprintf_s(socket, Size, "%lf", dbl_expected);
+    TSPrintTo(socket, dbl_expected);
     A_ASSERT(SScan(socket, dbl_found));
     A_AVOW(dbl_expected, dbl_found);
   }

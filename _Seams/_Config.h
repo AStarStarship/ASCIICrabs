@@ -6,7 +6,7 @@
 
 #define SEAM CRABS_ROOM
 /* Seams:
-#define CRABS_COUT          1
+#define CRABS_CORE          1
 #define CRABS_ITOS          2
 #define CRABS_FTOS          3
 #define CRABS_UNIPRINTER    4
@@ -29,7 +29,6 @@
 #define CRABS_PROMISE       21
 #define CRABS_SCRIPT        22
 #define CRABS_RELEASE       23
-#define SEAM_N CRABS_RELEASE
 */
 
 #include "../_ConfigDefault.h"

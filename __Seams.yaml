@@ -1,4 +1,4 @@
-# seams.yaml - Single source of truth for CrabsTK seam numbers.
+# seams.yaml - Single source of truth for ASCIICrabs seam numbers.
 # Regenerate _Seams.h by running: python3 Hatch/SyncSeams.py seams.yaml
 #
 # Never edit _Seams.h by hand -- edit this file and re-run SyncSeams.py.
@@ -6,281 +6,83 @@
 # seam numbering is monotonic; the release seam must be the highest number.
 # To add a new seam, append to the list and re-run SyncSeams.py.
 
-project: CrabsTK
-mode: crabstk
-release: CRABSTK_RELEASE
+project: ASCIICrabs
+mode: ASCIICrabs
+release: ASCIICrabsRelease
 
 seams:
   # CRABS core types (seam 1-18)
   - name: CRABS_CORE
-    module: Crab
-    label: "Testing Crab core types..."
+    module: Crabs
+    label: "Testing Crabs core types..."
 
   - name: CRABS_RNG
-    module: Crab
-    label: "Testing Crab RNG..."
+    module: Crabs
+    label: "Testing Crabs RNG..."
 
   - name: CRABS_ITOS
-    module: Crab
-    label: "Testing Crab ITOS conversion..."
+    module: Crabs
+    label: "Testing Crabs ITOS conversion..."
 
   - name: CRABS_FTOS
-    module: Crab
-    label: "Testing Crab FTOS conversion..."
+    module: Crabs
+    label: "Testing Crabs FTOS conversion..."
 
   - name: CRABS_SPRINTER
-    module: Crab
-    label: "Testing Crab sprinter..."
+    module: Crabs
+    label: "Testing Crabs sprinter..."
 
   - name: CRABS_CLOCK
-    module: Crab
-    label: "Testing Crab clock..."
+    module: Crabs
+    label: "Testing Crabs clock..."
 
   - name: CRABS_STACK
-    module: Crab
-    label: "Testing Crab stack..."
+    module: Crabs
+    label: "Testing Crabs stack..."
 
   - name: CRABS_MATRIX
-    module: Crab
-    label: "Testing Crab matrix..."
+    module: Crabs
+    label: "Testing Crabs matrix..."
 
   - name: CRABS_STRING
-    module: Crab
-    label: "Testing Crab string..."
+    module: Crabs
+    label: "Testing Crabs string..."
 
   - name: CRABS_LOOM
-    module: Crab
-    label: "Testing Crab loom..."
+    module: Crabs
+    label: "Testing Crabs loom..."
 
   - name: CRABS_LIST
-    module: Crab
-    label: "Testing Crab list..."
+    module: Crabs
+    label: "Testing Crabs list..."
 
   - name: CRABS_BOOK
-    module: Crab
-    label: "Testing Crab book..."
+    module: Crabs
+    label: "Testing Crabs book..."
 
   - name: CRABS_MAP
-    module: Crab
-    label: "Testing Crab map..."
+    module: Crabs
+    label: "Testing Crabs map..."
 
   - name: CRABS_TABLE
-    module: Crab
-    label: "Testing Crab table..."
+    module: Crabs
+    label: "Testing Crabs table..."
 
   - name: CRABS_DIC
-    module: Crab
-    label: "Testing Crab dic..."
+    module: Crabs
+    label: "Testing Crabs dic..."
 
   - name: CRABS_MACHINE
-    module: Crab
-    label: "Testing Crab machine..."
+    module: Crabs
+    label: "Testing Crabs machine..."
 
   - name: CRABS_DOOR
-    module: Crab
-    label: "Testing Crab door..."
+    module: Crabs
+    label: "Testing Crabs door..."
 
   - name: CRABS_FILECABINET
-    module: Crab
-    label: "Testing Crab filecabinet..."
-
-  # Who API (seam 19-40)
-  - name: CRABSTK_WHO_CORE
-    module: Who
-    label: "Testing Who core..."
-
-  - name: CRABSTK_WHO_ACCOUNT
-    module: Who
-    label: "Testing Who account..."
-
-  - name: CRABSTK_WHO_ADDRESS
-    module: Who
-    label: "Testing Who address..."
-
-  - name: CRABSTK_WHO_ADDRESSEMAIL
-    module: Who
-    label: "Testing Who address email..."
-
-  - name: CRABSTK_WHO_AUTHENTICATOR
-    module: Who
-    label: "Testing Who authenticator..."
-
-  - name: CRABSTK_WHO_ENTITY
-    module: Who
-    label: "Testing Who entity..."
-
-  - name: CRABSTK_WHO_ENTITYGROUP
-    module: Who
-    label: "Testing Who entity group..."
-
-  - name: CRABSTK_WHO_ENTITYLIST
-    module: Who
-    label: "Testing Who entity list..."
-
-  - name: CRABSTK_WHO_HANDLE
-    module: Who
-    label: "Testing Who handle..."
-
-  - name: CRABSTK_WHO_NAME
-    module: Who
-    label: "Testing Who name..."
-
-  - name: CRABSTK_WHO_ORGANIZATION
-    module: Who
-    label: "Testing Who organization..."
-
-  - name: CRABSTK_WHO_PASSWORD
-    module: Who
-    label: "Testing Who password..."
-
-  - name: CRABSTK_WHO_PERSON
-    module: Who
-    label: "Testing Who person..."
-
-  - name: CRABSTK_WHO_PRIVILEGE
-    module: Who
-    label: "Testing Who privilege..."
-
-  - name: CRABSTK_WHO_PROFILE
-    module: Who
-    label: "Testing Who profile..."
-
-  - name: CRABSTK_WHO_REGISTRAR
-    module: Who
-    label: "Testing Who registrar..."
-
-  - name: CRABSTK_WHO_RELATIONSHIP
-    module: Who
-    label: "Testing Who relationship..."
-
-  - name: CRABSTK_WHO_ROLE
-    module: Who
-    label: "Testing Who role..."
-
-  - name: CRABSTK_WHO_ROSTER
-    module: Who
-    label: "Testing Who roster..."
-
-  - name: CRABSTK_WHO_SYMBOL
-    module: Who
-    label: "Testing Who symbol..."
-
-  - name: CRABSTK_WHO_UIDASSIGNER
-    module: Who
-    label: "Testing Who UID assigner..."
-
-  - name: CRABSTK_WHO_USER
-    module: Who
-    label: "Testing Who user..."
-
-  - name: CRABSTK_WHO_USERLIST
-    module: Who
-    label: "Testing Who user list..."
-
-  # Pro API (seam 41-47)
-  - name: CRABSTK_PRO_CORE
-    module: Pro
-    label: "Testing Pro core..."
-
-  - name: CRABSTK_PRO_GIT
-    module: Pro
-    label: "Testing Pro git..."
-
-  - name: CRABSTK_PRO_ISSUE
-    module: Pro
-    label: "Testing Pro issue..."
-
-  - name: CRABSTK_PRO_MISSION
-    module: Pro
-    label: "Testing Pro mission..."
-
-  - name: CRABSTK_PRO_PROJECT
-    module: Pro
-    label: "Testing Pro project..."
-
-  - name: CRABSTK_PRO_SCHEDULE
-    module: Pro
-    label: "Testing Pro schedule..."
-
-  - name: CRABSTK_PRO_TASK
-    module: Pro
-    label: "Testing Pro task..."
-
-  - name: CRABSTK_PRO_WORKSPACE
-    module: Pro
-    label: "Testing Pro workspace..."
-
-  # Code API (seam 48-51)
-  - name: CRABSTK_CODE_CORE
-    module: Code
-    label: "Testing Code core..."
-
-  - name: CRABSTK_CODE_CODEMODULE
-    module: Code
-    label: "Testing Code code module..."
-
-  - name: CRABSTK_CODE_COMMENTSTRIPPER
-    module: Code
-    label: "Testing Code comment stripper..."
-
-  - name: CRABSTK_CODE_LEXER
-    module: Code
-    label: "Testing Code lexer..."
-
-  - name: CRABSTK_CODE_FITTER
-    module: Code
-    label: "Testing Code fitter..."
-
-  # IMUL API (seam 52-53)
-  - name: CRABSTK_IMUL_CORE
-    module: Imul
-    label: "Testing IMUL core..."
-
-  - name: CRABSTK_IMUL_RELEASE
-    module: Imul
-    label: "Testing IMUL release..."
-
-  # Data API (seam 54-56)
-  - name: CRABSTK_DATA_RECORD
-    module: Data
-    label: "Testing Data record..."
-
-  - name: CRABSTK_DATA_DATASET
-    module: Data
-    label: "Testing Data dataset..."
-
-  - name: CRABSTK_DATA_ASCIIPLOT
-    module: Data
-    label: "Testing Data ASCII plot..."
-
-  # Plot API (seam 57)
-  - name: CRABSTK_PLOT_CORE
-    module: Plot
-    label: "Testing Plot core..."
-
-  # Touch API (seam 58)
-  - name: CRABSTK_TOUCH_CORE
-    module: Touch
-    label: "Testing Touch core..."
-
-  # GUI API (seam 59)
-  - name: CRABSTK_GUI_CORE
-    module: Gui
-    label: "Testing GUI core..."
-
-  # Env API (seam 61)
-  - name: CRABSTK_ENV_CORE
-    module: Env
-    label: "Testing Env core..."
-
-  - name: CRABSTK_ENV_VAR
-    module: Env
-    label: "Testing Env var..."
-
-  # Release (seam 62)
-  - name: CRABSTK_RELEASE
-    module: Release
-    label: "Release mode"
+    module: Crabs
+    label: "Testing Crabs filecabinet..."
 
 # ---------------------------------------------------------------------------
 # Do not edit _Seams.h, _Config.h, _Main.cpp, or module 00.Core.h by hand.
