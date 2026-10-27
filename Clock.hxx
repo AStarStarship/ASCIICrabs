@@ -117,25 +117,25 @@ inline ISA ClockWeekday(TMC timestamp, TMC epoch) {
 TMT::TMT(ISC seconds, IUC ticks) :
     ticks(ticks), seconds(seconds) {}
 
-TMT::TMT(ISD value) {
-  *this = value;
-}
+// Bit-level constructors: a 64-bit word unpacks into {seconds, ticks} with
+// the low 32 bits as seconds and the high 32 bits as ticks. (A plain
+// "*this = value" would recurse into this constructor forever, since the
+// assignment needs the same implicit conversion that defines it.)
+TMT::TMT(ISD value) :
+    seconds(ISC(value)), ticks(IUC(value >> 32)) {}
 
-TMT::TMT(IUD value) {
-  *this = value;
-}
+TMT::TMT(IUD value) :
+    seconds(ISC(ISD(value))), ticks(IUC(ISD(value) >> 32)) {}
 
 SSD::SSD(ISC seconds, ISC ticker, ISC source) :
   value(ISD(seconds) << SSDHotSecondsBit0 | ISD(ticker) << SSDHotTickerBit0 | ISD(source))
 {}
 
-SSD::SSD(IUD value) {
-  *this = ISD(value);
-}
+SSD::SSD(IUD value) :
+  value(ISD(value)) {}
 
-SSD::SSD(ISD value) {
-  *this = value;
-}
+SSD::SSD(ISD value) :
+  value(value) {}
 
 ISC SSD::Seconds() {
   ISD mask = (1 << (SSDHotSecondsBitCount - 1)) - 1;
@@ -149,11 +149,10 @@ ISC SSD::Ticker() {
 ISC SSD::Source() { return this->value & ((1 << SSDHotSourceBitCount) - 1); }
 
 /* Checks if the TMD is a Hot UUID.
-Hot UUID have MSb = 1 and ticks < 192. */
+Hot UUID have MSb = 1 and bits 35:34 = 0b00 (ticks < 192). */
 BOL SSD::IsHot() {
   ISD ssd = this->value;
-  return ssd < 0 && (((ssd >> SSDEvergreenBit0) & SSDEvergreenBitMaskLSB) == 
-    SSDEvergreenBitMaskLSB);
+  return ssd < 0 && (((ssd >> SSDEvergreenBit0) & SSDEvergreenBitMaskLSB) == 0);
 }
 
 /* Checks if the TMD is a Cold UUID.
@@ -168,16 +167,14 @@ BOL SSD::IsEvergreen() {
     SSDEvergreenBitMaskLSB);
 }
 
-/* Converts a Hot UUID to Evergreen UUID.
-@param source_id The random source ID to use for the Evergreen UUID.
-@return Reference to this TMD. */
+/* Converts a Hot UUID to a Cold UUID.
+Cold UUIDs carry the same field layout as Hot UUIDs with MSb = 0, so the
+conversion clears the sign bit and leaves seconds, ticker, and source
+untouched. The ticker parameter is reserved for future Cold layouts.
+@return The Cold UUID as ISD. */
 ISD SSD::ToCold(ISC ticker) const {
-  // Extract components from Hot UUID
-  ISD ssd = this->value;
-  ISC seconds = (ssd >> SSDHotSecondsBit0) & 
-                ((1 << (SSDHotSecondsBitCount - 1)) - 1);
-  ISC ticks = (ssd >> SSDHotTickerBit0) & ((1 << SSDHotTickerBitCount) - 1);
-  return ISD(ssd) << SSDHotSecondsBit0;
+  (void)ticker;
+  return this->value & ~(ISD(1) << 63);
 }
 
 /* Converts Hot UUID to Evergreen UUID.
@@ -197,7 +194,7 @@ IUD ClockHotToEvergreen(IUD hot_uuid, IUD source_id) {
   
   IUD Evergreen = 0;
   Evergreen |= (IUD(1) << 63) | (IUD(3) << 34) |
-               (IUD(seconds & ((ISD(1) << 27) - 1)) << SSDEvergreenBit0);
+               (IUD(seconds & ((ISD(1) << 27) - 1)) << SSDEvergreenSecondsBit0);
   
   // Set 34-bit source_id at bits 33:0
   Evergreen |= (source_id & ((IUD(1) << 34) - 1));

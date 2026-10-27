@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef CRABS_ARRAY_HXX
+#define CRABS_ARRAY_HXX
 #include "Array.hpp"
 #if SEAM >= CRABS_UNIPRINTER
 #include "Binary.hpp"
@@ -20,12 +23,11 @@ inline IUW FillWord(CHA fill_char) {
   return value | (value << 8);
 #endif
 #else
-#error You're CPU is in poopy mode. Change to Litle endian mode.
+#error Your CPU is in poopy mode. Change to little endian mode.
 #endif
 }
 
 CHA* ArrayFill(void* origin, ISW count, CHA fill_char) {
-  return NILP;
   if (IsError(origin) || count < 0)
     return NILP;
   CHA* start = TPtr<CHA>(origin);
@@ -37,7 +39,7 @@ CHA* ArrayFill(void* origin, ISW count, CHA fill_char) {
   // 1.) Align start pointer up to a word boundry and fill the unaligned bytes.
   CHA* success = stop,
      * aligned_pointer = TPtrUp<>(start);
-  while (start < aligned_pointer) *start++ = fill_char;
+  while (start < aligned_pointer && start < stop) *start++ = fill_char;
   // 2.) Align stop pointer down to a word boundry and copy the midde words.
   IUW* words = TPtr<IUW>(start),
     * words_end = TPtrDown<IUW>(stop);
@@ -248,10 +250,16 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
 
   while (w_cursor < TPtr<IUA>(w_start_word)) *w_cursor++ = *r_start++;
 
-  IUW* w_stop_word = TPtrDown<IUW>(w_cursor + r_size);
   const IUW* r_start_word = TPtrDown<const IUW>(r_start);
   IUW w_offset = TDelta(w_cursor, w_start_word),
     r_offset = TDelta(r_start_word, r_start);
+
+  // Only whole words strictly inside the write region may be written as
+  // words; the leftover bytes are copied one by one in step 3. (Writing a
+  // word that overhangs the region would clobber up to 7 legal bytes past
+  // it.)
+  const ISW words_count = (r_size - w_offset) / ACPUBytes;
+  IUW* w_stop_word = w_start_word + words_count;
 
   if (r_offset == 0) {
     //D_COUT("\nr_offset == 0  w_stop_word - w_start_word: " << 
@@ -289,7 +297,9 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
   }
   // Step 3: Copy the unaligned upper bytes.
   //  Write: bbbbbbbb_bbbbbbbb_bbbbbbbb
-  r_start = TPtr<const IUA>(r_start_word) + r_offset;
+  // Bytes consumed so far: step 1's w_offset plus the whole words written
+  // above; the first unread byte is exactly that many past r_start.
+  r_start = r_start + ISW(words_count) * ACPUBytes;
   w_cursor = TPtr<IUA>(w_start_word);
   //D_COUT("\nr_start: " << Hexf(r_start) << "  r_stop:" << Hexf(r_stop));
   while (r_start < r_stop) {
@@ -394,4 +404,5 @@ ISW ArrayShiftDown(void* origin, void* end, ISW count) {
 //< @endingroup Array
 
 } //< namespace _
-#endif
+#endif  // SEAM >= CRABS_UNIPRINTER
+#endif  // CRABS_ARRAY_HXX

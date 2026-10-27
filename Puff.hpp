@@ -3,6 +3,7 @@
 #ifndef CRABS_PUFF_HPP
 #define CRABS_PUFF_HPP
 #include "Puff.h"
+#include "Ryu.hpp"  //< TRyuF2S/TRyuD2S shortest round-trip float print.
 #if SEAM >= CRABS_ITOS
 #include "Binary.hpp"
 #if SEAM == CRABS_ITOS
@@ -417,7 +418,7 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
 
 template<typename IU = IUD, typename CHS = CHR>
 inline CHS* TSPrintUnsigned(CHS* socket, ISW size, IU value) {
-  return TSPrintUnsigned<IU, CHS>(socket, socket + size - 1, value);
+  return TSPrintUnsigned<IU, CHS>(socket, socket + size, value);
 }
 
 template<typename CHS = CHR, typename CHT = CHD>
@@ -459,6 +460,7 @@ success.
 @param value The value to write. */
 template<typename IS = ISD, typename IU = IUD, typename CHS = CHR>
 inline CHS* TSPrintSigned(CHS* start, CHS* stop, IS value) {
+  if (IsErrorSocket(start, stop)) return NILP;
   if (value >= 0) {
     return TSPrintUnsigned<IU, CHS>(start, stop, IU(value));
   }
@@ -473,7 +475,7 @@ success.
 @param value The value to write. */
 template<typename IS = ISD, typename IU = IUD, typename CHS = CHR>
 inline CHS* TSPrintSigned(CHS* start, ISW size, IS value) {
-  return TSPrintSigned<IS, IU, CHS>(start, start + size - 1, value);
+  return TSPrintSigned<IS, IU, CHS>(start, start + size, value);
 }
 
 template<typename CHS = CHR, typename CHT = CHD>
@@ -552,25 +554,23 @@ CHS* TSPrint3(CHS* string, CHS* stop, CHS a, CHS b, CHS c) {
   return string;
 }
 
-/* Masks off the given bits starting at b0. */
+/* Extracts the bits between LSb_ and MSb_ (inclusive). */
 template<typename IS, ISN MSb_, ISN LSb_>
 IS TMiddleBits(IS value) {
-  // The goal is to not allow for undefined shifting behavior and not pay for
-  // the error checking.
   //                              b15 ---vv--- b8
   // Example: TMiddleBits<ISC, 15, 7> (0xff00)
   //          Expecting 0xff
-  // right_shift_count = 32 - 16 = 16
   enum {
     Size = sizeof(IS) * 8,
     MSbNatural = (MSb_ < 0) ? 0 : MSb_,
     LSbLNatural = (LSb_ < 0) ? 0 : LSb_,
-    RightShiftTemp1 = Size - MSbNatural + 1,
-    RightShiftTemp2 = (RightShiftTemp1 >= Size) ? 0 : RightShiftTemp1,
-    LeftShift = (RightShiftTemp2 < LSb_) ? 0 : RightShiftTemp2,
-    RightShift = (RightShiftTemp2 < LSb_) ? 0 : RightShiftTemp2,
   };
-  return (value << RightShift) >> LeftShift;
+  if (LSbLNatural > MSbNatural) {
+    return IS(0);
+  }
+  IS count = MSbNatural - LSbLNatural + 1;
+  IS mask = (count >= Size) ? ~IS(0) : (IS(1) << count) - 1;
+  return (value >> LSbLNatural) & mask;
 }
 
 /* Searches for the highest MSb asserted.
@@ -594,7 +594,7 @@ class TDecimalFloat {
 public:
   enum {
     SizeMax = 8,
-    Size = sizeof(Float) >= SizeMax ? 0 : sizeof(Float),
+    Size = sizeof(Float) > SizeMax ? 0 : sizeof(Float),
     SizeBits = Size * 8,
     MSb = SizeBits - 1,
     StringLengthMax = 24,
@@ -604,9 +604,9 @@ public:
                      : 15,
     CoefficientSize = SizeBits - ExponentSizeBits - 1,
     MantissaSize = SizeBits - ExponentSizeBits - 1,
-    ExponentMaskUnshifted = (sizeof(Size) == 2) ? 0xf
-                          : (sizeof(Size) == 4) ? 0x7f
-                          : (sizeof(Size) == 8) ? 0x3FF
+    ExponentMaskUnshifted = (sizeof(Float) == 2) ? 0xf
+                          : (sizeof(Float) == 4) ? 0x7f
+                          : (sizeof(Float) == 8) ? 0x3FF
                           : 0,
     ExponentBias = ExponentMaskUnshifted + CoefficientSize,
     ExponentMin = -ExponentBias,
@@ -623,10 +623,10 @@ public:
   TDecimalFloat(Float value) {
     IU ui = *TPtr<IU>(&value);
 
-    IU biased_e = TMiddleBits<IU, MSb - 1, MantissaSize - 1>(ui);
+    IU biased_e = TMiddleBits<IU, MSb - 1, MantissaSize>(ui);
     IU coefficient = Coefficient(ui);
     if (biased_e != 0) {
-      f = coefficient + (IU(1) << ExponentSizeBits);
+      f = coefficient + (IU(1) << MantissaSize);
       e = biased_e - ExponentBias;
     }
     else {
@@ -769,6 +769,10 @@ public:
 
   TDecimalFloat operator*(const TDecimalFloat& rhs) const { return Multiply(rhs.f, rhs.e); }
 
+  inline TDecimalFloat Multiply(IUD rhs_f, ISC rhs_e) const {
+    return Multiply(rhs_f, ISD(rhs_e));
+  }
+
   TDecimalFloat operator-(const TDecimalFloat& rhs) const {
     D_ASSERT(e == rhs.e);
     D_ASSERT(f >= rhs.f);
@@ -843,8 +847,8 @@ private:
       res.f <<= 1;
       --res.e;
     }
-    res.f <<= (CoefficientSize - CoefficientSize - 2);
-    res.e = res.e - (CoefficientSize - CoefficientSize - 2);
+    res.f <<= (MSb - MantissaSize - 1);
+    res.e = res.e - (MSb - MantissaSize - 1);
     return res;
 #endif
   }
@@ -1130,24 +1134,20 @@ using Binary64 = TDecimalFloat<FPD, ISC, IUD>;
 
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, CHS* stop, FPC value) {
-  return start;
-  //return TSPrint<CHS>(start, stop, value);
+  return TRyuF2S<CHS>(value, start, stop);
 }
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, ISW size, FPC value) {
-  return start;
-  //return TSPrint<CHS>(start, start + size - 1, value);
+  return TRyuF2S<CHS>(value, start, size);
 }
 
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, CHS* stop, FPD value) {
-  return start;
-  //return TSPrint<CHS>(start, stop, value);
+  return TRyuD2S<CHS>(value, start, stop);
 }
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* start, ISW size, FPD value) {
-  return start;
-  //return TSPrint<CHS>(start, start + size - 1, value);
+  return TRyuD2S<CHS>(value, start, size);
 }
 
 }  //< namespace _

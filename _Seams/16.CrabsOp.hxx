@@ -11,7 +11,7 @@
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
-#include "AType.hpp"
+#include "../AType.h"
 #endif
 using namespace ::_;
 namespace CRTest {

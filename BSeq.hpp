@@ -28,7 +28,8 @@ enum {
 #if CPU_SIZE == CPU_2_BYTE
 inline ISB UnpackISV(ISB value) {
   if (value < 0) {
-    IUB result = 0x8000 return result | ~(value - 1);
+    IUB result = 0x8000;
+    return result | ~(value - 1);
   }
   return value;
 }
@@ -40,8 +41,8 @@ inline ISB PackISV(ISB value) {
   }
   return value;
 }
-#elseif CPU_SIZE == CPU_4_BYTE
-#elseif CPU_SIZE == CPU_8_BYTE
+#elif CPU_SIZE == CPU_4_BYTE
+#elif CPU_SIZE == CPU_8_BYTE
 #endif
 
 /* Creates a immutable Type Sequence (TSQ).

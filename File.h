@@ -4,13 +4,39 @@
 #define CRABS_FILE_DECL
 #include <_Config.h>
 #if SEAM >= CRABS_FILE
-#ifndef _MSC_VER
+// OS I/O shim layer: the platform headers live with the declarations so
+// File.hxx stays free of stdlib includes.
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <stdio.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#else
 #include <dirent.h>
+#include <libgen.h>
+#endif
+#ifndef _MSC_VER
+#if (defined __MINGW32__) && (defined _UNICODE)
+// MINGW32 has two versions of dirent, ASCII and UNICODE.
+#define _TINYDIR_DIR _WDIR
+#define _og_dirent _wdirent
+#define _og_opendir _wopendir
+#define _og_readdir _wreaddir
+#define _og_closedir _wclosedir
+#else
 #define _TINYDIR_DIR DIR
 #define _og_dirent dirent
 #define _og_opendir opendir
 #define _og_readdir readdir
 #define _og_closedir closedir
+#endif
 #endif
 #include "Uniprinter.hpp"
 namespace _ {
@@ -24,11 +50,9 @@ struct File {
   File(const CHR* uri);
 
   /* Default constructor (for directory-scan scratch entries). */
-  File() : uri_(NILP), extension(NILP), is_directory_(0), is_reg_(0),
-           last_time_modified_(0) {
-    path[0] = 0;
-    name[0] = 0;
-  }
+  File() : is_directory_(0), is_reg_(0), path(), name(),
+           uri_(NILP), is_open_(0), extension(NILP),
+           last_time_modified_(0), fp_(NILP) {}
 
   /* Returns reference to this. */
   File& Star();
@@ -52,6 +76,21 @@ struct File {
 
   /* Opens the file. */
   ISN Open(const CHR* path);
+
+  /* Opens the stream for raw reading (binary mode). */
+  ISN OpenRead(const CHR* path);
+
+  /* Opens the stream for raw writing (binary mode). */
+  ISN OpenWrite(const CHR* path);
+
+  /* Reads raw bytes from the stream. Returns the bytes read. */
+  ISW Read(void* buf, ISW bytes);
+
+  /* Moves the stream position. Returns the new absolute position. */
+  ISW Seek(ISW offset, ISN whence);
+
+  /* Returns the stream size in bytes, leaving the position unchanged. */
+  ISW Size();
 
   /* Closes the file. */
   void Close();
@@ -99,8 +138,10 @@ struct File {
 
  private:
   const CHR* uri_;          //< Uniform Resource Identifier.
+  CHR is_open_;             //< 1 after a successful Open().
   CHR* extension;
-  TMC last_time_modified_;  //< Last time the URL was modified.
+  TME last_time_modified_;  //< Last time the URL was modified.
+  FILE* fp_;                //< Stream handle (OpenRead/OpenWrite).
 };
 
 /* A text file in a filesystem. */
@@ -134,7 +175,7 @@ struct TextFile {
   void Close();
 
   /* Gets the last time this file was modified. */
-  TMC LastTimeModified();
+  TME LastTimeModified();
 
   /* Checks to see if the file has been modified by comparing the last time it
   was modified. */
@@ -237,15 +278,15 @@ struct Folder {
   ISN Open(const CHR* path);
   ISN OpenSorted(const CHR* path);
   ISN Read(File* file);
-  ISN ReadFile(File* file, size_t i);
+  ISN ReadFile(File* file, ISW i);
   ISN Next(Folder* dir);
   ISN HasNext();
-  ISN OpenSubfolder(size_t i);
+  ISN OpenSubfolder(ISW i);
   void Close();
  private:
    CHR path_[URIPathLengthMax];
    ISN has_next_;
-   size_t file_count_;
+   ISW file_count_;
 
    File* files_;
 #ifdef _MSC_VER

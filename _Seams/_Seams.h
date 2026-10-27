@@ -1,6 +1,6 @@
 // Copyright AStarship <https://astarship.net>.
 
-#define CRABS_COUT          1
+#define CRABS_CORE          1
 #define CRABS_ITOS          2
 #define CRABS_FTOS          3
 #define CRABS_UNIPRINTER    4

@@ -1,7 +1,5 @@
 // Copyright AStarship <https://astarship.net>.
 #if SEAM >= CRABS_ITOS
-#include <cstring>
-#include <cstdio>
 //
 #include "../Puff.hpp"
 #include "../Random.h"
@@ -106,7 +104,7 @@ inline const CHA* ItoS(const CHA* args) {
 
   for (ISN i = 0; i < 1 << 6; ++i) {
     expected_iud = IUDRandom();
-    sprintf(socket, "%llu", static_cast<unsigned long long>(expected_iud));
+    TSPrintUnsigned<IUD, CHA>(socket, socket + 31, expected_iud);
     const CHA* test = TSScanUnsigned<IUD, CHA>(socket, result_ui8);
     A_ASSERT(test);
     A_AVOW(expected_iud, result_ui8);
@@ -119,7 +117,7 @@ inline const CHA* ItoS(const CHA* args) {
 
   for (ISN i = 0; i < count; ++i) {
     expected_iud = problem_child[i];
-    sprintf(expecting, "%llu", static_cast<unsigned long long>(expected_iud));
+    TSPrintUnsigned<IUD, CHA>(expecting, expecting + 23, expected_iud);
     static const CHA PuffDebugHeader[] =
         "\n\n    "
         "|6666555555555544444444443333333333222222222211111111110000000000|\n"
@@ -144,7 +142,7 @@ inline const CHA* ItoS(const CHA* args) {
   D_COUT("\n\nTesting " << count << " edge conditions...\n\n");
   for (ISW i = 0; i < count; ++i) {
     expected_iud = edge_condition[i];
-    sprintf_s(expecting, 24, "%llu", expected_iud);
+    TSPrintUnsigned<IUD, CHA>(expecting, expecting + 23, expected_iud);
     D_COUT("\n\n" << i + 1 << ".) ");
     result = TSPrintUnsigned<IUD, CHA>(text, text + Size - 1, expected_iud);
     if (IsError(result)) {
@@ -171,7 +169,7 @@ inline const CHA* ItoS(const CHA* args) {
       if (j >= Pow10_UI8()[i + i] - 1 - Pow10_UI8()[i]) break;
       IUD lower_bounds = Pow10_UI8()[i], upper_bounds = Pow10_UI8()[i + 1] - 1;
       expected_ui8 = Random(lower_bounds, upper_bounds);
-      sprintf_s(expecting, 24, "%llu", expected_ui8);
+      TSPrintUnsigned<IUD, CHA>(expecting, expecting + 23, expected_ui8);
       D_COUT("\n\n" << i + 1);
       result = TSPrintUnsigned<IUD, CHA>(text, text + Size - 1, expected_ui8);
       if (IsError(result)) {

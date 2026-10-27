@@ -400,9 +400,9 @@ inline T* TPtrUp(const void* pointer, ISW mask = ACPUWordMask) {
   return TPtr<T>(value + ((-value) & mask));
 }
 
-inline ISA AlignUpArray(ISA count) { AlignUp(count); }
+inline ISA AlignUpArray(ISA count) { return AlignUp(count); }
 
-inline IUA AlignUpArray(IUA count) { AlignUp(count); }
+inline IUA AlignUpArray(IUA count) { return AlignUp(count); }
 
 inline ISB AlignUpArray(ISB count) {
 #if CPU_SIZE == 1 || CPU_SIZE == 2

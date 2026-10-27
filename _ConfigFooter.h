@@ -176,7 +176,7 @@ typedef unsigned __int128 IUE;
 #define HAS_128_BIT_INT
 #endif
 
-#if SEAM < CRABS_COUT
+#if SEAM < CRABS_CORE
 #undef USING_STB
 #undef USING_STC
 #define USING_STB NO_0

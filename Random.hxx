@@ -1,5 +1,14 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef CRABS_RANDOM_HXX
+#define CRABS_RANDOM_HXX
 #include "Random.h"
+// rand()/RAND_MAX/sqrt/log are used by the Box-Muller path in both seam
+// branches; <cstdlib>/<cmath> are C system headers (allowed under the
+// no-stdlib rule, which bans C++ standard *types/containers*, not the C
+// runtime).
+#include <cstdlib>
+#include <cmath>
 #if SEAM < CRABS_RANDOM
 #include <random>
 #endif
@@ -7,10 +16,6 @@
 namespace _ {
 
 #if SEAM < CRABS_RANDOM
-
-FPD LSTMRNGNext(FPD running_xor) {
-  
-}
 
 static ::std::random_device seed_gen;
 static IUC seed = seed_gen();
@@ -87,20 +92,19 @@ inline FP TRandomSignedProbility(FP mean, FP std_dev) {
 
 template<typename I, typename FP = FPC>
 inline I TRandom(I min, I max) {
-  enum {
-    FPExponentBitCount = sizeof(FP) == 8 ? 11 : 8,
-    FPMantissaBitCount = sizeof(FP) * 8 - 1 - FPExponentBitCount,
-  };
   if (min >= max)
     return 0;
-  I range = max - min + 1;
-  if (range < I(1) << FPMantissaBitCount) {
-    FP range_fp = FP(range);
-    FP signed_prob = TRandomSignedProbility<FP>(FP(0.0), FP(1.0));
-    if (signed_prob < 0.0) signed_prob = -signed_prob;
-    return I(signed_prob * range_fp) + min;
-  }
-  return 0;
+  // Range in FP: `max - min + 1` in I overflows for full-width types
+  // (e.g. ~IUC(0) + 1 wraps to zero), which used to collapse every draw
+  // to 0. Wide types lose mantissa precision on the fold — the value
+  // still spans the full range, just at coarser granularity.
+  FP range_fp = FP(max) - FP(min) + FP(1);
+  FP prob = TRandomSignedProbility<FP>(FP(0.0), FP(1.0));
+  if (prob < FP(0.0)) prob = -prob;
+  // |N(0,1)| exceeds 1 about 32% of the time; fold it into [0, 1) so the
+  // result can never escape [min, max].
+  while (prob >= FP(1.0)) prob -= FP(1.0);
+  return I(min) + I(prob * range_fp);
 }
 
 template<typename I, typename FP>
@@ -109,10 +113,15 @@ void TRandomBits(I& result, I bit_count) {
     result = 0;
     return;
   }
-  const I BitCountMax = sizeof(I) * 8;
+  const I BitCountMax = I(sizeof(I) * 8);
   if (bit_count >= BitCountMax) bit_count = BitCountMax;
   FP rnd = TRandomSignedProbility<FP>(FP(0.0), FP(1.0));
-  result = I(result & ((I(1) << bit_count) - 1));
+  if (rnd < FP(0.0)) rnd = -rnd;
+  while (rnd >= FP(1.0)) rnd -= FP(1.0);
+  // Scale by 2^bit_count via 2^(bit_count-1) in word units so the shift
+  // itself never overflows; the mask keeps the result to `bit_count` bits.
+  result = I(rnd * (FP(IUW(I(1)) << IUW(bit_count - 1)) * FP(2))) &
+           (I(-1) >> (BitCountMax - bit_count));
 }
 #endif
 
@@ -174,21 +183,11 @@ IUD Random(IUD min, IUD max) { return TRandom<IUD, FPD>(min, max); }
 ISD Random(ISD min, ISD max) { return TRandom<ISD, FPD>(min, max); }
 
 void RandomBits(ISA& result, ISA bit_count) {
-  if (bit_count < 0 || bit_count > sizeof(ISA) * 8) {
-    result = 0;
-    return;
-  }
-  FPC rnd = TRandomSignedProbility<FPC>(0.0, 1.0);
-  result = ISA(result & ((ISA(1) << bit_count) - 1));
+  TRandomBits<ISA, FPC>(result, bit_count);
 }
 
 void RandomBits(ISB& result, ISB bit_count) {
-  if (bit_count < 0 || bit_count > sizeof(ISB) * 8) {
-    result = 0;
-    return;
-  }
-  FPC rnd = TRandomSignedProbility<FPC>(0.0, 1.0);
-  result = ISA(result & ((ISA(1) << bit_count) - 1));
+  TRandomBits<ISB, FPC>(result, bit_count);
 }
 
 void RandomBits(ISC& result, ISC bit_count) {
@@ -200,3 +199,4 @@ void RandomBits(ISD& result, ISD bit_count) {
 }
 
 }  // namespace _
+#endif  // CRABS_RANDOM_HXX

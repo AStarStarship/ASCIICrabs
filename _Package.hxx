@@ -18,7 +18,15 @@
 #include "Puff.hxx"
 #include "Random.hxx"
 #include "Regex.hpp"
+#include "Ryu.hxx"
 #include "Slot.hxx"
 #include "Stringf.hxx"
 #include "Test.hxx"
 #include "AType.hxx"
+
+// 2026-10-27: rollup completeness — these root implementations were never
+// pulled in. Autoject precedes BigInt (BigInt allocates Autoject buffers).
+#include "Autoject.hxx"
+#include "BigInt.hxx"
+#include "Address.hxx"
+#include "Math.hxx"

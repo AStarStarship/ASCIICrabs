@@ -18,7 +18,7 @@
 #define D_LINEF(item) ::_::StdOut() << Linef(item)
 #define D_PAUSE(message) ::_::Pausef(message)
 #define D_COUT_ERROR(message)\
-  ::_::StdOut() << "\nERROR: " << message << '.');\
+  ::_::StdOut() << "\nERROR: " << message << '.';\
   ::_::TestWarn(__LINE__, __FUNCTION__, __FILE__)
 #define D_COUT_BSQ(item) ::_::TBSeqPrint<::_::COut>(::StdOut(), item)
 #define D_COUT_BIN(item) ::_::TBInPrint<::_::COut>(::StdOut(), item)

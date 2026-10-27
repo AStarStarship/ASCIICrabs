@@ -30,7 +30,7 @@ const IUD* Pow10_UI8() {
       10000000000000000,     //< 10^16
       100000000000000000,    //< 10^17
       1000000000000000000,   //< 10^18
-      10000000000000000000,  //< 10^19
+      10000000000000000000ULL,  //< 10^19
   };
   return TenToThe;
 }
@@ -140,7 +140,7 @@ ISN STRLength(IUD value) {
   if (value < 10000000000000000) return 16;
   if (value < 100000000000000000) return 17;
   if (value < 1000000000000000000) return 18;
-  if (value < 10000000000000000000) return 19;
+  if (value < 10000000000000000000ULL) return 19;
   return 20;
 }
 ISN STRLength(ISD value) {

@@ -1,78 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 // Based on TinyDir, a C library for reading directories transformed.
 #include "File.h"
+#include "Array.h"
+#include "Autoject.h"
 #if SEAM >= CRABS_FILE
 #include "Stringf.hpp"
-#include <sys/stat.h>
-#include <sys/types.h>
-//#ifndef WIN32
-//#include <unistd.h>
-//#endif
-//#ifdef WIN32
-//#define stat _stat
-//#endif
-//
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#else
-#include <dirent.h>
-#include <libgen.h>
-#include <stddef.h>
-#ifdef __linux__
-#include <limits.h>
-#endif
-#endif
-//#ifdef _MSC_VER
-//#ifndef WIN32_LEAN_AND_MEAN
-//#define WIN32_LEAN_AND_MEAN
-//#endif
-//#include <windows.h>
-//#pragma warning(push)
-//#pragma warning(disable : 4996)
-//#else
-//#include <dirent.h>
-//#include <libgen.h>
-//#include <stddef.h>
-//#include <sys/stat.h>
-//#endif
-//
-//#if (defined _MSC_VER || defined __MINGW32__)
-//#include <windows.h>
-//namespace _ {
-//  enum { URIPathLengthMax = MAX_PATH };
-//}
-//#elif defined __linux__
-//#include <limits.h>
-//#ifdef PATH_MAX
-//namespace _ {
-//  enum { URIPathLengthMax = PATH_MAX };
-//}
-//#else
-//namespace _ {
-//  enum { URIPathLengthMax = 4096 };
-//}
-//#endif
-//#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-//#include <sys/param.h>
-//#if defined(BSD)
-//#include <limits.h>
-//#ifdef PATH_MAX
-//namespace _ {
-//  enum { URIPathLengthMax = PATH_MAX };
-//}
-//#else
-//namespace _ {
-//  enum { URIPathLengthMax = 4096 };
-//}
-//#endif
-//#endif
-//#endif
 #ifdef _MSC_VER
 enum {
   Win32FindDataBytes = 592
@@ -83,49 +15,11 @@ enum {
 #define _TINYDIR_DRIVE_MAX 3
 #endif
 
-/* Simple allocator wrappers (no stdlib constraint applies to the OS I/O
-shim layer; the FVM ledger/chain storage uses SubsecondDb, not these). */
-#ifdef _MSC_VER
-#define _TINYDIR_MALLOC(_size) malloc(_size)
-#define _TINYDIR_FREE(_ptr) free(_ptr)
-#else
-#define _TINYDIR_MALLOC(_size) malloc(_size)
-#define _TINYDIR_FREE(_ptr) free(_ptr)
-#endif
-
-/* MINGW32 has two versions of dirent, ASCII and UNICODE. */
-#ifndef _MSC_VER
-#if (defined __MINGW32__) && (defined _UNICODE)
-#define _TINYDIR_DIR _WDIR
-#define _og_dirent _wdirent
-#define _og_opendir _wopendir
-#define _og_readdir _wreaddir
-#define _og_closedir _wclosedir
-#else
-#define _TINYDIR_DIR DIR
-#define _og_dirent dirent
-#define _og_opendir opendir
-#define _og_readdir readdir
-#define _og_closedir closedir
-#endif
-#endif
-
-///* Allow user to use a custom allocator by defining _TINYDIR_MALLOC and
-// * _TINYDIR_FREE. */
-//#if defined(_TINYDIR_MALLOC) && defined(_TINYDIR_FREE)
-//#elif !defined(_TINYDIR_MALLOC) && !defined(_TINYDIR_FREE)
-//#else
-//#error "Either define both alloc and free or none of them!"
-//#endif
-//
-//#if !defined(_TINYDIR_MALLOC)
-//#define _TINYDIR_MALLOC(_size) malloc(_size)
-//#define _TINYDIR_FREE(_ptr) free(_ptr)
-//#endif /* !defined(_TINYDIR_MALLOC) */
-
 namespace _ {
 
-File::File(const CHR* uri) : uri_(uri_) {}
+File::File(const CHR* uri) : is_directory_(0), is_reg_(0), path(), name(),
+                             uri_(uri), is_open_(0), extension(NILP),
+                             last_time_modified_(0), fp_(NILP) {}
 
 File& File::Star() { return *this; }
 
@@ -135,7 +29,10 @@ TextFile File::Text() {
 }
 
 const CHR* File::Extension() {
-  const CHR* ext = TSFindLast<CHR>(uri_, '.');
+  // Directory-scan entries carry their filename in `name` with a nil uri_;
+  // URI-constructed files have the opposite.
+  const CHR* source = name[0] ? name : uri_;
+  const CHR* ext = TSFindLast<CHR>(source, '.');
   if (ext != NILP) ++ext;
   return ext;
 }
@@ -153,21 +50,24 @@ inline const CHR* File::URISet(const CHR* uri) {
 inline TME File::LastTimeModified() {
   struct stat result;
   if (stat(uri_, &result) == 0) {
-    return result.st_mtime;
+    // Explicit narrowing at the OS boundary: time_t -> ASCII timestamp.
+    return TME(result.st_mtime);
   }
   return 0;
 }
 
 inline BOL File::HasBeenModified() {
-  TMC last_time_modified = LastTimeModified();
+  TME last_time_modified = LastTimeModified();
   if (last_time_modified == last_time_modified_) return 0;
   last_time_modified_ = last_time_modified;
   return last_time_modified;
 }
 
-inline BOL File::Exists() { return false; }
+inline BOL File::Exists() {
+  return uri_ ? ::access(uri_, F_OK) == 0 : false;
+}
 
-inline BOL File::IsOpen() { return false; }
+inline BOL File::IsOpen() { return is_open_ != 0; }
 
 inline ISN File::Open(const CHR* path) {
   if (IsError(path) || TSCodeCount<CHR, CHC, ISW>(path) == 0) {
@@ -240,7 +140,7 @@ inline ISN File::Open(const CHR* path) {
       result = -1;
       goto bail;
     }
-    if (TSEquals<CHR>(entry.Name(), base_name) == 0) {
+    if (TSEquals<CHR>(entry.Name(), base_name) != NILP) {
       found = 1;
       break;
     }
@@ -253,85 +153,208 @@ inline ISN File::Open(const CHR* path) {
 
 bail:
   dir.Close();
+  is_open_ = result == 0 ? 1 : 0;
   return result;
 }
 
-BOL File::CompareNames(const File* other) {
-  if (is_directory_ != other->is_directory_) {
-    return -(is_directory_ - other->is_directory_);
+ISN File::OpenRead(const CHR* path) {
+  if (IsError(path) || TSCodeCount<CHR, CHC, ISW>(path) == 0) {
+    errno = EINVAL;
+    return -AErrorInvalidInput;
   }
-  return TSEquals<CHR>(name, other->name);
+  if (fp_ != NILP) {
+    fclose(fp_);
+    fp_ = NILP;
+  }
+  fp_ = fopen(path, "rb");
+  if (fp_ == NILP) {
+    return -1;
+  }
+  is_open_ = 1;
+  return 0;
 }
 
-inline void File::Close() {}
+ISN File::OpenWrite(const CHR* path) {
+  if (IsError(path) || TSCodeCount<CHR, CHC, ISW>(path) == 0) {
+    errno = EINVAL;
+    return -AErrorInvalidInput;
+  }
+  if (fp_ != NILP) {
+    fclose(fp_);
+    fp_ = NILP;
+  }
+  fp_ = fopen(path, "wb");
+  if (fp_ == NILP) {
+    return -1;
+  }
+  is_open_ = 1;
+  return 0;
+}
+
+ISW File::Read(void* buf, ISW bytes) {
+  if (IsError(buf) || bytes < 0) {
+    errno = EINVAL;
+    return 0;
+  }
+  if (fp_ == NILP) {
+    errno = EBADF;
+    return 0;
+  }
+  if (bytes == 0) {
+    return 0;
+  }
+  return ISW(fread(buf, 1, bytes, fp_));
+}
+
+ISW File::Seek(ISW offset, ISN whence) {
+  if (fp_ == NILP) {
+    errno = EBADF;
+    return 0;
+  }
+  if (fseek(fp_, offset, whence) == -1) {
+    return 0;
+  }
+  return ISW(ftell(fp_));
+}
+
+ISW File::Size() {
+  if (fp_ == NILP) {
+    errno = EBADF;
+    return 0;
+  }
+  ISW position = ISW(ftell(fp_));
+  if (position < 0) {
+    return 0;
+  }
+  if (fseek(fp_, 0, SEEK_END) == -1) {
+    return 0;
+  }
+  ISW size = ISW(ftell(fp_));
+  if (size < 0 || fseek(fp_, position, SEEK_SET) == -1) {
+    return 0;
+  }
+  return size;
+}
+
+BOL File::CompareNames(const File* other) {
+  return TSEquals<CHR>(name, other->name) != NILP;
+}
+
+inline void File::Close() {
+  if (fp_ != NILP) {
+    fclose(fp_);
+    fp_ = NILP;
+  }
+  is_open_ = 0;
+}
 
 inline File& File::Write(CHA item) {
-	return Write(ISA(item));
+  if (fp_ != NILP) {
+    fputc(item, fp_);
+  }
+  return *this;
 }
 
 inline File& File::Write(const CHA* item) {
-	return *this;
+  if (fp_ != NILP) {
+    fwrite(item, 1, TSCodeCount<CHA, CHC, ISW>(item), fp_);
+  }
+  return *this;
 }
 
 #if USING_STB == YES_0
 inline File& File::Write(CHB item) {
-  return Write(ISB(item));
+  return Write(CHA(item));
 }
 
 inline File& File::Write(const CHB* item) {
+  while (*item != 0) {
+    Write(CHA(*item++));
+  }
   return *this;
 }
 
 #endif
 #if USING_STC == YES_0
 inline File& File::Write(CHC item) {
-  return Write(ISC(item));
+  return Write(CHA(item));
 }
 
 inline File& File::Write(const CHC* item) {
+  while (*item != 0) {
+    Write(CHA(*item++));
+  }
   return *this;
 }
 
 #endif
 
-inline File& File::Write(IUA item) {
-  return *this;
-}
-
 inline File& File::Write(ISA item) {
-  return Write(IUA(item));
-}
-
-File& File::Write(IUB item) {
-  return *this;
+  return Write(ISD(item));
 }
 
 inline File& File::Write(ISB item) {
-  return Write(IUB(item));
-}
-
-inline File& File::Write(IUC item) {
-  return *this;
+  return Write(ISD(item));
 }
 
 inline File& File::Write(ISC item) {
-  return Write(IUC(item));
-}
-
-inline File& File::Write(IUD item) {
-  return *this;
+  return Write(ISD(item));
 }
 
 inline File& File::Write(ISD item) {
+  if (fp_ == NILP) {
+    return *this;
+  }
+  enum { Size = 24 };
+  CHA socket[Size];
+  TSPrintSigned<ISD, IUD, CHA>(socket, Size, item);
+  Write(socket);
+  return *this;
+}
+
+inline File& File::Write(IUA item) {
   return Write(IUD(item));
+}
+
+inline File& File::Write(IUB item) {
+  return Write(IUD(item));
+}
+
+inline File& File::Write(IUC item) {
+  return Write(IUD(item));
+}
+
+inline File& File::Write(IUD item) {
+  if (fp_ == NILP) {
+    return *this;
+  }
+  enum { Size = 24 };
+  CHA socket[Size];
+  TSPrintUnsigned<IUD, CHA>(socket, Size, item);
+  Write(socket);
+  return *this;
 }
 
 inline File& File::Write(FPC item) {
-  return Write(IUC(item));
+  if (fp_ == NILP) {
+    return *this;
+  }
+  enum { Size = 32 };
+  CHA socket[Size];
+  TSPrint<CHA>(socket, Size, item);
+  Write(socket);
+  return *this;
 }
 
 inline File& File::Write(FPD item) {
-  return Write(IUD(item));
+  if (fp_ == NILP) {
+    return *this;
+  }
+  enum { Size = 32 };
+  CHA socket[Size];
+  TSPrint<CHA>(socket, Size, item);
+  Write(socket);
+  return *this;
 }
 
 
@@ -346,7 +369,7 @@ inline const CHR* TextFile::URI() { return file_.URI(); }
 
 inline const CHR* TextFile::URISet(const CHR* uri) { return file_.URISet(uri); }
 
-inline TMC TextFile::LastTimeModified() { return file_.LastTimeModified(); }
+inline TME TextFile::LastTimeModified() { return file_.LastTimeModified(); }
 
 inline BOL TextFile::HasBeenModified() { return file_.HasBeenModified(); }
 
@@ -359,7 +382,8 @@ inline ISN TextFile::Open() { return file_.Open(file_.URI()); }
 inline void TextFile::Close() { file_.Close(); }
 
 TextFile& TextFile::Print(CHA item) {
-  return Print(IUA(item));
+  file_.Write(item);
+  return *this;
 }
 
 TextFile& TextFile::Print(const CHA* item) {
@@ -368,7 +392,8 @@ TextFile& TextFile::Print(const CHA* item) {
 
 #if USING_STB == YES_0
 TextFile& TextFile::Print(CHB item) {
-  return Print(IUB(item));
+  file_.Write(item);
+  return *this;
 }
 
 TextFile& TextFile::Print(const CHB* item) {
@@ -378,7 +403,8 @@ TextFile& TextFile::Print(const CHB* item) {
 
 #if USING_STC == YES_0
 TextFile& TextFile::Print(CHC item) {
-  return Print(IUC(item));
+  file_.Write(item);
+  return *this;
 }
 TextFile& TextFile::Print(const CHC* item) {
   return TPrint<TextFile, CHC>(*this, item);
@@ -394,7 +420,7 @@ TextFile& TextFile::Print(ISC item) {
 #else
   enum { Size = 24 };
   CHA socket[Size];
-  TSPrintSigned<ISD, IUD, CHA>(socket, Size, ISD(value));
+  TSPrintSigned<ISD, IUD, CHA>(socket, Size, ISD(item));
   Print(socket);
 #endif
 #endif
@@ -457,7 +483,7 @@ TextFile& TextFile::Print(FPD item) {
 #if SEAM <= CRABS_FTOS
   STD_COUT << item;
 #else
-  enum { Size = 24 };
+  enum { Size = 32 };
   CHA boofer[Size];
   TSPrint<CHA>(boofer, Size, item);
   Print(boofer);
@@ -684,11 +710,45 @@ bail:
   return -1;
 }
 
-static int _og_file_cmp(const void* a, const void* b);
+/* Compares two Folder entries without qsort: directories first, then the
+names byte-wise with ASCII Data Types (the OS I/O shim stays syscall-only). */
+static ISN FolderCompare(const File* a, const File* b) {
+  if (a->is_directory_ != b->is_directory_) {
+    return a->is_directory_ ? -1 : 1;
+  }
+  return 0 - TSCompare<CHR>(a->name, b->name);
+}
+
+/* In-place quicksort: middle pivot, the smaller partition recurses first so
+the stack stays log-depth. */
+static void FolderSort(File* files, ISN lo, ISN hi) {
+  while (lo < hi) {
+    const File pivot = files[(lo + hi) / 2];
+    ISN i = lo, j = hi;
+    do {
+      while (FolderCompare(&files[i], &pivot) < 0) ++i;
+      while (FolderCompare(&files[j], &pivot) > 0) --j;
+      if (i <= j) {
+        File tmp = files[i];
+        files[i] = files[j];
+        files[j] = tmp;
+        ++i;
+        --j;
+      }
+    } while (i <= j);
+    if (j - lo < hi - i) {
+      FolderSort(files, lo, j);
+      lo = i;
+    } else {
+      FolderSort(files, i, hi);
+      hi = j;
+    }
+  }
+}
 
 ISN Folder::OpenSorted(const CHR* path) {
   // Count the number of files first, to pre-allocate the files array.
-  size_t file_count = 0;
+  ISW file_count = 0;
   if (Open(path) == -1) return -1;
   while (has_next_) {
     ++file_count;
@@ -699,7 +759,7 @@ ISN Folder::OpenSorted(const CHR* path) {
 
   if (file_count == 0 || Open(path) == -1) return -1;
 
-  files_ = (File*)_TINYDIR_MALLOC(sizeof(File) * file_count);
+  files_ = TPtr<File>(ObjectFactoryHeap(NILP, ISW(sizeof(File)) * file_count));
   if (IsError(files_)) goto bail;
   file_count = 0;
   while (has_next_) {
@@ -710,7 +770,7 @@ ISN Folder::OpenSorted(const CHR* path) {
   }
   file_count_ = file_count;
 
-  qsort(files_, file_count, sizeof(File), _og_file_cmp);
+  FolderSort(files_, ISN(0), ISN(file_count) - 1);
 
   return 0;
 
@@ -720,10 +780,10 @@ bail:
 }
 
 inline void Folder::Close() {
-  memset(path_, 0, sizeof(path_));
+  ArrayFill(path_, sizeof(path_), 0);
   has_next_ = 0;
   file_count_ = 0;
-  _TINYDIR_FREE(files_);
+  if (files_) ObjectFactoryHeap(TPtr<IUW>(files_), RAMFactoryDelete);
   files_ = NILP;
 #ifdef _MSC_VER
   if (_h != INVALID_HANDLE_VALUE) {
@@ -802,6 +862,13 @@ ISN Folder::Read(File* file) {
   }
 
   SPrint(file->Path(), URIPathLengthMax, path_);
+  // Join the directory path and the entry name: the stat() below needs the
+  // full entry path, not just the directory.
+  ISW dir_len = TSCodeCount<CHR, CHC, ISW>(path_);
+  CHR* cursor = file->Path() + dir_len;
+  if (dir_len && cursor[-1] != '/')
+    *cursor++ = '/';
+  SPrint(cursor, URIPathLengthMax - ISW(cursor - file->Path()), filename);
   SPrint(file->Name(), URLFilenameLengthMax, filename);
 #ifndef _MSC_VER
   struct stat file_stat;
@@ -827,24 +894,7 @@ ISN Folder::Read(File* file) {
   return 0;
 }
 
-static int _og_file_cmp(const void* a, const void* b) {
-  const File* fa = (const File*)a;
-  const File* fb = (const File*)b;
-  const CHR* na = fa->Name();
-  const CHR* nb = fb->Name();
-  ISN len_a = TSCodeCount<CHR, CHC, ISW>(na);
-  ISN len_b = TSCodeCount<CHR, CHC, ISW>(nb);
-  ISN len = len_a < len_b ? len_a : len_b;
-  for (ISN i = 0; i < len; ++i) {
-    if (na[i] < nb[i]) return -1;
-    if (na[i] > nb[i]) return 1;
-  }
-  if (len_a < len_b) return -1;
-  if (len_a > len_b) return 1;
-  return 0;
-}
-
-inline ISN Folder::ReadFile(File* file, size_t i) {
+inline ISN Folder::ReadFile(File* file, ISW i) {
   if (IsError(file)) {
     errno = EINVAL;
     return -1;
@@ -854,13 +904,13 @@ inline ISN Folder::ReadFile(File* file, size_t i) {
     return -1;
   }
 
-  memcpy(file, &files_[i], sizeof(File));
+  ArrayCopy(file, sizeof(File), &files_[i], sizeof(File));
   file->Extension();
 
   return 0;
 }
 
-inline ISN Folder::OpenSubfolder(size_t i) {
+inline ISN Folder::OpenSubfolder(ISW i) {
   CHR path[URIPathLengthMax];
   if (IsError(this)) {
     errno = EINVAL;
@@ -877,20 +927,6 @@ inline ISN Folder::OpenSubfolder(size_t i) {
 
   return 0;
 }
-//#include <dirent.h>
-//DIR* dir;
-//struct dirent* ent;
-//if ((dir = opendir("c:\\src\\")) != NULL) {
-//  /* print all the files and directories within directory */
-//  while ((ent = readdir(dir)) != NULL) {
-//    printf("%s\n", ent->d_name);
-//  }
-//  closedir(dir);
-//} else {
-//  /* could not open directory */
-//  perror("");
-//  return EXIT_FAILURE;
-//}
 
 }  // namespace
 

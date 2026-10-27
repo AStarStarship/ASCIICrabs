@@ -87,8 +87,8 @@ enum ClockConstants {
   SSDEpochSeconds = 1 << (SSDHotSecondsBitCount - 1), 
 
   SSDEvergreenSourceBitCount = 34, //< Evergreen UUID source id bit count.
-  SSDEvergreenBit0 = 34,           //< Bit 0 of the Evergreen Source bits.
-  SSDEvergreenSecondsBit0 = 34,    //< Bit 0 of the Evergreen Source bits.
+  SSDEvergreenBit0 = 34,           //< Bit 0 of the Evergreen marker bits.
+  SSDEvergreenSecondsBit0 = 36,    //< Bit 0 of the Evergreen seconds field.
   SSDEvergreenBitMaskLSB = 3,      //< Mask for bits 35:34 in LSB (0b11).
 
   SSDColdSecondsBitCount = 36,  //< Cold UUID seconds timestamp bit count.

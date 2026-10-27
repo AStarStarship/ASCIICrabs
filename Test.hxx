@@ -192,7 +192,7 @@ inline const CHC* BRK(const CHC* value, const CHR* message) {
 }
 
 BOL TestWarnFail(ISN line, const CHA* function, const CHA* file) {
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   StdOut() << "\n\nFAILURE Function:" << function << " at line:" << line <<
     "\n       " << " in \"" << file << '\"';
 #endif
@@ -205,14 +205,14 @@ BOL TestFail(ISN line, const CHA* function, const CHA* file) {
 }
 
 void TestFunctionLine(ISN line, const CHA* function, const CHA* file) {
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   StdOut() << "\n        Function:" << function
            << "\n            Line:" << line << " in \"" << file << '\"';
 #endif
 }
 
 BOL TestWarn(ISN line, const CHA* function, const CHA* file) {
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   StdOut() << "\n\nWARNING Function:" << function << " at line:" << line <<
        "\n       " << " in \"" << file << '\"';
 #endif
@@ -237,7 +237,7 @@ const CHA* TestTree(const CHA* args, TestCase* tests, ISN count) {
   for (ISN i = 0; i < count; ++i) {
     TestCase test = tests[i];
     if (IsError(test)) {
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
       COut("\nError: seam node ").Print(i) << " is missing!";
 #endif
       return "";
@@ -250,12 +250,12 @@ const CHA* TestTree(const CHA* args, TestCase* tests, ISN count) {
 
 ISN SeamResult(const CHA* result) {
   if (result) {
-    #if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+    #if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
     COut("\n\nError in seam ").Print(result);
     #endif
     return APP_EXIT_FAILURE;
   }
-  #if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+  #if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nUnit tests completed successfully! (:-)+=<\n");
   #endif
   return APP_EXIT_SUCCESS;
@@ -294,7 +294,7 @@ static const CHA STRFound[] = "\n           Found:0x\0";
 BOL TestEq(const CHA* a, const CHA* b) {
   ISN difference = TSCompare<CHA>(a, b);
   if (!difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -306,7 +306,7 @@ BOL TestEq(const CHA* a, const CHA* b) {
 BOL TestEq(const CHB* a, const CHB* b) {
   ISN difference = TSCompare<CHB>(a, b);
   if (!difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -319,7 +319,7 @@ BOL TestEq(const CHB* a, const CHB* b) {
 BOL TestEq(const CHC* a, const CHC* b) {
   ISN difference = TSCompare<CHC>(a, b);
   if (!difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -330,7 +330,7 @@ BOL TestEq(const CHC* a, const CHC* b) {
 
 BOL TestEq(CHA a, CHA b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -339,7 +339,7 @@ BOL TestEq(CHA a, CHA b) {
 
 BOL TestEq(CHB a, CHB b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -348,7 +348,7 @@ BOL TestEq(CHB a, CHB b) {
 
 BOL TestEq(CHC a, CHC b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -357,7 +357,7 @@ BOL TestEq(CHC a, CHC b) {
 
 BOL TestEq(const void* a, const void* b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a) << STRFound << Hexf(b);
 #endif
   return false;
@@ -365,7 +365,7 @@ BOL TestEq(const void* a, const void* b) {
 
 BOL TestEq(IUA a, IUA b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -374,7 +374,7 @@ BOL TestEq(IUA a, IUA b) {
 
 BOL TestEq(ISA a, ISA b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -383,7 +383,7 @@ BOL TestEq(ISA a, ISA b) {
 
 BOL TestEq(IUB a, IUB b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -392,7 +392,7 @@ BOL TestEq(IUB a, IUB b) {
 
 BOL TestEq(ISB a, ISB b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -401,7 +401,7 @@ BOL TestEq(ISB a, ISB b) {
 
 BOL TestEq(IUC a, IUC b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -411,7 +411,7 @@ BOL TestEq(IUC a, IUC b) {
 BOL TestEq(ISC a, ISC b) {
   if (a == b) return true;
 
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -420,7 +420,7 @@ BOL TestEq(ISC a, ISC b) {
 
 BOL TestEq(IUD a, IUD b) {
   if (a == b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -430,7 +430,7 @@ BOL TestEq(IUD a, IUD b) {
 BOL TestEq(ISD a, ISD b) {
   if (a == b) return true;
 
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -459,7 +459,7 @@ BOL TestEq(FPD a, FPD b) {
 BOL TestNot(const CHA* a, const CHA* b) {
   ISN difference = TSCompare<CHA>(a, b);
   if (difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -471,7 +471,7 @@ BOL TestNot(const CHA* a, const CHA* b) {
 BOL TestNot(const CHB* a, const CHB* b) {
   ISN difference = TSCompare<CHB>(a, b);
   if (difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -483,7 +483,7 @@ BOL TestNot(const CHB* a, const CHB* b) {
 BOL TestNot(const CHC* a, const CHC* b) {
   ISN difference = TSCompare<CHC>(a, b);
   if (difference) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut("\n\nERROR: Expecting:\"").Print(a)
       << "\"\n           Found:\"" << b << "\"\n      Difference:\0"
       << difference;
@@ -493,7 +493,7 @@ BOL TestNot(const CHC* a, const CHC* b) {
 #endif
 BOL TestNot(CHA a, CHA b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -502,7 +502,7 @@ BOL TestNot(CHA a, CHA b) {
 
 BOL TestNot(CHB a, CHB b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -511,7 +511,7 @@ BOL TestNot(CHB a, CHB b) {
 
 BOL TestNot(CHC a, CHC b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -520,7 +520,7 @@ BOL TestNot(CHC a, CHC b) {
 
 BOL TestNot(const void* a, const void* b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a) << STRFound << Hexf(b);
 #endif
   return false;
@@ -528,7 +528,7 @@ BOL TestNot(const void* a, const void* b) {
 
 BOL TestNot(IUA a, IUA b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -537,7 +537,7 @@ BOL TestNot(IUA a, IUA b) {
 
 BOL TestNot(ISA a, ISA b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -546,7 +546,7 @@ BOL TestNot(ISA a, ISA b) {
 
 BOL TestNot(IUB a, IUB b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -555,7 +555,7 @@ BOL TestNot(IUB a, IUB b) {
 
 BOL TestNot(ISB a, ISB b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -564,7 +564,7 @@ BOL TestNot(ISB a, ISB b) {
 
 BOL TestNot(IUC a, IUC b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -574,7 +574,7 @@ BOL TestNot(IUC a, IUC b) {
 BOL TestNot(ISC a, ISC b) {
   if (a != b) return true;
 
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -583,7 +583,7 @@ BOL TestNot(ISC a, ISC b) {
 
 BOL TestNot(IUD a, IUD b) {
   if (a != b) return true;
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif
@@ -593,7 +593,7 @@ BOL TestNot(IUD a, IUD b) {
 BOL TestNot(ISD a, ISD b) {
   if (a != b) return true;
 
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
   COut(STRErrorExpecting).Hex(a)
       << ':' << a << STRFound << Hexf(b) << ':' << b;
 #endif

@@ -25,7 +25,7 @@ constexpr HSH CPrimeMaxUnigned() {
   HSH prime = sizeof(HSH) == 1   ? 251
             : sizeof(HSH) == 2 ? 65535
             : sizeof(HSH) == 4 ? 4294967291
-            : sizeof(HSH) == 8 ? 18446744073709551557
+            : sizeof(HSH) == 8 ? 18446744073709551557ULL
                                  : 0;
   return prime;
 }
