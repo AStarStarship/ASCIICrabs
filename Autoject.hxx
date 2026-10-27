@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef CRABS_AUTOJECT_HXX
+#define CRABS_AUTOJECT_HXX
 #if SEAM >= CRABS_STACK
 #include "Autoject.h"
 #include "Binary.hpp"
@@ -76,4 +79,5 @@ IUW* ObjectFactoryHeap(IUW* origin, ISW bytes) {
 }
 
 }  //< namespace _
-#endif
+#endif  // SEAM >= CRABS_STACK
+#endif  // CRABS_AUTOJECT_HXX

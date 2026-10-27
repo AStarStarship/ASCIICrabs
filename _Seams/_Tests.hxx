@@ -3,7 +3,11 @@
 //
 #include "../_Package.hxx"
 //
-#include "01.COut.hxx"
+// Forward declaration so the Release seam (23.Release.hxx, included below)
+// can call the fully sown tree. Defined at the end of this file.
+inline const CHA* CrabsTests(const CHA* args);
+//
+#include "01.Core.hxx"
 #include "02.ItoS.hxx"
 #include "03.FtoS.hxx"
 #include "04.Uniprinter.hxx"
@@ -31,9 +35,10 @@
 using namespace ::_;
 
 inline const CHA* CrabsTests(const CHA* args) {
-  return TTestTree<CRTest::Core, CRTest::ItoS, CRTest::FtoS, 
-    CRTest::Uniprinter, CRTest::Clock, CRTest::Stack, CRTest::String, 
-    CRTest::Loom,  CRTest::List, CRTest::Book, CRTest::Map, CRTest::Table,
-    CRTest::Dic, CRTest::File, CRTest::CrabsOp, CRTest::Room, CRTest::MathCore, 
-    CRTest::RNG, CRTest::Promise, CRTest::CrabsScript, CRTest::Regex>(args);
+  return TTestTree<CRTest::Core, CRTest::ItoS, CRTest::FtoS,
+    CRTest::Uniprinter, CRTest::Clock, CRTest::Array, CRTest::Stack,
+    CRTest::String, CRTest::Regex, CRTest::Loom,  CRTest::List, CRTest::Book,
+    CRTest::Map, CRTest::Table, CRTest::Dic, CRTest::CrabsOp, CRTest::Room,
+    CRTest::MathCore, CRTest::RNG, CRTest::File, CRTest::Promise,
+    CRTest::CrabsScript>(args);
 }

@@ -1,8 +1,8 @@
 // Copyright AStarship <https://astarship.net>.
 #include "CIn.h"
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
 #include "Stringf.hpp"
-#if SEAM == CRABS_COUT
+#if SEAM == CRABS_CORE
 #include "_Debug.h"
 #else
 #include "_Release.h"

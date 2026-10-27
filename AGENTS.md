@@ -5,14 +5,14 @@
 ## 1. Build, Lint, and Test Commands
 
 ### Build
-- **Compile:** `g++ -g -o Crabs _Seams/_main.cpp`
+- **Compile:** `g++ -g -o Crabs _Seams/_Main.hxx`
 - **Output Binary:** `Crabs` (Windows: `Crabs.exe`)
 
 ### Test
 The project uses a custom seam tree testing framework located in `_Seams/`. You change the SEAM macro to one of the seams in the `_Seams.h` file, then all the debug information changes and a different unit test is runs.
 
 - **Run All Tests:** `./Crabs` (Runs the compiled executable)
-- **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_main.cpp` or set breakpoints in `Test.hpp` as described in `README.md`.
+- **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_Main.hxx` or set breakpoints in `Test.hpp` as described in `README.md`.
 - **Debugging:**
   - Breakpoints: `Test.hpp` contains a `TBRK` function intended for one breakpoints.
   - Setup: Copy `_Seams` directory to workspace if needed (per `README.md`).

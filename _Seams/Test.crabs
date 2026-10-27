@@ -1,0 +1,2 @@
+# Test fixture for CRTest::File (_Seams/20.File.hxx).
+# The test asserts that this file exists; the content is irrelevant.

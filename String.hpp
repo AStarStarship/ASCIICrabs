@@ -11,7 +11,6 @@
 #include "_Debug.h"
 #else
 #include "_Release.h"
-#define D_COUT_STRING(s)
 #endif
 
 #define STR_A typename T=CHR, typename CHT = CHD, typename ISZ=ISW, typename ISY=ISZ

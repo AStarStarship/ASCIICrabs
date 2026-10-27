@@ -3,7 +3,7 @@
 #ifndef CRABS_CIN_DECL
 #define CRABS_CIN_DECL
 #include "COut.h"
-#if SEAM >= CRABS_COUT && USING_CONSOLE == YES_0
+#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
 namespace _ {
 
 /* Checks if the given string is yes or no.

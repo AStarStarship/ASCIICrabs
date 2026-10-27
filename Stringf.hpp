@@ -135,6 +135,7 @@ inline CHC ToUpper(CHC value) { return TToUpper<CHC>(value); }
 /* Finds the last instance of the given token character in the string.. */
 template<typename CHS = CHR, typename CHT = CHD>
 inline const CHS* TSFindLast(const CHS* start, CHA token) {
+  if (IsError(start)) return NILP;
   const CHS* last_instance = NILP;
   CHT c = 0;
   start = SScan(start, c);
@@ -579,7 +580,7 @@ inline CHS* TSPrint(CHS* start, CHS* stop, const CHO* item) {
   while (c) {
     start = SPrint(start, stop, c);
     if (IsErrorSocket(start, stop))
-      return start;
+      return NILP;
     item = SScan(item, c);
   }
   *start = 0;
@@ -592,7 +593,7 @@ inline CHS* TSPrint(CHS* start, CHS* stop, const CHO* item) {
 //}
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW boofer_size, const CHA* item) {
-  return TSPrint<CHS, CHT>(start, start + boofer_size - 1, item);
+  return TSPrint<CHS, CHT>(start, start + boofer_size, item);
 }
 //
 //#if USING_STB == YES_0
@@ -613,7 +614,7 @@ inline CHS* TSPrint(CHS* start, ISW boofer_size, const CHA* item) {
 ////}
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW boofer_size, const CHB* item) {
-  return TSPrint<CHS, CHT, CHB>(start, start + boofer_size - 1, item);
+  return TSPrint<CHS, CHT, CHB>(start, start + boofer_size, item);
 }
 //#endif
 //
@@ -636,7 +637,7 @@ inline CHS* TSPrint(CHS* start, ISW boofer_size, const CHB* item) {
 ////}
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW boofer_size, const CHC* item) {
-  return TSPrint<CHS, CHT, CHC>(start, start + boofer_size - 1, item);
+  return TSPrint<CHS, CHT, CHC>(start, start + boofer_size, item);
 }
 //#endif
 
@@ -919,12 +920,12 @@ template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSConcat(CHS* start, CHS* stop, const CHS* item) {
   if (IsErrorSocket(start, stop))
     return NILP;
-  return TSPrint<CHS*>(TSStop<CHS, CHT>(start), stop, item);
+  return TSPrint<CHS, CHT>(TSStop<CHS, CHT>(start), stop, item);
 }
 
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSConcat(CHS* start, ISW size, const CHS* item) {
-  return TSConcat<CHS>(start, start + size - 1, item);
+  return TSConcat<CHS>(start, start + size, item);
 }
 
 /* Finds the end of a decimal number of the given string.

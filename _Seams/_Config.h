@@ -4,7 +4,11 @@
 #define PACKAGE_CONFIGURATION
 #include "../_ConfigHeader.h"
 
-#define SEAM CRABS_ROOM
+// Default to the fully sown release seam (runs the whole tree). Override
+// with -DSEAM=<n> to debug a specific seam layer.
+#ifndef SEAM
+#define SEAM SEAM_N
+#endif
 /* Seams:
 #define CRABS_CORE          1
 #define CRABS_ITOS          2

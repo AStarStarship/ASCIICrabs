@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef CRABS_ADDRESS_HPP
+#define CRABS_ADDRESS_HPP
 #include "Address.h"
 #if SEAM >= CRABS_OP
 namespace _ {
@@ -21,3 +24,4 @@ const CHA* TAddress() {
 
 }  //< namespace _
 #endif
+#endif  // CRABS_ADDRESS_HPP

@@ -320,9 +320,9 @@ enum AExtendedStandard {
   _OBJ,       //< 
   _VSI,       //< 
   _VUI,       //< 
-  _STA = ATypeESBase + _CHA,  //< Extended ASCII Type nil-terminated UTF-8 string.
-  _STB = ATypeESBase + _CHB,  //< Extended ASCII Type nil-terminated UTF-16 string.
-  _STC = ATypeESBase + _CHC,  //< Extended ASCII Type nil-terminated UTF-32 string.
+  _STA = ATypeESBase + static_cast<int>(_CHA),  //< Extended ASCII Type nil-terminated UTF-8 string.
+  _STB = ATypeESBase + static_cast<int>(_CHB),  //< Extended ASCII Type nil-terminated UTF-16 string.
+  _STC = ATypeESBase + static_cast<int>(_CHC),  //< Extended ASCII Type nil-terminated UTF-32 string.
   _CNS_PTR = _PTR | _CNS,     //< Constant pointer type.
   _CNS_STA = _CNS | _STA,     //< 133. Constant UTF-8 string.
   _CNS_STB = _CNS | _STB,     //< 134. Constant UTF-16 string.

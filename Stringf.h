@@ -28,6 +28,26 @@ BOL IsLowerCase(CHC c);
 
 BOL IsUpperCase(CHC c);
 
+/* @defgroup StringC
+@brief In-house C-string primitives (contiguous, safe-access).
+@details Consumers must NOT #include <cstring>/<cstdlib>; they use these `_::`
+functions. Thin wrappers over the C runtime, ISC/ISD/IUD/CHA-typed, kept here
+so the stdlib boundary stays inside ASCIICrabs. (Memory copy/fill/move use the
+Array module's ArrayCopy/ArrayFill/ArrayShiftUp/ArrayShiftDown, not this file.)
+@see ./Stringf.hxx
+*/
+
+/* C-string (NUL-terminated, CHA-typed). */
+ISC    StrLen(const CHA* s);
+ISC    StrCmp(const CHA* a, const CHA* b);
+ISC    StrToInt(const CHA* s);   /* like atoi, ISC-typed */
+ISD    StrToISD(const CHA* s, CHA** end);  /* like strtoll, ISD (signed 64-bit) */
+IUD    StrToIUD(const CHA* s, CHA** end);  /* like strtoul, IUD (unsigned 64-bit) */
+
+/* C-string search (pointer-returning; returns NILP if not found). */
+const CHA* StrStr(const CHA* haystack, const CHA* needle);  /* like strstr */
+const CHA* StrChr(const CHA* s, CHA value);                /* like strchr */
+
 /* Gets the header to print for PrintChars(const void*, const void*). */
 const CHA* STAPrintCharsHeader();
 

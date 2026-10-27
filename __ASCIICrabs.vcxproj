@@ -158,8 +158,8 @@
     <Text Include="_Seams\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="_Seams\_Main.cpp" />
-    <ClCompile Include="_Seams\__Crabs.cpp" />
+    <ClCompile Include="_Seams\_Main.hxx" />
+    <ClCompile Include="_Seams\__Crabs.hxx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -1,6 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #include "Stringf.hpp"
 #include "Binary.hpp"
+/* The mem/str primitives are a thin, contiguous, bounds-explicit boundary over
+   the C runtime. <cstring>/<cstdlib> are ASCIICrabs-internal details (same
+   class of internal C use as File.hxx); consumers see only the _:: wrappers. */
+#include <cstring>
+#include <cstdlib>
 namespace _ {
 
 inline BOL IsPrintable(CHA value) {
@@ -31,6 +36,29 @@ inline BOL IsWhitespace(CHC value) {
   return value <= ' ';
 }
 
+/* --- StringC: in-house C-string primitives --- */
+inline ISC StrLen(const CHA* s) {
+  return static_cast<ISC>(strlen(s));
+}
+inline ISC StrCmp(const CHA* a, const CHA* b) {
+  return static_cast<ISC>(strcmp(a, b));
+}
+inline ISC StrToInt(const CHA* s) {
+  return static_cast<ISC>(atoi(s));
+}
+inline ISD StrToISD(const CHA* s, CHA** end) {
+  return static_cast<ISD>(strtoll(s, end, 10));
+}
+inline IUD StrToIUD(const CHA* s, CHA** end) {
+  return static_cast<IUD>(strtoul(s, end, 10));
+}
+inline const CHA* StrStr(const CHA* haystack, const CHA* needle) {
+  return strstr(haystack, needle);
+}
+inline const CHA* StrChr(const CHA* s, CHA value) {
+  return strchr(s, value);
+}
+
 const CHA* STAPrintCharsHeader() {
   return "\n|0       8       16      24      32      40      48      56      |"
          " Begin address:";
@@ -53,8 +81,8 @@ const CHA* STAPrintHexBorder() {
 
 }  //< namespace _
 
-#if SEAM >= CRABS_COUT
-#if SEAM == CRABS_COUT
+#if SEAM >= CRABS_CORE
+#if SEAM == CRABS_CORE
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -74,6 +102,10 @@ inline ISN StringLength(ISA value) {
 }
 
 inline const CHA* SScan(const CHA* start, CHA& value) {
+  if (IsError(start)) {
+    value = 0;
+    return start;
+  }
   value = *start++;
   return start;
 }
@@ -82,8 +114,10 @@ inline CHA* SScan(CHA* start, CHA& value) {
 }
 
 inline const CHA* SScan(const CHA* start, CHC& value) {
-  //if (IsError(start)) return start;
-  //value = 0; //< @todo Do I need this?
+  if (IsError(start)) {
+    value = 0;
+    return start;
+  }
   // | Byte 1   | Byte 2   | Byte 3   | Byte 4   | UTF-32 Result         |
   // |:--------:|:--------:|:--------:|:--------:|:---------------------:|
   // | 0aaaaaaa |          |          |          | 00000000000000aaaaaaa |
@@ -131,7 +165,10 @@ inline CHA* SScan(CHA* start, CHC& value) {
 
 #if USING_STB == YES_0
 inline const CHB* SScan(const CHB* start, CHC& value) {
-	//if (IsError(start)) return start;
+	if (IsError(start)) {
+		value = 0;
+		return start;
+	}
   // | Bytes {4N, 4N+ 1} | Bytes {4N + 2, 4N+ 3} |    UTF-32 Result     |
   // |:-----------------:|:---------------------:|:--------------------:|
   // | 000000aaaaaaaaaa  |                       | 0000000000aaaaaaaaaa |
@@ -411,27 +448,27 @@ inline CHA* SPrint(CHA* start, CHA* stop, IUA item) {
 	return SPrint(start, stop, IUC(item));
 }
 inline CHA* SPrint(CHA* start, ISW size, IUA item) {
-	return SPrint(start, start + size - 1, item);
+	return SPrint(start, start + size, item);
 }
 inline CHA* SPrint(CHA* start, CHA* stop, ISA item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHA* SPrint(CHA* start, ISW size, ISA item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, IUB item) {
   return SPrint(start, stop, IUC(item));
 }
 inline CHA* SPrint(CHA* start, ISW size, IUB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, ISB item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHA* SPrint(CHA* start, ISW size, ISB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, IUC item) {
@@ -442,7 +479,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, IUC item) {
   #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, IUC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, ISC item) {
@@ -453,7 +490,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, ISC item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, ISC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, IUD item) {
@@ -464,7 +501,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, IUD item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, IUD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, ISD item) {
@@ -475,7 +512,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, ISD item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, ISD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 CHA* SPrint(CHA* start, CHA* stop, CHC value) {
@@ -490,7 +527,7 @@ CHA* SPrint(CHA* start, CHA* stop, CHC value) {
 
   D_COUT("\n\n" << IUC(value) << ".) Printed:0x");
   if (value >> 7 == 0) { // 1 ASCII CHA.
-    if (start + 1 > stop) return NILP;
+    if (start + 1 >= stop) return NILP;
     *start++ = CHA(value);
     D_COUT(Hexf(*(start - 1)) << "   ");
   } else {
@@ -525,42 +562,43 @@ CHA* SPrint(CHA* start, CHA* stop, CHC value) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, CHA value) {
-  if (IsErrorSocket(start, stop)) return NILP;
+  // Needs 2 bytes: the char and the nil, both strictly before stop.
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
   *start++ = value;
   *start = 0;
   return start;
 }
 
 inline CHA* SPrint(CHA* start, ISW size, CHA value) {
-  return SPrint(start, start + size - 1, value);
+  return SPrint(start, start + size, value);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUA item) {
   return SPrint(start, stop, IUC(item));
 }
 inline CHB* SPrint(CHB* start, ISW size, IUA item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISA item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHB* SPrint(CHB* start, ISW size, ISA item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUB item) {
   return SPrint(start, stop, IUC(item));
 }
 inline CHB* SPrint(CHB* start, ISW size, IUB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISB item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHB* SPrint(CHB* start, ISW size, ISB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUC item) {
@@ -571,7 +609,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, IUC item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, IUC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISC item) {
@@ -582,7 +620,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, ISC item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, ISC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUD item) {
@@ -593,7 +631,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, IUD item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, IUD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISD item) {
@@ -604,7 +642,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, ISD item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, ISD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 #if USING_FPC == YES_0
@@ -612,7 +650,7 @@ inline CHB* SPrint(CHB* string, CHB* stop, FPC item) {
   return TSPrint<CHB>(string, stop, item);
 }
 inline CHB* SPrint(CHB* start, ISW size, FPC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 #endif
 #if USING_FPD == YES_0
@@ -620,13 +658,14 @@ inline CHB* SPrint(CHB* string, CHB* stop, FPD item) {
   return TSPrint<CHB>(string, stop, item);
 }
 inline CHB* SPrint(CHB* start, ISW size, FPD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 #endif
 
 #if USING_STB == YES_0
 inline CHB* SPrint(CHB* start, CHB* stop, CHB value) {
-  if (IsErrorSocket(start, stop)) return NILP;
+  // Needs 2 units: the char and the nil, both strictly before stop.
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
   *start++ = value;
   *start = 0;
   return start;
@@ -635,13 +674,13 @@ inline CHB* SPrint(CHB* start, CHB* stop, CHA value) {
   return SPrint(start, stop, CHB(value));
 }
 inline CHB* SPrint(CHB* start, ISW size, CHA value) {
-  return SPrint(start, start + size - 1, value);
+  return SPrint(start, start + size, value);
 }
 inline CHB* SPrint(CHB* start, ISW size, CHB value) {
-  return SPrint(start, start + size - 1, value);
+  return SPrint(start, start + size, value);
 }
 inline CHB* SPrint(CHB* start, ISW size, CHC value) {
-  return SPrint(start, start + size - 1, value);
+  return SPrint(start, start + size, value);
 }
 #endif  // #if USING_STB == YES_0
 
@@ -651,28 +690,28 @@ inline CHC* SPrint(CHC* start, CHC* stop, IUA item) {
   return SPrint(start, stop, IUC(item));
 }
 inline CHC* SPrint(CHC* start, ISW size, IUA item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISA item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHC* SPrint(CHC* start, ISW size, ISA item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, IUB item) {
   return SPrint(start, stop, IUC(item));
 }
 inline CHC* SPrint(CHC* start, ISW size, IUB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISB item) {
   return SPrint(start, stop, ISC(item));
 }
 inline CHC* SPrint(CHC* start, ISW size, ISB item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, IUC item) {
@@ -683,7 +722,7 @@ inline CHC* SPrint(CHC* start, CHC* stop, IUC item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, IUC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISC item) {
@@ -697,7 +736,7 @@ inline CHC* SPrint(CHC* start, ISW size, ISC item) {
 #if SEAM < CRABS_UNIPRINTER
   return start;
 #else 
-  return TSPrintSigned<ISC, IUC, CHC>(start, start + size - 1, item);
+  return TSPrintSigned<ISC, IUC, CHC>(start, start + size, item);
 #endif
 }
 
@@ -709,7 +748,7 @@ inline CHC* SPrint(CHC* start, CHC* stop, IUD item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, IUD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISD item) {
@@ -720,14 +759,14 @@ inline CHC* SPrint(CHC* start, CHC* stop, ISD item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, ISD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, ISW size, CHC value) {
-  return SPrint(start, start + size - 1, value);
+  return SPrint(start, start + size, value);
 }
 inline CHC* SPrint(CHC* start, ISW size, CHC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 #if USING_FPC == YES_0
@@ -735,7 +774,7 @@ inline CHC* SPrint(CHC* string, CHC* stop, FPC value) {
   return TSPrint<CHC>(string, stop, value);
 }
 inline CHC* SPrint(CHC* start, ISW size, FPC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 #endif
 #if USING_FPD == YES_0
@@ -743,13 +782,13 @@ inline CHC* SPrint(CHC* string, CHC* stop, FPD value) {
   return TSPrint<CHC>(string, stop, value);
 }
 inline CHC* SPrint(CHC* start, ISW size, FPD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 #endif
 
 inline CHC* SPrint(CHC* start, CHC* stop, CHC value) {
-  if (IsErrorSocket(start, stop))
-    return NILP;
+  // Needs 2 units: the char and the nil, both strictly before stop.
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
   *start++ = value;
   *start = 0;
   return start;
@@ -758,11 +797,11 @@ inline CHC* SPrint(CHC* start, CHC* stop, CHA value) {
   return SPrint(start, stop, CHC(value));
 }
 inline CHC* SPrint(CHC* start, ISW size, CHA value) {
-  return SPrint(start, start + size - 1 , CHC(value));
+  return SPrint(start, start + size, CHC(value));
 }
 
 inline CHC* SPrint(CHC* start, ISW size, CHB value) {
-  return SPrint(start, start + size - 1, CHC(value));
+  return SPrint(start, start + size, CHC(value));
 }
 inline CHC* SPrint(CHC* start, CHC* stop, CHB value) {
   return SPrint(start, stop, CHC(value));
@@ -779,7 +818,7 @@ CHB* SPrint(CHB* start, CHB* stop, CHC value) {
     return NILP;
   CHC lsb_mask = 0x3f, lsb = value & lsb_mask, msb = value >> 10;
   if (!msb) {
-    if (start + 1 > stop)
+    if (start + 1 >= stop)
       return NILP;
     *start++ = CHB(value);
     D_COUT("\nPrinting 1:" << Hexf(CHB(value)));
@@ -810,7 +849,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, const CHA* item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, const CHA* item) {
-	return SPrint(start, start + size - 1, item);
+	return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, const CHB* item) {
@@ -821,7 +860,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, const CHB* item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, const CHB* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, const CHC* item) {
@@ -832,7 +871,7 @@ inline CHA* SPrint(CHA* start, CHA* stop, const CHC* item) {
 #endif
 }
 inline CHA* SPrint(CHA* start, ISW size, const CHC* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, const CHA* item) {
@@ -843,7 +882,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, const CHA* item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, const CHA* item) {
-	return SPrint(start, start + size - 1, item);
+	return SPrint(start, start + size, item);
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, const CHB* item) {
@@ -865,7 +904,7 @@ inline CHB* SPrint(CHB* start, CHB* stop, const CHC* item) {
 #endif
 }
 inline CHB* SPrint(CHB* start, ISW size, const CHC* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHA* item) {
@@ -876,7 +915,7 @@ inline CHC* SPrint(CHC* start, CHC* stop, const CHA* item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, const CHA* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHB* item) {
@@ -887,7 +926,7 @@ inline CHC* SPrint(CHC* start, CHC* stop, const CHB* item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, const CHB* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHC* item) {
@@ -898,7 +937,7 @@ inline CHC* SPrint(CHC* start, CHC* stop, const CHC* item) {
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, const CHC* item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 
@@ -1669,7 +1708,7 @@ CHA* SPrint(CHA* start, CHA* stop, FPC value) {
   return start + count;
 }
 inline CHA* SPrint(CHA* start, ISW size, FPC item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 
 #if USING_FPD == YES_0
@@ -1681,7 +1720,7 @@ CHA* SPrint(CHA* start, CHA* stop, FPD value) {
   return start + count;
 }
 inline CHA* SPrint(CHA* start, ISW size, FPD item) {
-  return SPrint(start, start + size - 1, item);
+  return SPrint(start, start + size, item);
 }
 #endif
 

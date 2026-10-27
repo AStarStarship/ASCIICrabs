@@ -19,39 +19,64 @@ static const CHA* UUID(const CHA* args) {
 
   IUD hot_source_id = GenerateHotSourceID();
   D_COUT("Hot UUID Source ID (28-bit): 0x" << Hexf(hot_source_id));
-  D_ASSERT(hot_source_id < (IUD(1) << 28));
-  
+  A_ASSERT(hot_source_id < (IUD(1) << 28));
+
   IUD Evergreen_source_id = GenerateEvergreenSourceID();
   D_COUT("Evergreen UUID Source ID (34-bit): 0x" << Hexf(Evergreen_source_id));
-  D_ASSERT(Evergreen_source_id < (IUD(1) << 34));
+  A_ASSERT(Evergreen_source_id < (IUD(1) << 34));
 
   ISC seconds = 1234567;
   ISC ticks = 42;
   IUD source_id = GenerateHotSourceID();
-  
+
   IUD hot_uuid = CreateHotUUID(seconds, ticks, source_id);
   D_COUT("Hot UUID: 0x" << Hexf(hot_uuid));
-  
-  TMD tmd_hot(hot_uuid);
-  D_ASSERT(tmd_hot.IsHotUUID());
+  {
+    SSD s_hot(hot_uuid);
+    A_ASSERT(s_hot.IsHot());
+    A_ASSERT(!s_hot.IsEvergreen());
+    A_ASSERT(s_hot.Source() == source_id);
+    A_ASSERT(s_hot.Ticker() == ticks);
+  }
 
-  IUD Evergreen_uuid = ConvertHotToEvergreenUUID(hot_uuid, Evergreen_source_id);
+  IUD Evergreen_uuid = ClockHotToEvergreen(hot_uuid, Evergreen_source_id);
   D_COUT("Evergreen UUID: 0x" << Hexf(Evergreen_uuid));
-  
-  TMD tmd_Evergreen(Evergreen_uuid);
-  D_ASSERT(tmd_Evergreen.IsEvergreenUUID());
-  D_ASSERT(!tmd_Evergreen.IsHotUUID());
+  {
+    SSD s_ever(Evergreen_uuid);
+    A_ASSERT(s_ever.IsEvergreen());
+    A_ASSERT(!s_ever.IsHot());
+  }
 
   IUD Evergreen_uuid2 = CreateEvergreenUUID(seconds, Evergreen_source_id);
-  TMD tmd_Evergreen2(Evergreen_uuid2);
-  D_ASSERT(tmd_Evergreen2.IsEvergreenUUID());
+  {
+    SSD s_ever2(Evergreen_uuid2);
+    A_ASSERT(s_ever2.IsEvergreen());
+    A_ASSERT(!s_ever2.IsHot());
+  }
 
-  TMD tmd_test(hot_uuid);
+  // Converting an existing Hot TMD to Evergreen must flip the marker bits.
+  TMD tmd_test = hot_uuid;
   IUD new_source_id = GenerateEvergreenSourceID();
-  tmd_test.ConvertToEvergreenUUID(new_source_id);
-  D_ASSERT(tmd_test.IsEvergreenUUID());
+  IUD converted = ClockHotToEvergreen(tmd_test, new_source_id);
+  {
+    SSD s_converted(converted);
+    A_ASSERT(s_converted.IsEvergreen());
+    A_ASSERT(!s_converted.IsHot());
+  }
 
-  D_COUT(Headingf("UUID Tests Complete! :-)\n"));
+  // A Hot UUID converted to Cold keeps its fields and only clears the MSb.
+  {
+    SSD s_hot2(hot_uuid);
+    IUD cold_uuid = s_hot2.ToCold(0);
+    SSD s_cold(cold_uuid);
+    A_ASSERT(s_cold.IsCold());
+    A_ASSERT(!s_cold.IsHot());
+    A_ASSERT(!s_cold.IsEvergreen());
+    A_ASSERT(s_cold.Ticker() == ticks);
+    A_ASSERT(s_cold.Source() == source_id);
+  }
+
+  D_COUT(Headingf("UUID Tests Complete! :-)"));
 
 #endif
   return NILP;
@@ -60,6 +85,8 @@ static const CHA* UUID(const CHA* args) {
 static const CHA* Clock(const CHA* args) {
 #if SEAM >= CRABS_CLOCK
   A_TEST_BEGIN;
+
+  UUID(args);
 
   D_COUT(Headingf("Testing TScanTime..."));
 
