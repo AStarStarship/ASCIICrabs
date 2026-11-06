@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_PROMISE_DECL
-#define CRABS_PROMISE_DECL
+#ifndef _CrabsPromiseH
+#define _CrabsPromiseH
 #include <_Config.h>
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 struct Crabs;
@@ -29,5 +29,5 @@ const Op* PromiseTriggerRejection(Crabs* crabs, Slot* promise_slot);
 
 }  //< namespace _
 
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsPromiseH

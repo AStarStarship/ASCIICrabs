@@ -1,30 +1,30 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_MATHCORE
+#if _Seam >= _CrabsMathCore
 #include "../Matrix.hpp"
-#if SEAM == CRABS_MATHCORE
+#if _Seam == _CrabsMathCore
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 template<MTX_A>
 void TestMatrixIntegers() {
-  //D_LINEF("\n\n+---\n| Testing AMatrix<IS" << CSizef<ISZ>() << ">\n+---");
-  D_LINEF("\n\n+---\n| Testing AMatrix<IS");
+  //_DLinef("\n\n+---\n| Testing AMatrix<IS" << CSizef<ISZ>() << ">\n+---");
+  _DLinef("\n\n+---\n| Testing AMatrix<IS");
   // << ASizeCodef<ISZ>() << Linef(">\n+---");
 
   static const ISC Expected2x2x2[2][2][2] = {{{0, 1}, {2, 3}},
                                              {{4, 5}, {6, 7}}};
   AMatrix<MTX_P, TDim<ISZ, IUY, 2, 2, 2>> matrix(Expected2x2x2[0][0][0]);
-  D_COUT_OBJ(matrix);
+  _DROutOBJ(matrix);
   ISC w = 0;
   T* array_base = matrix.Start();
   for (ISC x = 0; x < 2; ++x) {
     for (ISC y = 0; y < 2; ++y) {
       for (ISC z = 0; z < 2; ++z) {
-        A_AVOW(w++, Expected2x2x2[x][y][z]);
+        _AAvow(w++, Expected2x2x2[x][y][z]);
       }
     }
   }
@@ -32,26 +32,26 @@ void TestMatrixIntegers() {
 
 /* Tests the C++11 MultiplyVals compile-time product helper. */
 void TestMultiplyVals() {
-  D_LINEF("\n\n+---\n| Testing MultiplyVals C++11 compile-time product\n+---");
+  _DLinef("\n\n+---\n| Testing MultiplyVals C++11 compile-time product\n+---");
 
   // Single dimension.
-  A_AVOW(ISC(5), ISC(MultiplyVals<ISC, IUC, 5>::value));
+  _AAvow(ISC(5), ISC(MultiplyVals<ISC, IUC, 5>::value));
 
   // Two dimensions.
-  A_AVOW(ISC(6), ISC(MultiplyVals<ISC, IUC, 2, 3>::value));
+  _AAvow(ISC(6), ISC(MultiplyVals<ISC, IUC, 2, 3>::value));
 
   // Three dimensions.
-  A_AVOW(ISC(24), ISC(MultiplyVals<ISC, IUC, 2, 3, 4>::value));
+  _AAvow(ISC(24), ISC(MultiplyVals<ISC, IUC, 2, 3, 4>::value));
 
   // TDimC CBytes constant.
-  //A_AVOW(ISD(8), ISD(TDimC<2, 2, 2>::CBytes));
-  //A_AVOW(ISD(12), ISD(TDimC<3, 4>::CBytes));
-  //A_AVOW(ISD(60), ISD(TDimC<3, 4, 5>::CBytes));
+  //_AAvow(ISD(8), ISD(TDimC<2, 2, 2>::CBytes));
+  //_AAvow(ISD(12), ISD(TDimC<3, 4>::CBytes));
+  //_AAvow(ISD(60), ISD(TDimC<3, 4, 5>::CBytes));
 }
 
 /* Tests the dot product of two vectors. */
 void TestDotProduct() {
-  D_LINEF("\n\n+---\n| Testing TMatrixDotProduct\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixDotProduct\n+---");
 
   // Integer dot product.
   {
@@ -59,7 +59,7 @@ void TestDotProduct() {
     const ISC b[] = {5, 6, 7, 8};
     // 1*5 + 2*6 + 3*7 + 4*8 = 5 + 12 + 21 + 32 = 70
     ISC result = TMatrixDotProduct<ISC>(a, b, 4);
-    A_AVOW(ISC(70), result);
+    _AAvow(ISC(70), result);
   }
   // Float dot product.
   {
@@ -67,7 +67,7 @@ void TestDotProduct() {
     const FPC b[] = {4.0f, 5.0f, 6.0f};
     // 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32
     FPC result = TMatrixDotProduct<FPC>(a, b, 3);
-    A_AVOW(FPC(32.0f), result);
+    _AAvow(FPC(32.0f), result);
   }
   // Double dot product.
   {
@@ -75,66 +75,66 @@ void TestDotProduct() {
     const FPD b[] = {2.0, 3.0, 4.0};
     // 0.5*2 + 1.5*3 + 2.5*4 = 1 + 4.5 + 10 = 15.5
     FPD result = TMatrixDotProduct<FPD>(a, b, 3);
-    A_AVOW(FPD(15.5), result);
+    _AAvow(FPD(15.5), result);
   }
 }
 
 /* Tests element-wise addition. */
 void TestMatrixAdd() {
-  D_LINEF("\n\n+---\n| Testing TMatrixAdd\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixAdd\n+---");
 
   const FPD a[] = {1.0, 2.0, 3.0, 4.0};
   const FPD b[] = {5.0, 6.0, 7.0, 8.0};
   FPD result[4];
   TMatrixAdd<FPD>(result, a, b, 4);
-  A_AVOW(FPD(6.0),  result[0]);
-  A_AVOW(FPD(8.0),  result[1]);
-  A_AVOW(FPD(10.0), result[2]);
-  A_AVOW(FPD(12.0), result[3]);
+  _AAvow(FPD(6.0),  result[0]);
+  _AAvow(FPD(8.0),  result[1]);
+  _AAvow(FPD(10.0), result[2]);
+  _AAvow(FPD(12.0), result[3]);
 }
 
 /* Tests element-wise subtraction. */
 void TestMatrixSubtract() {
-  D_LINEF("\n\n+---\n| Testing TMatrixSubtract\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixSubtract\n+---");
 
   const FPD a[] = {10.0, 20.0, 30.0};
   const FPD b[] = {1.0, 2.0, 3.0};
   FPD result[3];
   TMatrixSubtract<FPD>(result, a, b, 3);
-  A_AVOW(FPD(9.0),  result[0]);
-  A_AVOW(FPD(18.0), result[1]);
-  A_AVOW(FPD(27.0), result[2]);
+  _AAvow(FPD(9.0),  result[0]);
+  _AAvow(FPD(18.0), result[1]);
+  _AAvow(FPD(27.0), result[2]);
 }
 
 /* Tests element-wise multiplication (Hadamard product). */
 void TestMatrixMultiplyElementwise() {
-  D_LINEF("\n\n+---\n| Testing TMatrixMultiplyElementwise\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixMultiplyElementwise\n+---");
 
   const FPD a[] = {2.0, 3.0, 4.0};
   const FPD b[] = {5.0, 6.0, 7.0};
   FPD result[3];
   TMatrixMultiplyElementwise<FPD>(result, a, b, 3);
-  A_AVOW(FPD(10.0), result[0]);
-  A_AVOW(FPD(18.0), result[1]);
-  A_AVOW(FPD(28.0), result[2]);
+  _AAvow(FPD(10.0), result[0]);
+  _AAvow(FPD(18.0), result[1]);
+  _AAvow(FPD(28.0), result[2]);
 }
 
 /* Tests scalar multiplication. */
 void TestMatrixScalarMultiply() {
-  D_LINEF("\n\n+---\n| Testing TMatrixScalarMultiply\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixScalarMultiply\n+---");
 
   const FPD a[] = {1.0, 2.0, 3.0, 4.0};
   FPD result[4];
   TMatrixScalarMultiply<FPD>(result, a, FPD(3.0), 4);
-  A_AVOW(FPD(3.0),  result[0]);
-  A_AVOW(FPD(6.0),  result[1]);
-  A_AVOW(FPD(9.0),  result[2]);
-  A_AVOW(FPD(12.0), result[3]);
+  _AAvow(FPD(3.0),  result[0]);
+  _AAvow(FPD(6.0),  result[1]);
+  _AAvow(FPD(9.0),  result[2]);
+  _AAvow(FPD(12.0), result[3]);
 }
 
 /* Tests matrix transpose for a 2x3 -> 3x2 matrix. */
 void TestMatrixTranspose() {
-  D_LINEF("\n\n+---\n| Testing TMatrixTranspose\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixTranspose\n+---");
 
   // 2x3 row-major matrix:
   // | 1  2  3 |
@@ -147,17 +147,17 @@ void TestMatrixTranspose() {
   // | 1  4 |
   // | 2  5 |
   // | 3  6 |
-  A_AVOW(FPD(1.0), dst[0]);
-  A_AVOW(FPD(4.0), dst[1]);
-  A_AVOW(FPD(2.0), dst[2]);
-  A_AVOW(FPD(5.0), dst[3]);
-  A_AVOW(FPD(3.0), dst[4]);
-  A_AVOW(FPD(6.0), dst[5]);
+  _AAvow(FPD(1.0), dst[0]);
+  _AAvow(FPD(4.0), dst[1]);
+  _AAvow(FPD(2.0), dst[2]);
+  _AAvow(FPD(5.0), dst[3]);
+  _AAvow(FPD(3.0), dst[4]);
+  _AAvow(FPD(6.0), dst[5]);
 }
 
 /* Tests general matrix multiplication (GEMM). */
 void TestMatrixMultiply() {
-  D_LINEF("\n\n+---\n| Testing TMatrixMultiply (GEMM)\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixMultiply (GEMM)\n+---");
 
   // A (2x3):
   // | 1  2  3 |
@@ -176,10 +176,10 @@ void TestMatrixMultiply() {
   // | 4*7+5*9+6*11   4*8+5*10+6*12 |   | 139  154 |
   FPD c[4];
   TMatrixMultiply<FPD>(c, a, b, 2, 3, 2);
-  A_AVOW(FPD(58.0),  c[0]);
-  A_AVOW(FPD(64.0),  c[1]);
-  A_AVOW(FPD(139.0), c[2]);
-  A_AVOW(FPD(154.0), c[3]);
+  _AAvow(FPD(58.0),  c[0]);
+  _AAvow(FPD(64.0),  c[1]);
+  _AAvow(FPD(139.0), c[2]);
+  _AAvow(FPD(154.0), c[3]);
 
   // Identity matrix multiplication: A * I = A.
   const FPD eye[] = {1.0, 0.0, 0.0,
@@ -188,44 +188,44 @@ void TestMatrixMultiply() {
   FPD ai[6];
   TMatrixMultiply<FPD>(ai, a, eye, 2, 3, 3);
   for (ISW i = 0; i < 6; ++i)
-    A_AVOW(a[i], ai[i]);
+    _AAvow(a[i], ai[i]);
 }
 
 /* Tests ReLU activation and its derivative. */
 void TestMatrixReLU() {
-  D_LINEF("\n\n+---\n| Testing TMatrixReLU\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixReLU\n+---");
 
   FPD x[] = {-3.0, -1.0, 0.0, 0.5, 2.0};
   TMatrixReLU<FPD>(x, 5);
-  A_AVOW(FPD(0.0), x[0]);
-  A_AVOW(FPD(0.0), x[1]);
-  A_AVOW(FPD(0.0), x[2]);
-  A_AVOW(FPD(0.5), x[3]);
-  A_AVOW(FPD(2.0), x[4]);
+  _AAvow(FPD(0.0), x[0]);
+  _AAvow(FPD(0.0), x[1]);
+  _AAvow(FPD(0.0), x[2]);
+  _AAvow(FPD(0.5), x[3]);
+  _AAvow(FPD(2.0), x[4]);
 
   // Test derivative.
   FPD pre[] = {-3.0, -1.0, 0.0, 0.5, 2.0};
   FPD grad[5];
   TMatrixReLUDerivative<FPD>(grad, pre, 5);
-  A_AVOW(FPD(0.0), grad[0]);
-  A_AVOW(FPD(0.0), grad[1]);
-  A_AVOW(FPD(0.0), grad[2]);
-  A_AVOW(FPD(1.0), grad[3]);
-  A_AVOW(FPD(1.0), grad[4]);
+  _AAvow(FPD(0.0), grad[0]);
+  _AAvow(FPD(0.0), grad[1]);
+  _AAvow(FPD(0.0), grad[2]);
+  _AAvow(FPD(1.0), grad[3]);
+  _AAvow(FPD(1.0), grad[4]);
 
   // Integer ReLU.
   ISC xi[] = {-5, -1, 0, 3, 7};
   TMatrixReLU<ISC>(xi, 5);
-  A_AVOW(ISC(0), xi[0]);
-  A_AVOW(ISC(0), xi[1]);
-  A_AVOW(ISC(0), xi[2]);
-  A_AVOW(ISC(3), xi[3]);
-  A_AVOW(ISC(7), xi[4]);
+  _AAvow(ISC(0), xi[0]);
+  _AAvow(ISC(0), xi[1]);
+  _AAvow(ISC(0), xi[2]);
+  _AAvow(ISC(3), xi[3]);
+  _AAvow(ISC(7), xi[4]);
 }
 
 /* Tests sigmoid activation and its derivative. */
 void TestMatrixSigmoid() {
-  D_LINEF("\n\n+---\n| Testing TMatrixSigmoid\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixSigmoid\n+---");
 
   // sigmoid(0) should be 0.5.
   FPD x[] = {0.0};
@@ -233,17 +233,17 @@ void TestMatrixSigmoid() {
   // Allow small floating-point tolerance.
   FPD diff = x[0] - 0.5;
   if (diff < 0.0) diff = -diff;
-  D_ASSERT(diff < 1e-10);
+  _DAssert(diff < 1e-10);
 
   // sigmoid of large positive should be ~1.0.
   FPD big[] = {100.0};
   TMatrixSigmoid(big, 1);
-  D_ASSERT(big[0] > 0.999);
+  _DAssert(big[0] > 0.999);
 
   // sigmoid of large negative should be ~0.0.
   FPD small[] = {-100.0};
   TMatrixSigmoid(small, 1);
-  D_ASSERT(small[0] < 0.001);
+  _DAssert(small[0] < 0.001);
 
   // Test derivative: s*(1-s) at s=0.5 should be 0.25.
   FPD s_out[] = {0.5};
@@ -251,12 +251,12 @@ void TestMatrixSigmoid() {
   TMatrixSigmoidDerivative(s_grad, s_out, 1);
   FPD d2 = s_grad[0] - 0.25;
   if (d2 < 0.0) d2 = -d2;
-  D_ASSERT(d2 < 1e-10);
+  _DAssert(d2 < 1e-10);
 }
 
 /* Tests softmax activation. */
 void TestMatrixSoftmax() {
-  D_LINEF("\n\n+---\n| Testing TMatrixSoftmax\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixSoftmax\n+---");
 
   // Softmax of equal values should give uniform distribution.
   FPD uniform[] = {1.0, 1.0, 1.0};
@@ -265,7 +265,7 @@ void TestMatrixSoftmax() {
   for (ISW i = 0; i < 3; ++i) {
     FPD diff = uniform[i] - expected_uniform;
     if (diff < 0.0) diff = -diff;
-    D_ASSERT(diff < 1e-10);
+    _DAssert(diff < 1e-10);
   }
 
   // Softmax outputs should sum to 1.0.
@@ -274,21 +274,21 @@ void TestMatrixSoftmax() {
   FPD sum = TMatrixSum<FPD>(vals, 4);
   FPD sum_diff = sum - 1.0;
   if (sum_diff < 0.0) sum_diff = -sum_diff;
-  D_ASSERT(sum_diff < 1e-10);
+  _DAssert(sum_diff < 1e-10);
 
   // Largest input should have largest output.
-  D_ASSERT(vals[3] > vals[2]);
-  D_ASSERT(vals[2] > vals[1]);
-  D_ASSERT(vals[1] > vals[0]);
+  _DAssert(vals[3] > vals[2]);
+  _DAssert(vals[2] > vals[1]);
+  _DAssert(vals[1] > vals[0]);
 }
 
 /* Tests Mean Squared Error. */
 void TestMatrixMSE() {
-  D_LINEF("\n\n+---\n| Testing TMatrixMSE\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixMSE\n+---");
 
   // MSE of identical arrays should be 0.
   const FPD a[] = {1.0, 2.0, 3.0};
-  A_AVOW(FPD(0.0), TMatrixMSE(a, a, 3));
+  _AAvow(FPD(0.0), TMatrixMSE(a, a, 3));
 
   // MSE of known values.
   const FPD predicted[] = {1.0, 2.0, 3.0};
@@ -297,53 +297,53 @@ void TestMatrixMSE() {
   FPD mse = TMatrixMSE(predicted, target, 3);
   FPD mse_diff = mse - 0.25;
   if (mse_diff < 0.0) mse_diff = -mse_diff;
-  D_ASSERT(mse_diff < 1e-10);
+  _DAssert(mse_diff < 1e-10);
 }
 
 /* Tests bias addition to a matrix. */
 void TestMatrixAddBias() {
-  D_LINEF("\n\n+---\n| Testing TMatrixAddBias\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixAddBias\n+---");
 
   // 2x3 matrix + 3-element bias.
   FPD m[] = {1.0, 2.0, 3.0,
              4.0, 5.0, 6.0};
   const FPD bias[] = {10.0, 20.0, 30.0};
   TMatrixAddBias<FPD>(m, bias, 2, 3);
-  A_AVOW(FPD(11.0), m[0]);
-  A_AVOW(FPD(22.0), m[1]);
-  A_AVOW(FPD(33.0), m[2]);
-  A_AVOW(FPD(14.0), m[3]);
-  A_AVOW(FPD(25.0), m[4]);
-  A_AVOW(FPD(36.0), m[5]);
+  _AAvow(FPD(11.0), m[0]);
+  _AAvow(FPD(22.0), m[1]);
+  _AAvow(FPD(33.0), m[2]);
+  _AAvow(FPD(14.0), m[3]);
+  _AAvow(FPD(25.0), m[4]);
+  _AAvow(FPD(36.0), m[5]);
 }
 
 /* Tests TMatrixFill, TMatrixSum, and TMatrixArgMax. */
 void TestMatrixUtilities() {
-  D_LINEF("\n\n+---\n| Testing TMatrixFill, TMatrixSum, TMatrixArgMax\n+---");
+  _DLinef("\n\n+---\n| Testing TMatrixFill, TMatrixSum, TMatrixArgMax\n+---");
 
   // Fill.
   FPD x[4];
   TMatrixFill<FPD>(x, 4, FPD(7.0));
   for (ISW i = 0; i < 4; ++i)
-    A_AVOW(FPD(7.0), x[i]);
+    _AAvow(FPD(7.0), x[i]);
 
   // Sum.
   const FPD s[] = {1.0, 2.0, 3.0, 4.0};
-  A_AVOW(FPD(10.0), TMatrixSum<FPD>(s, 4));
+  _AAvow(FPD(10.0), TMatrixSum<FPD>(s, 4));
 
   // ArgMax.
   const FPD am[] = {0.1, 0.9, 0.3, 0.7};
-  A_AVOW(ISW(1), TMatrixArgMax<FPD>(am, 4));
+  _AAvow(ISW(1), TMatrixArgMax<FPD>(am, 4));
 
   // ArgMax with negative values.
   const FPD am2[] = {-5.0, -1.0, -3.0};
-  A_AVOW(ISW(1), TMatrixArgMax<FPD>(am2, 3));
+  _AAvow(ISW(1), TMatrixArgMax<FPD>(am2, 3));
 }
 
 /* Tests a simple forward pass: Y = ReLU(X * W + b).
 This verifies the operations chain together correctly for ML inference. */
 void TestForwardPass() {
-  D_LINEF("\n\n+---\n| Testing ML Forward Pass: Y = ReLU(X*W + b)\n+---");
+  _DLinef("\n\n+---\n| Testing ML Forward Pass: Y = ReLU(X*W + b)\n+---");
 
   // X: 1x3 input row vector.
   const FPD X[] = {1.0, 2.0, 3.0};
@@ -361,7 +361,7 @@ void TestForwardPass() {
   TMatrixMultiply<FPD>(Z, X, W, 1, 3, 2);
   FPD z0_diff = Z[0] - 1.4;
   if (z0_diff < 0.0) z0_diff = -z0_diff;
-  D_ASSERT(z0_diff < 1e-10);
+  _DAssert(z0_diff < 1e-10);
 
   // Step 2: Z = Z + b
   TMatrixAdd<FPD>(Z, Z, b, 2);
@@ -371,14 +371,14 @@ void TestForwardPass() {
   TMatrixReLU<FPD>(Z, 2);
   FPD y0_diff = Z[0] - 1.5;
   if (y0_diff < 0.0) y0_diff = -y0_diff;
-  D_ASSERT(y0_diff < 1e-10);
-  A_AVOW(FPD(0.0), Z[1]);  //< Negative clamped to 0.
+  _DAssert(y0_diff < 1e-10);
+  _AAvow(FPD(0.0), Z[1]);  //< Negative clamped to 0.
 }
 
 /* Tests a two-layer forward pass with softmax output.
 Simulates: hidden = ReLU(X*W1 + b1), output = softmax(hidden*W2 + b2). */
 void TestTwoLayerForwardPass() {
-  D_LINEF("\n\n+---\n| Testing Two-Layer Forward Pass with Softmax\n+---");
+  _DLinef("\n\n+---\n| Testing Two-Layer Forward Pass with Softmax\n+---");
 
   // X: 1x2 input.
   const FPD X[] = {0.5, -0.3};
@@ -410,11 +410,11 @@ void TestTwoLayerForwardPass() {
   FPD sum = TMatrixSum<FPD>(output, 2);
   FPD sum_diff = sum - 1.0;
   if (sum_diff < 0.0) sum_diff = -sum_diff;
-  D_ASSERT(sum_diff < 1e-10);
-  D_ASSERT(output[0] >= 0.0 && output[0] <= 1.0);
-  D_ASSERT(output[1] >= 0.0 && output[1] <= 1.0);
+  _DAssert(sum_diff < 1e-10);
+  _DAssert(output[0] >= 0.0 && output[0] <= 1.0);
+  _DAssert(output[1] >= 0.0 && output[1] <= 1.0);
 
-  D_COUT("\n  Softmax output: [" << output[0] << ", " << output[1] << "]");
+  _DROut("\n  Softmax output: [" << output[0] << ", " << output[1] << "]");
 }
 
 }  //< namespace CRTest
@@ -422,8 +422,8 @@ void TestTwoLayerForwardPass() {
 
 namespace CRTest {
 static const CHA* MathCore(const CHA* args) {
-#if SEAM >= CRABS_MATHCORE
-  A_TEST_BEGIN;
+#if _Seam >= _CrabsMathCore
+  _ATestBegin;
   //TestMatrixIntegers<ISA, ISA, IUA, ISA>();
   //TestMatrixIntegers<ISA, ISA, IUA, ISB>();
   //TestMatrixIntegers<ISA, ISA, IUA, ISC>();
@@ -463,6 +463,6 @@ static const CHA* MathCore(const CHA* args) {
   TestForwardPass();
   TestTwoLayerForwardPass();
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

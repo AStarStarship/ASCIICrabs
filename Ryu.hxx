@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsRyuHXX
+#define _CrabsRyuHXX
 //
 // Ryu implementation: Ulf Adams' shortest IEEE-754 float-to-string
 // algorithm, ported from the C original (d2s.c, f2s.c, d2s_intrinsics.h,
@@ -11,7 +14,7 @@
 // keep in mind that the static data will get duplicated in each library
 // you build.
 namespace _ {
-#if SEAM >= CRABS_FTOS
+#if _Seam >= _CrabsFToS
 
 // A floating decimal representing m * 10^e.
 struct TRyuFloatDecimal {
@@ -1374,5 +1377,6 @@ CHA* RyuD2S(FPD value, CHA* result) {
   return result + index;
 }
 
-#endif  //< SEAM >= CRABS_FTOS
+#endif  //< _Seam >= _CrabsFToS
 }  //< namespace _
+#endif  //< _CrabsRyuHXX

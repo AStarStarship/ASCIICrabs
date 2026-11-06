@@ -1,10 +1,13 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsOpHXX
+#define _CrabsOpHXX
 #include "Op.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "BSeq.hpp"
 #include "Slot.h"
 #include "Test.h"
-#if SEAM == CRABS_OP
+#if _Seam == _CrabsOp
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -14,16 +17,16 @@ namespace _ {
 
 inline const Op* OpError(ERC error) { return (const Op*)IUW(error); }
 /*
-#if USING_CRABS_TEXT
-Op OpInit (IUW* socket, ISC boofer_size) {
-    TBOut<ISC>* bout = BOutInit (socket, boofer_size);
+#if _CrabsUsingText
+Op OpInit (IUW* socket, ISC buffer_size) {
+    TBOut<ISC>* bout = BOutInit (socket, buffer_size);
     Op log;
     log.bout = bout;
     return log;
 }
 
 void Print (Op& log) {
-  TBIn<ISC>* bin = TPtr<TBIn<ISC>> (log.bout);
+  TBIn<ISC>* bin = TRef<TBIn<ISC>> (log.bout);
   void   * args[1];
   IUA     type = 0,
   iua;
@@ -38,7 +41,7 @@ void Print (Op& log) {
   FPC    flt;
   FPD   dbl;
   CHA   index;
-  //if (BinReadChar (TPtr<TBIn<ISC>> (log.bout), index))
+  //if (BinReadChar (TRef<TBIn<ISC>> (log.bout), index))
   //    return;
   CHA socket[DBL_MAX_10_EXP + 2];
   while (index ) {
@@ -123,4 +126,5 @@ void Print (Op& log) {
 
 }  //< namespace _
 
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsOpHXX

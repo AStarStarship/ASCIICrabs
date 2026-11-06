@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ITERATOR_DECL
-#define CRABS_ITERATOR_DECL
+#ifndef _CrabsIteratorH
+#define _CrabsIteratorH
 #include <_Config.h>
-#if SEAM >= CRABS_DIC
+#if _Seam >= _CrabsDictionary
 // Dependencies:
 // End dependencies.
 namespace _ {
@@ -25,4 +25,4 @@ struct Iterator {
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsIteratorH

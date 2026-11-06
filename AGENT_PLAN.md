@@ -97,10 +97,10 @@ world later wants bf16 activations (or we move to GPU), a `bf16` type
 **Ask (low priority):** add a `bf16` POD + `f32_to_bf16`/`bf16_to_f32` if the
 throughput case ever justifies it. Not a blocker for the current CPU milestone.
 
-## Gap 5 (needed for console diagnostics) — `COut` has no `operator<<` for `FPC`/`FPD`
+## Gap 5 (needed for console diagnostics) — `ROut` has no `operator<<` for `FPC`/`FPD`
 
-Verified 2026-10-07 (iGeekCardsWorld M3, transformer policy): `StdOut() << <FPC>`
-and `StdOut() << <FPD>` **print nothing** (empty). The `COut` stream overloads
+Verified 2026-10-07 (iGeekCardsWorld M3, transformer policy): `RefOut() << <FPC>`
+and `RefOut() << <FPD>` **print nothing** (empty). The `ROut` stream overloads
 exist for the integer PODs (`ISC`, `IUD`, `IUC`, ...) and `CHA*`, but there is no
 working overload for the float types. This breaks any console diagnostic that
 wants to print a float (rewards, logits, losses, hyperparameters) — the iGeek
@@ -110,8 +110,8 @@ RL-gym work has to cast `FPC` to `ISC` and scale by 1000 as a workaround.
 The PPO loop (M5) and the train seam (M6) both want to print reward/loss/KL
 curves; right now they can't print the actual float values.
 
-**Ask:** add `COut::operator<<(FPC)` / `operator<<(FPD)` (a fixed-decimal
-printer, e.g. 6 significant digits) to `COut.hxx`. Low risk, high value for any
+**Ask:** add `ROut::operator<<(FPC)` / `operator<<(FPD)` (a fixed-decimal
+printer, e.g. 6 significant digits) to `ROut.hxx`. Low risk, high value for any
 numeric/console work.
 
 

@@ -1,15 +1,15 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_TEST_HPP
-#define CRABS_TEST_HPP
+#ifndef _CrabsTestHPP
+#define _CrabsTestHPP
 #include "Test.h"
 namespace _ {
 
 template<typename T = BOL>
-inline T TBRK(T value = 0, const CHR* message = nullptr) {
+inline T TBRK(T value = 0, const CHR* message = _NilP) {
   if(!IsError(message)) {
-    #if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-    StdOut() << " message:\"" << message << "\"\nvalue:" << value;
+    #if _Seam >= _CrabsCore
+    RefOut() << " message:\"" << message << "\"\nvalue:" << value;
     #endif
   }
   return value;  //< Insert break-point here.
@@ -18,8 +18,8 @@ inline T TBRK(T value = 0, const CHR* message = nullptr) {
 template<typename T>
 inline BOL TTestNZ(T value) {
   if (value != 0) return true;
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-  StdOut() << "\n\nERROR: value:" << value << " is nil!";
+#if _Seam >= _CrabsCore
+  RefOut() << "\n\nERROR: value:" << value << " is nil!";
 #endif
   return false;
 }
@@ -28,8 +28,8 @@ template<typename T>
 BOL TTestEq(T a, T b) {
   if (a == b) return true;
 
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-  StdOut() << "\n\nERROR: Expecting: " << a << " > " << b
+#if _Seam >= _CrabsCore
+  RefOut() << "\n\nERROR: Expecting: " << a << " > " << b
     << "\n      Difference:\0" << (b - a);
 #endif
   return false;
@@ -39,8 +39,8 @@ template<typename T>
 BOL TTestGTEQ(T a, T b) {
   if (a >= b) return true;
 
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-  StdOut() << "\n\nERROR: Expecting: " << a << " >= " << b
+#if _Seam >= _CrabsCore
+  RefOut() << "\n\nERROR: Expecting: " << a << " >= " << b
     << "\n      Difference:\0" << (b - a);
 #endif
   return false;
@@ -50,8 +50,8 @@ template<typename T>
 BOL TTestLT(T a, T b) {
   if (a < b) return true;
 
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-  StdOut() << "\n\nERROR: Expecting: " << a << " < " << b
+#if _Seam >= _CrabsCore
+  RefOut() << "\n\nERROR: Expecting: " << a << " < " << b
     << "\n      Difference:\0" << (b - a);
 #endif
   return false;
@@ -62,8 +62,8 @@ BOL TTestLTEQ
 (T a, T b) {
   if (a <= b) return true;
 
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
-  StdOut() << "\n\nERROR: Expecting: " << a << " <= " << b
+#if _Seam >= _CrabsCore
+  RefOut() << "\n\nERROR: Expecting: " << a << " <= " << b
            << "\n      Difference:\0" << (b - a);
 #endif
   return false;
@@ -82,4 +82,4 @@ ISN TTestTree(ISN arg_count, CHA** args) {
 }
 
 }  //< namespace _
-#endif
+#endif  //< _CrabsTestHPP

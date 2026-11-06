@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_SLOT_DECL
-#define CRABS_SLOT_DECL
+#ifndef _CrabsSlotH
+#define _CrabsSlotH
 #include <_Config.h>
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "AType.h"
 #include "AType.hpp"
 namespace _ {
@@ -83,11 +83,8 @@ const Op* SlotWrite(Slot* slot, const IUA* message);
 /* Copies the contents of the target slot into the slot. */
 const Op* SlotWrite(Slot* slot, Slot& target);
 
-#if USING_CRABS_TEXT
-UTF1& SlotPrint(UTF1& utf, Slot* slot);
-#endif
 // @} Slot
-}  //< namespace _
 
-#endif
-#endif
+}  //< namespace _
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsSlotH

@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ARRAY_HXX
-#define CRABS_ARRAY_HXX
+#ifndef _CrabsArrayHXX
+#define _CrabsArrayHXX
 #include "Array.hpp"
-#if SEAM >= CRABS_UNIPRINTER
+#if _Seam >= _CrabsUniprinter
 #include "Binary.hpp"
 namespace _ {
 
@@ -13,11 +13,11 @@ namespace _ {
 /* Creates a CPU word from the repeated fill_char. */
 inline IUW FillWord(CHA fill_char) {
   IUW value = (IUW)(IUA)fill_char;
-#if CPU_ENDIAN == CPU_ENDIAN_LITTLE
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUEndian == _CPUEndianLittle
+#if _CPUSize == _CPU8Byte
   return value | (value << 8) | (value << 16) | (value << 24) | (value << 32) |
     (value << 48) | (value << 56);
-#elif CPU_SIZE == CPU_4_BYTE
+#elif _CPUSize == _CPU32Bit
   return value | (value << 8) | (value << 16) | (value << 24);
 #else
   return value | (value << 8);
@@ -29,8 +29,8 @@ inline IUW FillWord(CHA fill_char) {
 
 CHA* ArrayFill(void* origin, ISW count, CHA fill_char) {
   if (IsError(origin) || count < 0)
-    return NILP;
-  CHA* start = TPtr<CHA>(origin);
+    return _NilP;
+  CHA* start = TRef<CHA>(origin);
 
   CHA* stop = start + count;
 
@@ -41,11 +41,11 @@ CHA* ArrayFill(void* origin, ISW count, CHA fill_char) {
      * aligned_pointer = TPtrUp<>(start);
   while (start < aligned_pointer && start < stop) *start++ = fill_char;
   // 2.) Align stop pointer down to a word boundry and copy the midde words.
-  IUW* words = TPtr<IUW>(start),
+  IUW* words = TRef<IUW>(start),
     * words_end = TPtrDown<IUW>(stop);
   while (words < words_end) *words++ = fill_word;
   // 3.) Copy remaining unaligned bytes.
-  start = TPtr<CHA>(words_end);
+  start = TRef<CHA>(words_end);
   while (start < stop) *start++ = fill_char;
 
   return success;
@@ -58,17 +58,17 @@ inline CHA* ArrayFill(void* start, void* stop, CHA fill_char = 0) {
 
 template<typename ISZ = ISW>
 inline CHA* TObjectFill(void* start, void* stop, CHA fill_char = 0) {
-  return ArrayFill(TPtr<>(start, sizeof(ISZ)), stop, fill_char);
+  return ArrayFill(TRef<>(start, sizeof(ISZ)), stop, fill_char);
 }
 
 template<typename ISZ = ISW>
 inline CHA* TObjectFill(void* origin, ISW bytes, CHA fill_char = 0) {
-  return ArrayFill(TPtr<>(origin, sizeof(ISZ)), bytes - sizeof(ISZ), fill_char);
+  return ArrayFill(TRef<>(origin, sizeof(ISZ)), bytes - sizeof(ISZ), fill_char);
 }
 
 template<typename ISZ = ISW>
 inline CHA* TObjectFill(void* origin, CHA fill_char = 0) {
-  return TObjectFill<ISZ>(origin, *TPtr<ISZ>(origin), fill_char);
+  return TObjectFill<ISZ>(origin, *TRef<ISZ>(origin), fill_char);
 }
 
 /* Compares the two blocks of memory byte by byte to check if they're identical.
@@ -78,9 +78,9 @@ is the index + 1 of the first byte that was not the same. */
 ISW ArrayCompareSlow(const void* a, const ISW a_bytes, const void* b,
   const ISW b_bytes) {
   if (a_bytes != b_bytes || a_bytes <= 0) return 0;
-  const CHA* a_cursor = TPtr<CHA>(a),
+  const CHA* a_cursor = TRef<CHA>(a),
     * a_end = a_cursor + a_bytes,
-    * b_cursor = TPtr<CHA>(b);
+    * b_cursor = TRef<CHA>(b);
   while (a_cursor < a_end)
     if (*a_cursor++ != *b_cursor++) {
       return -TDelta<>(a, a_cursor);
@@ -95,9 +95,9 @@ is the index + 1 of the first byte that was not the same. */
 ISW ArrayCompareFast(const void* a, const ISW a_bytes, const void* b,
   const ISW b_bytes) {
   if (a_bytes != b_bytes || a_bytes <= 0) return 0;
-  const IUA* a_cursor = TPtr<const IUA>(a),
+  const IUA* a_cursor = TRef<const IUA>(a),
     * a_end = a_cursor + a_bytes,
-    * b_cursor = TPtr<const IUA>(b),
+    * b_cursor = TRef<const IUA>(b),
     * b_end = b_cursor + b_bytes;
   // 18-byte Examples:
   // v-- 0x0   v--------------------------- a_offset_msb
@@ -119,8 +119,8 @@ ISW ArrayCompareFast(const void* a, const ISW a_bytes, const void* b,
     b_offset_msb = IUW(ACPUBytes) * 8 - b_offset;
   a_cursor = (IUA*)a_begin_word;
   b_cursor = (IUA*)b_begin_word;
-  IUW a_lsb = *TPtr<IUW>(a_cursor),
-    b_lsb = *TPtr<IUW>(b_cursor);
+  IUW a_lsb = *TRef<IUW>(a_cursor),
+    b_lsb = *TRef<IUW>(b_cursor);
   while (a_cursor < a_end_word - ACPUBytes) {
     a_cursor += ACPUBytes;
     b_cursor += ACPUBytes;
@@ -134,7 +134,7 @@ ISW ArrayCompareFast(const void* a, const ISW a_bytes, const void* b,
       b_word = b_lsb_shifted | b_msb_shifted;
     if (a_word != b_word) {
       /*
-      D_COUT("\n\nStep 1 failed!" <<
+      _DROut("\n\nStep 1 failed!" <<
              "\na_offset       : " << a_offset <<
              "\nb_offset    : "    << b_offset <<
              "\na_offset_msb   : " << a_offset_msb <<
@@ -176,7 +176,7 @@ ISW ArrayCompareFast(const void* a, const ISW a_bytes, const void* b,
     a_word = (a_lsb_shifted | a_msb_shifted) & word_mask,
     b_word = (b_lsb_shifted | b_msb_shifted) & word_mask;
   if (a_word != b_word) {
-    /* D_COUT(
+    /* _DROut(
         "\n\nStep 2 failed!"
         <<
            "\na_offset     : "  << a_offset <<
@@ -217,8 +217,8 @@ ISW ArrayCompare(const void* a, ISW a_bytes, const void* b,
 ISW ArrayCopySlow(void* write, ISW w_size, const void* read, const ISW r_size) {
   if (IsError(write) || IsError(read) || r_size <= 0 || w_size < r_size)
     return 0;
-  CHA* w_cursor = TPtr<CHA>(write);
-  const CHA* r_cursor = TPtr<const CHA>(read),
+  CHA* w_cursor = TRef<CHA>(write);
+  const CHA* r_cursor = TRef<const CHA>(read),
     * r_end = r_cursor + r_size;
   while (r_cursor < r_end) *w_cursor++ = *r_cursor++;
   return r_size;
@@ -243,12 +243,12 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
   // Step 1: Copy to the unaligned lower write bytes.
   // We start out with a socket full of memory taht we're not allowed to access
   // any of the x memory bytes else the compiler will yell at us.
-  const IUA* r_start = TPtr<IUA>(read),
+  const IUA* r_start = TRef<IUA>(read),
     * r_stop = r_start + r_size;
-  IUA* w_cursor = TPtr<IUA>(write);
+  IUA* w_cursor = TRef<IUA>(write);
   IUW* w_start_word = TPtrUp<IUW>(w_cursor);
 
-  while (w_cursor < TPtr<IUA>(w_start_word)) *w_cursor++ = *r_start++;
+  while (w_cursor < TRef<IUA>(w_start_word)) *w_cursor++ = *r_start++;
 
   const IUW* r_start_word = TPtrDown<const IUW>(r_start);
   IUW w_offset = TDelta(w_cursor, w_start_word),
@@ -262,7 +262,7 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
   IUW* w_stop_word = w_start_word + words_count;
 
   if (r_offset == 0) {
-    //D_COUT("\nr_offset == 0  w_stop_word - w_start_word: " << 
+    //_DROut("\nr_offset == 0  w_stop_word - w_start_word: " << 
     //       w_stop_word - w_start_word);
     while (w_start_word < w_stop_word)
       *w_start_word++ = *r_start_word++;
@@ -275,7 +275,7 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
     //  Read: ??bbbbbb_bbbbbbbb_bbbbbbbb_bb??????
     //       -->      <-- offset_upper=6
     /*
-    D_COUT("\nStep 1 wrote "  << TDelta(write, w_cursor) << " bytes." <<
+    _DROut("\nStep 1 wrote "  << TDelta(write, w_cursor) << " bytes." <<
            "\nr_offset    : " << r_offset <<
            "\nw_start_word: " << Hexf(w_start_word) <<
            "  w_stop_word: "  << Hexf(w_stop_word) <<
@@ -290,7 +290,7 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
       IUW r_lsb = r_word_lsb >> r_offset_lsb,
         r_msb = r_word_msb << r_offset_msb,
         word = r_lsb | r_msb;
-      //D_COUT("\nr_lsb: " << Hexf(r_lsb) << "  r_msb: " << Hexf(r_msb));
+      //_DROut("\nr_lsb: " << Hexf(r_lsb) << "  r_msb: " << Hexf(r_msb));
       *w_start_word++ = word;
       r_word_lsb = r_word_msb;
     }
@@ -300,10 +300,10 @@ ISW ArrayCopyFast(void* write, ISW w_size, const void* read,
   // Bytes consumed so far: step 1's w_offset plus the whole words written
   // above; the first unread byte is exactly that many past r_start.
   r_start = r_start + ISW(words_count) * ACPUBytes;
-  w_cursor = TPtr<IUA>(w_start_word);
-  //D_COUT("\nr_start: " << Hexf(r_start) << "  r_stop:" << Hexf(r_stop));
+  w_cursor = TRef<IUA>(w_start_word);
+  //_DROut("\nr_start: " << Hexf(r_start) << "  r_stop:" << Hexf(r_stop));
   while (r_start < r_stop) {
-    //D_COUT("!");
+    //_DROut("!");
     *w_cursor++ = *r_start++;
   }
   return r_size;
@@ -343,8 +343,8 @@ inline ISW ArrayCopySlow(void* write, void* w_end, const void* read,
 
 ISW ArrayShiftUp(void* origin, void* end, ISW count) {
   if (IsError(origin) || origin <= end || count <= 0) return 0;
-  CHA* start = TPtr<CHA>(origin),
-    * stop = TPtr<CHA>(end);
+  CHA* start = TRef<CHA>(origin),
+    * stop = TRef<CHA>(end);
   if (count < 3 * sizeof(void*)) {
     for (ISC i = 0; i < count; ++i) *(stop + count) = *stop;
     return 0;
@@ -352,29 +352,29 @@ ISW ArrayShiftUp(void* origin, void* end, ISW count) {
   IUW lsb_mask = sizeof(IUW) - 1;
   // Align the pointer down.
   IUW value = IUW(stop);
-  CHA* pivot = TPtr<CHA>(value - (value & lsb_mask));
+  CHA* pivot = TRef<CHA>(value - (value & lsb_mask));
 
   // Shift up the top portion.
   for (ISC i = 0; i < count; ++i) *(stop + count) = *stop--;
-  IUW* stop_word = TPtr<IUW>(stop);
+  IUW* stop_word = TRef<IUW>(stop);
 
   // Align the pointer up.
   value = CAlignUp(value, lsb_mask);
-  IUW* start_word = TPtr<IUW>(value);
+  IUW* start_word = TRef<IUW>(value);
 
   // Shift up the moddle portion.
   while (stop_word >= start_word) *(stop_word + count) = *stop_word--;
 
   // Shift up the bottom portion.
-  pivot = TPtr<CHA>(stop_word + 1);
+  pivot = TRef<CHA>(stop_word + 1);
   while (pivot >= start) *(pivot + count) = *pivot--;
   return count;
 }
 
 ISW ArrayShiftDown(void* origin, void* end, ISW count) {
   if (IsError(origin) || origin <= end || count <= 0) return 0;
-  CHA* start = TPtr<CHA>(origin),
-    * stop = TPtr<CHA>(end);
+  CHA* start = TRef<CHA>(origin),
+    * stop = TRef<CHA>(end);
   if (count < 3 * sizeof(void*)) {
     for (ISC i = 0; i < count; ++i) *(stop + count) = *stop;
     return 0;
@@ -382,27 +382,27 @@ ISW ArrayShiftDown(void* origin, void* end, ISW count) {
   IUW least_significant_bits_mask = sizeof(IUW) - 1;
   // Align the pointer down.
   IUW value = IUW(stop);
-  CHA* pivot = TPtr<CHA>(value - (value & least_significant_bits_mask));
+  CHA* pivot = TRef<CHA>(value - (value & least_significant_bits_mask));
 
   // Shift up the top portion.
   for (ISC i = 0; i < count; ++i) *(stop + count) = *stop--;
-  IUW* stop_word = TPtr<IUW>(stop);
+  IUW* stop_word = TRef<IUW>(stop);
 
   // Align the pointer up.
   value = IUW(start);
-  IUW* start_word = TPtr<IUW>(
+  IUW* start_word = TRef<IUW>(
     value + ((-(ISW)value) & least_significant_bits_mask));
 
   // Shift up the moddle portion.
   while (stop_word >= start_word) *(stop_word + count) = *stop_word--;
 
   // Shift up the bottom portion.
-  pivot = TPtr<CHA>(stop_word + 1);
+  pivot = TRef<CHA>(stop_word + 1);
   while (pivot >= start) *(pivot + count) = *pivot--;
   return count;
 }
 //< @endingroup Array
 
 } //< namespace _
-#endif  // SEAM >= CRABS_UNIPRINTER
-#endif  // CRABS_ARRAY_HXX
+#endif  //< _Seam >= _CrabsUniprinter
+#endif  //< _CrabsArrayHXX

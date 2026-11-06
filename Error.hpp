@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ERROR_HPP
-#define CRABS_ERROR_HPP
+#ifndef _CrabsErrorHPP
+#define _CrabsErrorHPP
 #include "Error.h"
-#if SEAM >= CRABS_CORE
+#if _Seam >= _CrabsCore
 namespace _ {
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsErrorHPP

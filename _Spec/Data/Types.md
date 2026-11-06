@@ -75,6 +75,30 @@ A VHT or Vector of Homotuple (Homogenous Tuple) is a packed contiguous set of 1,
 |:-----:|:------:|:-----:|
 |  SW   |  VHT   |  POD  |
 
+### C++ Naming Convention (ASCIICrabs)
+
+The spec-conformant C++ name for a homotuple is **`<POD><arity>`** — the 3-letter
+POD acronym (from the "Primitive types" table) followed by the element count as a
+digit suffix. Examples: `FPC2` (2-tuple of float32), `ISC2` (2-tuple of int32),
+`FPC4` (4-tuple of float32), `ISC4` (4-tuple of int32), `ISD4` (4-tuple of int64),
+`IUD2` (2-tuple of uint64). The generic form is `THomoT<T, N>` (T-prefix +
+CamelCase per Chimera+), where `N` is the arity (1, 2, 3, or 4). The named types
+(`FPC2`, `ISC2`, `FPC4`, `ISC4`) are the common instantiations with SFML-parity
+members/methods, implemented in `ASCIICrabs/TVec.h` in `namespace _`. The older
+`TVec2F`/`TVec2I`/`TFloatRect`/`TIntRect` names remain as `using` aliases for
+backward compatibility with existing TileWorld/CarWorld/BikeWorld engines; new
+code should use the `<POD><arity>` names.
+
+| SW | POD   | Meaning                    | C++ name (ASCIICrabs)  |
+|----|-------|----------------------------|-------------------------|
+| 0  | any   | empty vector               | —                       |
+| 1  | any   | single value (scalar alias)| (the POD itself)        |
+| 2  | FPC   | 2D float point/vector      | `FPC2` (a.k.a. `TVec2F`) |
+| 2  | ISC   | 2D int point (grid coords) | `ISC2` (a.k.a. `TVec2I`) |
+| 3  | FPC   | 3D float point/vector      | `FPC3`                  |
+| 4  | FPC   | 4D float / axis-aligned rect | `FPC4` (a.k.a. `TFloatRect`) |
+| 4  | ISC   | 4D int / axis-aligned rect   | `ISC4` (a.k.a. `TIntRect`) |
+
 ## One-byte Data Type Bit Pattern
 
 1-byte types only support 2-byte Size Width and are intended for memory constrained processors.
@@ -189,7 +213,7 @@ escape-sequence principle. We use UTF-8, not 1970s terminal protocols.
 // Example: Using Plain Context Types for context management
 struct Context {
   PCa extended_data;      // 128-bit extended context
-  PCb context_ptr;        // 64-bit pointer to context structure
+  PCb context_ref;        // 64-bit pointer to context structure
   PCc context_index;      // 32-bit index into context table
   PCd context_tag;        // 16-bit context classification tag
   PCe context_flag;       // 8-bit boolean flag

@@ -1,10 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BOUT_DECL
+#ifndef _CrabsBOutH
+#define _CrabsBOutH
 #define CRABS_BOUT_DECL
 #include <_Config.h>
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* @defgroup TBOut B-Output Slot
@@ -31,12 +32,8 @@ typedef enum BOutStates {
 inline const Op* BOutError(TBOut<ISC>* bout, ERC error, const DTB* header,
   ISN bsq_error, IUA* error_byte);
 
-#if USING_CRABS_TEXT == YES_0
-
 /* Gets a a CHA for printing out the bout_state. */
 const CHA** BOutStateStrings();
-
-#endif
 
 /* Initializes the B-Output socket with the given socket size. */
 TBOut<ISC>* BOutInit(TBOut<ISC>* socket, ISN size);
@@ -46,7 +43,7 @@ TBOut<ISC>* BOutInit(TBOut<ISC>* socket, ISN size);
 ISN BOutSpace(TBOut<ISC>* bout);
 
 /* Gets the B-Output. */
-ISN BOutBooferLength(TBOut<ISC>* bout);
+ISN BOutBufferLength(TBOut<ISC>* bout);
 
 /* Gets the stop address of the tx socket. */
 IUA* BOutEndAddress(TBOut<ISC>* bout);
@@ -56,7 +53,7 @@ IUA* BOutEndAddress(TBOut<ISC>* bout);
 ISN BOutStreamByte(TBOut<ISC>* bout);
 
 /* The first byte in the B-Output's socket.*/
-IUA* BOutBoofer(TBOut<ISC>* bout);
+IUA* BOutBuffer(TBOut<ISC>* bout);
 
 /* Gets the begin of the socket. */
 inline const CHA* BOutBegin(const TBOut<ISC>* bout);
@@ -130,4 +127,4 @@ TBIn<ISC>* BInAttach(TBIn<ISC>* bin, TBOut<ISC>* bout, IUA* buffer, ISN buffer_b
 
 /* @} */  // End of TBOut group.
 #endif
-#endif
+#endif  //< _CrabsBOutH

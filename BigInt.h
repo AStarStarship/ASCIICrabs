@@ -1,6 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-
+#ifndef _CrabsBigIntH
+#define _CrabsBigIntH
+#include <_ConfigHeader.h>
+#include <_ConfigFooter.h>
+#include <Autoject.h>
+#if _Seam >= _CrabsUniprinter
 /* Arbitrary-precision integer types: ISQ (signed) and IUQ (unsigned).
 Modeled on JavaScript BigInt — no fixed upper/lower bound.
 Internal layout:
@@ -12,11 +17,6 @@ Internal layout:
   - Memory managed via Autoject + RAMFactory (no naked new/delete,
     no raw pointer null checks — use IsError/PtrIsError). */
 
-#ifndef CRABS_BIGINT_STANDALONE
-#include <_ConfigHeader.h>
-#include <_ConfigFooter.h>
-#include <Autoject.h>
-#endif
 
 namespace _ {
 
@@ -266,3 +266,5 @@ BOL operator>=(const ISQ& a, const ISQ& b);
 DTW TypeOf(const ISQ&);
 //< @endingroup BigInt
 }  // namespace _
+#endif  //< _Seam >= _CrabsUniprinter
+#endif  //< _CrabsBigIntH

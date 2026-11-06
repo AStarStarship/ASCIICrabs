@@ -1,29 +1,29 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_RANDOM
+#if _Seam >= _CrabsRandom
 #include "../Random.h"
-#if SEAM == CRABS_RANDOM
+#if _Seam == _CrabsRandom
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 static const CHA* RNG(const CHA* args) {
-#if SEAM >= CRABS_RANDOM
-  A_TEST_BEGIN;
+#if _Seam >= _CrabsRandom
+  _ATestBegin;
 
-#if SEAM == CRABS_RANDOM
+#if _Seam == _CrabsRandom
   enum { PrintCount = 256 };
 #else
   enum { PrintCount = 1 };
 #endif
 
   for (ISN i = 0; i < PrintCount; ++i)
-    D_COUT('\n' << i << ".) " << Random(TISMin<ISN>(), TISMax<ISN>()));
+    _DROut('\n' << i << ".) " << Random(TISMin<ISN>(), TISMax<ISN>()));
 
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

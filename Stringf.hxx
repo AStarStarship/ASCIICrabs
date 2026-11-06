@@ -1,11 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
-#include "Stringf.hpp"
+#pragma once
+#ifndef _CrabsStringfHXX
+#define _CrabsStringfHXX
 #include "Binary.hpp"
-/* The mem/str primitives are a thin, contiguous, bounds-explicit boundary over
-   the C runtime. <cstring>/<cstdlib> are ASCIICrabs-internal details (same
-   class of internal C use as File.hxx); consumers see only the _:: wrappers. */
-#include <cstring>
-#include <cstdlib>
+#include "Stringf.hpp"
+/* The string primitives are thin, contiguou wrappers over
+   the house TSScan/SScan scanner family. Consumers see only the _:: wrappers. */
 namespace _ {
 
 inline BOL IsPrintable(CHA value) {
@@ -36,29 +36,6 @@ inline BOL IsWhitespace(CHC value) {
   return value <= ' ';
 }
 
-/* --- StringC: in-house C-string primitives --- */
-inline ISC StrLen(const CHA* s) {
-  return static_cast<ISC>(strlen(s));
-}
-inline ISC StrCmp(const CHA* a, const CHA* b) {
-  return static_cast<ISC>(strcmp(a, b));
-}
-inline ISC StrToInt(const CHA* s) {
-  return static_cast<ISC>(atoi(s));
-}
-inline ISD StrToISD(const CHA* s, CHA** end) {
-  return static_cast<ISD>(strtoll(s, end, 10));
-}
-inline IUD StrToIUD(const CHA* s, CHA** end) {
-  return static_cast<IUD>(strtoul(s, end, 10));
-}
-inline const CHA* StrStr(const CHA* haystack, const CHA* needle) {
-  return strstr(haystack, needle);
-}
-inline const CHA* StrChr(const CHA* s, CHA value) {
-  return strchr(s, value);
-}
-
 const CHA* STAPrintCharsHeader() {
   return "\n|0       8       16      24      32      40      48      56      |"
          " Begin address:";
@@ -81,8 +58,8 @@ const CHA* STAPrintHexBorder() {
 
 }  //< namespace _
 
-#if SEAM >= CRABS_CORE
-#if SEAM == CRABS_CORE
+#if _Seam >= _CrabsCore
+#if _Seam == _CrabsCore
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -133,7 +110,7 @@ inline const CHA* SScan(const CHA* start, CHC& value) {
     if (c >> 6 != 2) {
       ExitFail:
       value = 0;
-      return NILP;
+      return _NilP;
     }
 		value |= c & 0x3f;
   } else if (c >> 4 == 14) {
@@ -163,7 +140,6 @@ inline CHA* SScan(CHA* start, CHC& value) {
   return const_cast<CHA*>(SScan(element, value));
 }
 
-#if USING_STB == YES_0
 inline const CHB* SScan(const CHB* start, CHC& value) {
 	if (IsError(start)) {
 		value = 0;
@@ -181,7 +157,7 @@ inline const CHB* SScan(const CHB* start, CHC& value) {
     c = *start++;
     if (c >> 10 != 55) {
       value = 0;
-			return NILP;
+			return _NilP;
     }
     value |= c & 0x3ff;
   }
@@ -190,22 +166,14 @@ inline const CHB* SScan(const CHB* start, CHC& value) {
 inline CHB* SScan(CHB* start, CHC& value) {
   return const_cast<CHB*>(SScan(const_cast<const CHB*>(start), value));
 }
-#endif
 
-#if USING_STC == YES_0
-
-#if USING_FPC == YES_0
 inline const CHA* SScan(const CHA* start, FPC& value) {
-  ISC count = sscanf_s(start, "%f", &value);
-  return TStringFloatStop<CHA>(start);
+  return TSScanFloat<FPC, CHA>(start, value);
 }
-#endif
-#if USING_FPD == YES_0
+
 inline const CHA* SScan(const CHA* start, FPD& value) {
-  ISC count = sscanf_s(start, "%lf", &value);
-  return TStringFloatStop<CHA>(start);
+  return TSScanFloat<FPD, CHA>(start, value);
 }
-#endif
 
 inline const CHC* SScan(const CHC* start, CHC& result) {
 	//if (IsError(start)) return start;
@@ -217,7 +185,6 @@ inline CHC* SScan(CHC* start, CHC& value) {
   const CHC* element = const_cast<const CHC*>(start);
   return const_cast<CHC*>(SScan(element, value));
 }
-#endif
 
 inline const CHA* SScan(const CHA* start, ISA& item) {
   return TSScanSigned<ISA, IUA, CHA>(start, item);
@@ -389,13 +356,13 @@ inline const CHA* SScanBack(const CHA* start, CHC& value) {
   }
 
   if (c >> 6 != 2)
-    return NILP;
+    return _NilP;
   value = c & 0x3f;
   CHA c_last = c;
   c = *--start;
   if (c >> 5 == 6) {  // 2-byte char.
     if (c_last >> 5 != 6)
-      return NILP;
+      return _NilP;
     value |= (c & 0x1f) << 6;
     return start;
   }
@@ -403,14 +370,14 @@ inline const CHA* SScanBack(const CHA* start, CHC& value) {
   c = *--start;
   if (c >> 4 == 14) {  // 3-byte char.
     if (c_last >> 6 != 2)
-      return NILP;
+      return _NilP;
     value |= (c & 0x1f) << 12;
   }
   // 4-byte character
   c_last = c;
   c = *--start;
   if (c >> 3 != 54 || c_last >> 6 != 2)
-    return NILP;
+    return _NilP;
   value |= (c & 0x1f) << 18;
   return start;
 }
@@ -428,11 +395,11 @@ inline const CHB* SScanBack(const CHB* start, CHC& value) {
     return start;
   }
   if (c >> 10 != 55)
-    return NILP;
+    return _NilP;
   value = c & 0x3ff;
   c = *--start;
   if (c >> 10 != 54)
-    return NILP;
+    return _NilP;
   value |= (c & 0x3ff) << 10;
   return start;
 }
@@ -472,7 +439,7 @@ inline CHA* SPrint(CHA* start, ISW size, ISB item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, IUC item) {
-  #if SEAM < CRABS_UNIPRINTER
+  #if _Seam < _CrabsUniprinter
   return start;
   #else 
   return TSPrintUnsigned<IUC, CHA>(start, stop, item);
@@ -483,7 +450,7 @@ inline CHA* SPrint(CHA* start, ISW size, IUC item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, ISC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISC, IUC, CHA>(start, stop, item);
@@ -494,7 +461,7 @@ inline CHA* SPrint(CHA* start, ISW size, ISC item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, IUD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintUnsigned<IUD, CHA>(start, stop, item);
@@ -505,7 +472,7 @@ inline CHA* SPrint(CHA* start, ISW size, IUD item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, ISD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISD, IUD, CHA>(start, stop, item);
@@ -523,38 +490,38 @@ CHA* SPrint(CHA* start, CHA* stop, CHC value) {
   // | 1110aaaa | 10bbbbbb | 10cccccc |          | 00000aaaabbbbbbcccccc |
   // | 11110aaa | 10bbbbbb | 10cccccc | 10dddddd | aaabbbbbbccccccdddddd |
 
-  if (IsError(start) || IsError(stop)) return NILP;
+  if (IsError(start) || IsError(stop)) return _NilP;
 
-  D_COUT("\n\n" << IUC(value) << ".) Printed:0x");
+  _DROut("\n\n" << IUC(value) << ".) Printed:0x");
   if (value >> 7 == 0) { // 1 ASCII CHA.
-    if (start + 1 >= stop) return NILP;
+    if (start + 1 >= stop) return _NilP;
     *start++ = CHA(value);
-    D_COUT(Hexf(*(start - 1)) << "   ");
+    _DROut(Hexf(*(start - 1)) << "   ");
   } else {
     CHB lsb_mask = 0x3f, msb_mask = 0x80;
     if ((value >> 11) == 0) {
-      if (start + 2 >= stop) return NILP;
+      if (start + 2 >= stop) return _NilP;
       *start++ = CHA(0xC0 | (value >> 6));
       *start++ = CHA(msb_mask | (value & lsb_mask));
-      D_COUT(Hexf(*(start - 2)) << '_' << Hexf(*(start - 1)) << "   ");
+      _DROut(Hexf(*(start - 2)) << '_' << Hexf(*(start - 1)) << "   ");
     } else if ((value >> 16) == 0) {
-      if (start + 3 >= stop) return NILP;
+      if (start + 3 >= stop) return _NilP;
       *start++ = CHA(0xE0 | (value >> 12));
       *start++ = CHA(msb_mask | ((value >> 6) & lsb_mask));
       *start++ = CHA(msb_mask | (value & lsb_mask));
-      D_COUT(Hexf(*(start - 3)) << '_' << Hexf(*(start - 2)) << '_' << 
+      _DROut(Hexf(*(start - 3)) << '_' << Hexf(*(start - 2)) << '_' << 
              Hexf(*(start - 1)) << "   ");
     } else if ((value >> 21) == 0) {
-      if (start + 4 >= stop) return NILP;
+      if (start + 4 >= stop) return _NilP;
       *start++ = CHA(0xF0 | (value >> 18));
       *start++ = CHA(msb_mask | ((value >> 12) & lsb_mask));
       *start++ = CHA(msb_mask | ((value >> 6) & lsb_mask));
       *start++ = CHA(msb_mask | (value & lsb_mask));
-      D_COUT(Hexf(*(start - 4)) << '_' << Hexf(*(start - 3)) << '_' << 
+      _DROut(Hexf(*(start - 4)) << '_' << Hexf(*(start - 3)) << '_' << 
              Hexf(*(start - 2)) << '_' << Hexf(*(start - 1)) << "   ");
     } else {
-      D_COUT("\n\nUTF8 print Error: CHC is out of range!");
-      return NILP;
+      _DROut("\n\nUTF8 print Error: CHC is out of range!");
+      return _NilP;
     }
   }
   *start = 0;
@@ -563,7 +530,7 @@ CHA* SPrint(CHA* start, CHA* stop, CHC value) {
 
 inline CHA* SPrint(CHA* start, CHA* stop, CHA value) {
   // Needs 2 bytes: the char and the nil, both strictly before stop.
-  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return _NilP;
   *start++ = value;
   *start = 0;
   return start;
@@ -602,7 +569,7 @@ inline CHB* SPrint(CHB* start, ISW size, ISB item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintUnsigned<IUC, CHB>(start, stop, item);
@@ -613,7 +580,7 @@ inline CHB* SPrint(CHB* start, ISW size, IUC item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISC, IUC, CHB>(start, stop, item);
@@ -624,7 +591,7 @@ inline CHB* SPrint(CHB* start, ISW size, ISC item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, IUD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintUnsigned<IUD, CHB>(start, stop, item);
@@ -635,7 +602,7 @@ inline CHB* SPrint(CHB* start, ISW size, IUD item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, ISD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISD, IUD, CHB>(start, stop, item);
@@ -645,27 +612,31 @@ inline CHB* SPrint(CHB* start, ISW size, ISD item) {
   return SPrint(start, start + size, item);
 }
 
-#if USING_FPC == YES_0
 inline CHB* SPrint(CHB* string, CHB* stop, FPC item) {
+#if _Seam < _CrabsFToS
+  return string;
+#else
   return TSPrint<CHB>(string, stop, item);
+#endif
 }
 inline CHB* SPrint(CHB* start, ISW size, FPC item) {
   return SPrint(start, start + size, item);
 }
-#endif
-#if USING_FPD == YES_0
+
 inline CHB* SPrint(CHB* string, CHB* stop, FPD item) {
+#if _Seam < _CrabsFToS
+  return string;
+#else
   return TSPrint<CHB>(string, stop, item);
+#endif
 }
 inline CHB* SPrint(CHB* start, ISW size, FPD item) {
   return SPrint(start, start + size, item);
 }
-#endif
 
-#if USING_STB == YES_0
 inline CHB* SPrint(CHB* start, CHB* stop, CHB value) {
   // Needs 2 units: the char and the nil, both strictly before stop.
-  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return _NilP;
   *start++ = value;
   *start = 0;
   return start;
@@ -682,9 +653,6 @@ inline CHB* SPrint(CHB* start, ISW size, CHB value) {
 inline CHB* SPrint(CHB* start, ISW size, CHC value) {
   return SPrint(start, start + size, value);
 }
-#endif  // #if USING_STB == YES_0
-
-#if USING_STC == YES_0
 
 inline CHC* SPrint(CHC* start, CHC* stop, IUA item) {
   return SPrint(start, stop, IUC(item));
@@ -715,7 +683,7 @@ inline CHC* SPrint(CHC* start, ISW size, ISB item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, IUC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintUnsigned<IUC, CHC>(start, stop, item);
@@ -726,14 +694,14 @@ inline CHC* SPrint(CHC* start, ISW size, IUC item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISC, IUC, CHC>(start, stop, item);
 #endif
 }
 inline CHC* SPrint(CHC* start, ISW size, ISC item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISC, IUC, CHC>(start, start + size, item);
@@ -741,7 +709,7 @@ inline CHC* SPrint(CHC* start, ISW size, ISC item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, IUD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintUnsigned<IUD, CHC>(start, stop, item);
@@ -752,7 +720,7 @@ inline CHC* SPrint(CHC* start, ISW size, IUD item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, ISD item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else 
   return TSPrintSigned<ISD, IUD, CHC>(start, stop, item);
@@ -769,26 +737,31 @@ inline CHC* SPrint(CHC* start, ISW size, CHC item) {
   return SPrint(start, start + size, item);
 }
 
-#if USING_FPC == YES_0
 inline CHC* SPrint(CHC* string, CHC* stop, FPC value) {
+#if _Seam < _CrabsFToS
+  return string;
+#else
   return TSPrint<CHC>(string, stop, value);
+#endif
 }
 inline CHC* SPrint(CHC* start, ISW size, FPC item) {
   return SPrint(start, start + size, item);
 }
-#endif
-#if USING_FPD == YES_0
+
 inline CHC* SPrint(CHC* string, CHC* stop, FPD value) {
+#if _Seam < _CrabsFToS
+  return string;
+#else
   return TSPrint<CHC>(string, stop, value);
+#endif
 }
 inline CHC* SPrint(CHC* start, ISW size, FPD item) {
   return SPrint(start, start + size, item);
 }
-#endif
 
 inline CHC* SPrint(CHC* start, CHC* stop, CHC value) {
   // Needs 2 units: the char and the nil, both strictly before stop.
-  if (IsErrorSocket(start, stop) || start + 1 >= stop) return NILP;
+  if (IsErrorSocket(start, stop) || start + 1 >= stop) return _NilP;
   *start++ = value;
   *start = 0;
   return start;
@@ -806,35 +779,33 @@ inline CHC* SPrint(CHC* start, ISW size, CHB value) {
 inline CHC* SPrint(CHC* start, CHC* stop, CHB value) {
   return SPrint(start, stop, CHC(value));
 }
-#endif  //< USING_STC == YES_0
 
-#if USING_STB == YES_0
 CHB* SPrint(CHB* start, CHB* stop, CHC value) {
   // | Bytes {4N, 4N+ 1} | Bytes {4N + 2, 4N+ 3} |    UTF-32 Result     |
   // |:-----------------:|:---------------------:|:--------------------:|
   // | 000000aaaaaaaaaa  |                       | 0000000000aaaaaaaaaa |
   // | 110110yyyyyyyyyy  |   110111xxxxxxxxxx    | yyyyyyyyyyxxxxxxxxxx |
   if (IsError(start) || start + 1 >= stop)
-    return NILP;
+    return _NilP;
   CHC lsb_mask = 0x3f, lsb = value & lsb_mask, msb = value >> 10;
   if (!msb) {
     if (start + 1 >= stop)
-      return NILP;
+      return _NilP;
     *start++ = CHB(value);
-    D_COUT("\nPrinting 1:" << Hexf(CHB(value)));
+    _DROut("\nPrinting 1:" << Hexf(CHB(value)));
     *start = 0;
     return start;
   } else {
     CHC msb_mask = 0xDC00;
     if (msb >> 10)  // Non-Unicode value.
-      return NILP;
+      return _NilP;
     if (start + 2 >= stop)
-      return NILP;
+      return _NilP;
     CHB nibble = CHB(lsb & msb_mask);
-    D_COUT("\nPrinting 2:" << Hexf(CHB(nibble)));
+    _DROut("\nPrinting 2:" << Hexf(CHB(nibble)));
     *start++ = nibble;
     nibble = CHB(msb & msb_mask);
-    D_COUT(Hexf(CHB(nibble)));
+    _DROut(Hexf(CHB(nibble)));
     *start++ = nibble;
     *start = 0;
     return start;
@@ -842,7 +813,7 @@ CHB* SPrint(CHB* start, CHB* stop, CHC value) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, const CHA* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
 	return start;
 #else
 	return TSPrint<CHA, CHC>(start, stop, item);
@@ -853,7 +824,7 @@ inline CHA* SPrint(CHA* start, ISW size, const CHA* item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, const CHB* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHA, CHC>(start, stop, item);
@@ -864,7 +835,7 @@ inline CHA* SPrint(CHA* start, ISW size, const CHB* item) {
 }
 
 inline CHA* SPrint(CHA* start, CHA* stop, const CHC* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHA, CHC>(start, stop, item);
@@ -875,7 +846,7 @@ inline CHA* SPrint(CHA* start, ISW size, const CHC* item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, const CHA* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHB, CHC>(start, stop, item);
@@ -886,7 +857,7 @@ inline CHB* SPrint(CHB* start, ISW size, const CHA* item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, const CHB* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHB, CHC>(start, stop, item);
@@ -897,7 +868,7 @@ inline CHB* SPrint(CHB* start, ISW bytes, const CHB* item) {
 }
 
 inline CHB* SPrint(CHB* start, CHB* stop, const CHC* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHB, CHC>(start, stop, item);
@@ -908,7 +879,7 @@ inline CHB* SPrint(CHB* start, ISW size, const CHC* item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHA* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHC, CHC>(start, stop, item);
@@ -919,7 +890,7 @@ inline CHC* SPrint(CHC* start, ISW size, const CHA* item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHB* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHC, CHC>(start, stop, item);
@@ -930,7 +901,7 @@ inline CHC* SPrint(CHC* start, ISW size, const CHB* item) {
 }
 
 inline CHC* SPrint(CHC* start, CHC* stop, const CHC* item) {
-#if SEAM < CRABS_UNIPRINTER
+#if _Seam < _CrabsUniprinter
   return start;
 #else
   return TSPrint<CHC, CHC>(start, stop, item);
@@ -940,8 +911,6 @@ inline CHC* SPrint(CHC* start, ISW size, const CHC* item) {
   return SPrint(start, start + size, item);
 }
 
-
-#endif
 
 ATypef::ATypef(DTB type, Sizef count) : count(count.size), type(type) {}
 ATypef::ATypef(DTC type, Sizef count) : count(count.size), type(type) {}
@@ -988,18 +957,16 @@ Valuef::Valuef() : count(0), value() {}
 
 Valuef::Valuef(void* value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(const void* value, ISW count) : count(count), value(value) {}
-#if USING_STA == YES_0
+
 Valuef::Valuef(CHA value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(const CHA* value, ISW count) : count(count), value(value) {}
-#endif
-#if USING_STB == YES_0
+
 Valuef::Valuef(CHB value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(const CHB* value, ISW count) : count(count), value(value) {}
-#endif
-#if USING_STC == YES_0
+
 Valuef::Valuef(CHC value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(const CHC* value, ISW count) : count(count), value(value) {}
-#endif
+
 Valuef::Valuef(ISA value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(IUA value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(ISB value, ISW count) : count(count), value(value) {}
@@ -1008,12 +975,10 @@ Valuef::Valuef(ISC value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(IUC value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(ISD value, ISW count) : count(count), value(value) {}
 Valuef::Valuef(IUD value, ISW count) : count(count), value(value) {}
-#if USING_FPC == YES_0
+
 Valuef::Valuef(FPC value, ISW count) : count(count), value(value) {}
-#endif
-#if USING_FPD == YES_0
+
 Valuef::Valuef(FPD value, ISW count) : count(count), value(value) {}
-#endif
 
 ISW Valuef::Type() { return value.Type(); }
 
@@ -1030,7 +995,7 @@ CHC* Valuef::ToSTC() { return value.ToSTC(); }
 IUW Valuef::ToWord() { return value.Value(); }
 
 Hexf::Hexf(const void* origin, ISW size) : element(origin, size) {}
-#if CPU_ENDIAN == CPU_ENDIAN_LITTLE
+#if _CPUEndian == _CPUEndianLittle
 Hexf::Hexf(const void* value) : element(IUW(value), -ISW(sizeof(const void*))) {}
 Hexf::Hexf(CHA value) : element(value, -ISW(sizeof(ISA))) {}
 Hexf::Hexf(ISA value) : element(value, -ISW(sizeof(ISA))) {}
@@ -1043,12 +1008,10 @@ Hexf::Hexf(ISC value) : element(value, -ISW(sizeof(ISC))) {}
 Hexf::Hexf(IUC value) : element(value, -ISW(sizeof(IUC))) {}
 Hexf::Hexf(ISD value) : element(value, -ISW(sizeof(ISD))) {}
 Hexf::Hexf(IUD value) : element(value, -ISW(sizeof(IUD))) {}
-#if USING_FPC == YES_0
+
 Hexf::Hexf(FPC value) : element(value, -ISW(sizeof(FPC))) {}
-#endif
-#if USING_FPD == YES_0
+
 Hexf::Hexf(FPD value) : element(value, -ISW(sizeof(FPD))) {}
-#endif
 
 Binaryf::Binaryf(const void* origin, ISW size) : element(origin, size) {}
 Binaryf::Binaryf(const void* value)
@@ -1061,12 +1024,11 @@ Binaryf::Binaryf(ISC value) : element(value, -ISW(sizeof(ISC))) {}
 Binaryf::Binaryf(IUC value) : element(value, -ISW(sizeof(IUC))) {}
 Binaryf::Binaryf(ISD value) : element(value, -ISW(sizeof(ISD))) {}
 Binaryf::Binaryf(IUD value) : element(value, -ISW(sizeof(IUD))) {}
-#if USING_FPC == YES_0
+
 Binaryf::Binaryf(FPC value) : element(value, -ISW(sizeof(FPC))) {}
-#endif
-#if USING_FPD == YES_0
+
 Binaryf::Binaryf(FPD value) : element(value, -ISW(sizeof(FPD))) {}
-#endif
+
 #else
 Hexf::Hexf(const void* value) : valuef(value, sizeof(const void*)) {}
 Hexf::Hexf(ISA value) : valuef(value, sizeof(ISA)) {}
@@ -1077,12 +1039,9 @@ Hexf::Hexf(ISC value) : valuef(value, sizeof(ISC)) {}
 Hexf::Hexf(IUC value) : valuef(value, sizeof(IUC)) {}
 Hexf::Hexf(ISD value) : valuef(value, sizeof(ISD)) {}
 Hexf::Hexf(IUD value) : valuef(value, sizeof(IUD)) {}
-#if USING_FPD == YES_0
 Hexf::Hexf(FPC value) : valuef(value, sizeof(FPC)) {}
-#endif
-#if USING_FPD == YES_0
+
 Hexf::Hexf(FPD value) : valuef(value, sizeof(FPD)) {}
-#endif
 
 Binaryf::Binaryf(const void* origin, ISW size) : valuef(origin, size) {}
 Binaryf::Binaryf(const void* origin) : valuef(origin, sizeof(const void*)) {}
@@ -1094,95 +1053,79 @@ Binaryf::Binaryf(ISC value) : valuef(value, sizeof(ISC)) {}
 Binaryf::Binaryf(IUC value) : valuef(value, sizeof(IUC)) {}
 Binaryf::Binaryf(ISD value) : valuef(value, sizeof(ISD)) {}
 Binaryf::Binaryf(IUD value) : valuef(value, sizeof(IUD)) {}
-#if USING_FPD == YES_0
 Binaryf::Binaryf(FPC value) : valuef(value, sizeof(FPC)) {}
-#endif
-#if USING_FPD == YES_0
+
 Binaryf::Binaryf(FPD value) : valuef(value, sizeof(FPD)) {}
-#endif
 #endif
 
 // Stringf::Stringf () {}
-Stringf::Stringf() : count_(0), type_(_NIL), boofer_() {
-  string_ = &boofer_[0];
-  *boofer_ = 0;
+Stringf::Stringf() : count_(0), type_(_NIL), buffer_() {
+  string_ = &buffer_[0];
+  *buffer_ = 0;
 }
 //< Visual C++ is complaining about unitialized members. I think it's a bug.
 
 Stringf::Stringf(const CHA* value) : string_(value), type_(_STA), count_(0) { Print(value); }
-#if USING_STB == YES_0
+
 Stringf::Stringf(const CHB* value) : string_(value), type_(_STA), count_(0) { Print(value); }
-#endif
-#if USING_STC == YES_0
+
 Stringf::Stringf(const CHC* value) : string_(value), type_(_STA), count_(0) { Print(value); }
-#endif
-Stringf::Stringf(CHA value) : string_(boofer_), type_(_CHA), count_(0) { Print(value); }
-Stringf::Stringf(CHB value) : string_(boofer_), type_(_CHB), count_(0) { Print(value); }
-Stringf::Stringf(CHC value) : string_(boofer_), type_(_CHC), count_(0) { Print(value); }
-Stringf::Stringf(ISC value) : string_(boofer_), type_(_ISC), count_(0) { Print(value); }
-Stringf::Stringf(IUC value) : string_(boofer_), type_(_IUC), count_(0) { Print(value); }
-Stringf::Stringf(ISD value) : string_(boofer_), type_(_ISD), count_(0) { Print(value); }
-Stringf::Stringf(IUD value) : string_(boofer_), type_(_IUD), count_(0) { Print(value); }
-#if USING_FPC == YES_0
-Stringf::Stringf(FPC value) : string_(boofer_), type_(_FPC), count_(0) { Print(value); }
-#endif
-#if USING_FPD == YES_0
-Stringf::Stringf(FPD value) : string_(boofer_), type_(_FPD), count_(0) { Print(value); }
-#endif
+
+Stringf::Stringf(CHA value) : string_(buffer_), type_(_CHA), count_(0) { Print(value); }
+Stringf::Stringf(CHB value) : string_(buffer_), type_(_CHB), count_(0) { Print(value); }
+Stringf::Stringf(CHC value) : string_(buffer_), type_(_CHC), count_(0) { Print(value); }
+Stringf::Stringf(ISC value) : string_(buffer_), type_(_ISC), count_(0) { Print(value); }
+Stringf::Stringf(IUC value) : string_(buffer_), type_(_IUC), count_(0) { Print(value); }
+Stringf::Stringf(ISD value) : string_(buffer_), type_(_ISD), count_(0) { Print(value); }
+Stringf::Stringf(IUD value) : string_(buffer_), type_(_IUD), count_(0) { Print(value); }
+Stringf::Stringf(FPC value) : string_(buffer_), type_(_FPC), count_(0) { Print(value); }
+Stringf::Stringf(FPD value) : string_(buffer_), type_(_FPD), count_(0) { Print(value); }
 Stringf::Stringf(const CHA* value, ISW count) : string_(value), type_(_STA), count_(count) {
   Print(value);
 }
-#if USING_STB == YES_0
 Stringf::Stringf(const CHB* value, ISW count) : string_(value), type_(_STB), count_(count) {
   Print(value);
 }
-#endif
-#if USING_STC == YES_0
 Stringf::Stringf(const CHC* value, ISW count) : string_(value), type_(_STC), count_(count) {
   Print(value);
 }
-#endif
-Stringf::Stringf(CHA value, ISW count) : string_(boofer_), type_(_CHA), count_(count) {
+Stringf::Stringf(CHA value, ISW count) : string_(buffer_), type_(_CHA), count_(count) {
   Print(value);
 }
-Stringf::Stringf(CHB value, ISW count) : string_(boofer_), type_(_CHB), count_(count) {
+Stringf::Stringf(CHB value, ISW count) : string_(buffer_), type_(_CHB), count_(count) {
   Print(value);
 }
-Stringf::Stringf(CHC value, ISW count) : string_(boofer_), type_(_CHC), count_(count) {
+Stringf::Stringf(CHC value, ISW count) : string_(buffer_), type_(_CHC), count_(count) {
   Print(value);
 }
-Stringf::Stringf(ISC value, ISW count) : string_(boofer_), type_(_ISC), count_(count) {
+Stringf::Stringf(ISC value, ISW count) : string_(buffer_), type_(_ISC), count_(count) {
   Print(value);
 }
-Stringf::Stringf(IUC value, ISW count) : string_(boofer_), type_(_IUC), count_(count) {
+Stringf::Stringf(IUC value, ISW count) : string_(buffer_), type_(_IUC), count_(count) {
   Print(value);
 }
-Stringf::Stringf(ISD value, ISW count) : string_(boofer_), type_(_ISD), count_(count) {
+Stringf::Stringf(ISD value, ISW count) : string_(buffer_), type_(_ISD), count_(count) {
   Print(value);
 }
-Stringf::Stringf(IUD value, ISW count) : string_(boofer_), type_(_IUD), count_(count) {
+Stringf::Stringf(IUD value, ISW count) : string_(buffer_), type_(_IUD), count_(count) {
   Print(value);
 }
-#if USING_FPC == YES_0
-Stringf::Stringf(FPC value, ISW count) : string_(boofer_), type_(_FPC), count_(count) {
+Stringf::Stringf(FPC value, ISW count) : string_(buffer_), type_(_FPC), count_(count) {
   Print(value);
 }
-#endif
-#if USING_FPD == YES_0
-Stringf::Stringf(FPD value, ISW count) : string_(boofer_), type_(_FPD), count_(count) {
+Stringf::Stringf(FPD value, ISW count) : string_(buffer_), type_(_FPD), count_(count) {
   Print(value);
 }
-#endif
 
-IUW Stringf::Word() { return boofer_[0]; }
+IUW Stringf::Word() { return buffer_[0]; }
 
-void* Stringf::Value() { return boofer_; }
+void* Stringf::Value() { return buffer_; }
 
-void* Stringf::Ptr() { return TPtr<void>(boofer_[0]); }
+void* Stringf::Ref() { return TRef<void>(buffer_[0]); }
 
-const CHA* Stringf::STA() { return TPtr<const CHA>(string_); }
-const CHB* Stringf::STB() { return TPtr<const CHB>(string_); }
-const CHC* Stringf::STC() { return TPtr<const CHC>(string_); }
+const CHA* Stringf::STA() { return TRef<const CHA>(string_); }
+const CHB* Stringf::STB() { return TRef<const CHB>(string_); }
+const CHC* Stringf::STC() { return TRef<const CHC>(string_); }
 
 ISW Stringf::Type() { return type_; }
 
@@ -1192,86 +1135,83 @@ void Stringf::Print(const CHA* value) {
   type_ = _STA;
   string_ = value;
 }
-#if USING_STB == YES_0
+
 void Stringf::Print(const CHB* value) {
   type_ = _STB;
   string_ = value;
 }
-#endif
-#if USING_STC == YES_0
+
 void Stringf::Print(const CHC* value) {
   type_ = _STC;
   string_ = value;
 }
-#endif
 
 void Stringf::Print(CHA value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-  ::_::SPrint(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+  ::_::SPrint(buffer, buffer + LengthMax, value);
   type_ = _CHA;
-  string_ = boofer_;
+  string_ = buffer_;
 }
 
-#if USING_STC == YES_0
 void Stringf::Print(CHC value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-  ::_::SPrint(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+  ::_::SPrint(buffer, buffer + LengthMax, value);
   type_ = _CHC;
-  string_ = boofer;
+  string_ = buffer;
 }
-#endif
 void Stringf::Print(ISC value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-#if SEAM >= CRABS_ITOS
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsIToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
 #endif
   type_ = _ISC;
-  string_ = boofer;
+  string_ = buffer;
 }
 
 void Stringf::Print(IUC value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-#if SEAM >= CRABS_ITOS
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsIToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
 #endif
   type_ = _IUC;
-  string_ = boofer;
+  string_ = buffer;
 }
 
 void Stringf::Print(ISD value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-#if SEAM >= CRABS_ITOS
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsIToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
 #endif
   type_ = _ISD;
-  string_ = boofer;
+  string_ = buffer;
 }
 
 void Stringf::Print(IUD value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-#if SEAM >= CRABS_ITOS
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsIToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
 #endif
   type_ = _SWA;
-  string_ = boofer;
+  string_ = buffer;
 }
 
-#if USING_FPC == YES_0
 void Stringf::Print(FPC value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsFToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
   type_ = _FPC;
-  string_ = boofer;
-}
+  string_ = buffer;
 #endif
-#if USING_FPD == YES_0
+}
+
 void Stringf::Print(FPD value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsFToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
   type_ = _FPD;
-  string_ = boofer;
-}
+  string_ = buffer;
 #endif
+}
 
 /*
 void Stringf::PrintTMC(TMC value) {}
@@ -1281,12 +1221,12 @@ void Stringf::PrintTME(TMC value, IUC subsecond_tick) {}
 void Stringf::PrintTMD(TMD value) {}
 
 void Stringf::Print(ATypef value) {
-  CHA* boofer = TPtr<CHA>(boofer_);
-#if SEAM >= CRABS_ITOS
-  ::_::TSPrint<CHA>(boofer, boofer + LengthMax, value);
+  CHA* buffer = TRef<CHA>(buffer_);
+#if _Seam >= _CrabsIToS
+  ::_::TSPrint<CHA>(buffer, buffer + LengthMax, value);
 #endif
   type_ = value.type;
-  string_ = boofer;
+  string_ = buffer;
 }
 
 void Stringf::Print(TypeValue value) {
@@ -1331,9 +1271,7 @@ void Stringf::Print(TypeValue value) {
       Print(IUC(value.ToIUC()));
       return;
     case _FPC:
-#if USING_FPC == YES_0
       Print(ToFloat(value.ToIUC()));
-#endif
       return;
     case _TME:
       PrintTME(ISC(value.Word()), IUC(value.Word2()));
@@ -1344,126 +1282,110 @@ void Stringf::Print(TypeValue value) {
       Print(value.ToUID());
       return;
     case _FPD:
-#if USING_FPD == YES_0
       Print(ToFloat(value.ToUID()));
-#endif
       return;
   }
   string_ = NotSupported;
 }
 
-Stringf::Stringf(ATypef value, ISW count) : string_(boofer_), count_(count) {
+Stringf::Stringf(ATypef value, ISW count) : string_(buffer_), count_(count) {
   Print(value);
 }
-Stringf::Stringf(TypeValue value, ISW count) : string_(boofer_), count_(count) {
+Stringf::Stringf(TypeValue value, ISW count) : string_(buffer_), count_(count) {
   Print(value);
 }*/
 
 void Stringf::Hex(CHA value, ISW count) {
-  *TPtr<CHA>(boofer_) = value;
+  *TRef<CHA>(buffer_) = value;
   type_ = _CHA;
   count_ = -count;
 }
-#if USING_STB == YES_0
+
 void Stringf::Hex(CHB value, ISW count) {
-  *TPtr<CHB>(boofer_) = value;
+  *TRef<CHB>(buffer_) = value;
   type_ = _CHB;
   count_ = -count;
 }
-#endif
-#if USING_STC == YES_0
+
 void Stringf::Hex(CHC value, ISW count) {
-  *TPtr<CHC>(boofer_) = value;
+  *TRef<CHC>(buffer_) = value;
   type_ = _CHC;
   count_ = -count;
 }
-#endif
 void Stringf::Hex(ISA value, ISW count) {
-  *TPtr<ISA>(boofer_) = value;
+  *TRef<ISA>(buffer_) = value;
   type_ = _ISA;
   count_ = -count;
 }
 void Stringf::Hex(IUA value, ISW count) {
-  *TPtr<IUA>(boofer_) = value;
+  *TRef<IUA>(buffer_) = value;
   type_ = _IUA;
   count_ = -count;
 }
 
 void Stringf::Hex(ISB value, ISW count) {
-  *TPtr<ISB>(boofer_) = value;
+  *TRef<ISB>(buffer_) = value;
   type_ = _ISB;
   count_ = -count;
 }
 
 void Stringf::Hex(IUB value, ISW count) {
-  *TPtr<IUB>(boofer_) = value;
+  *TRef<IUB>(buffer_) = value;
   type_ = _IUB;
   count_ = -count;
 }
 
 void Stringf::Hex(ISC value, ISW count) {
-  *TPtr<ISC>(boofer_) = value;
+  *TRef<ISC>(buffer_) = value;
   type_ = _ISC;
   count_ = -count;
 }
 
 void Stringf::Hex(IUC value, ISW count) {
-  *TPtr<IUC>(boofer_) = value;
+  *TRef<IUC>(buffer_) = value;
   type_ = _IUC;
   count_ = -count;
 }
 
 void Stringf::Hex(ISD value, ISW count) {
-  *TPtr<ISD>(boofer_) = value;
+  *TRef<ISD>(buffer_) = value;
   type_ = _ISD;
   count_ = -count;
 }
 
 void Stringf::Hex(IUD value, ISW count) {
-  *TPtr<IUD>(boofer_) = value;
+  *TRef<IUD>(buffer_) = value;
   type_ = _IUD;
   count_ = -count;
 }
 
-#if USING_FPC == YES_0
 void Stringf::Hex(FPC value, ISW count) {
-  *TPtr<FPC>(boofer_) = value;
+  *TRef<FPC>(buffer_) = value;
   type_ = _FPC;
   count_ = -count;
 }
-#endif
 
-#if USING_FPD == YES_0
 void Stringf::Hex(FPD value, ISW count) {
-  *TPtr<FPD>(boofer_) = value;
+  *TRef<FPD>(buffer_) = value;
   type_ = _FPD;
   count_ = -count;
 }
-#endif
 
 Centerf::Centerf() {}
-
-#if USING_STA == YES_0
 Centerf::Centerf(CHA value, ISW count) : element(value, count) {}
 Centerf::Centerf(const CHA* value, ISW count) : element(value, count) {}
-#endif
-#if USING_STB == YES_0
 Centerf::Centerf(CHB value, ISW count) : element(value, count) {}
 Centerf::Centerf(const CHB* value, ISW count) : element(value, count) {}
-#endif
-#if USING_STC == YES_0
 Centerf::Centerf(CHC value, ISW count) : element(value, count) {}
 Centerf::Centerf(const CHC* value, ISW count) : element(value, count) {}
-#endif
 Centerf::Centerf(ISC value, ISW count) : element(value, count) {}
 Centerf::Centerf(IUC value, ISW count) : element(value, count) {}
 Centerf::Centerf(ISD value, ISW count) : element(value, count) {}
-#if USING_FPC == YES_0
+
 Centerf::Centerf(FPC value, ISW count) : element(value, count) {}
-#endif
-#if USING_FPD == YES_0
+
 Centerf::Centerf(FPD value, ISW count) : element(value, count) {}
-#endif
+
 Centerf::Centerf(IUD value, ISW count) : element(value, count) {}
 //Centerf::Centerf(ATypef value, ISW count) : element(value, count) {}
 
@@ -1471,18 +1393,17 @@ Centerf& Centerf::Hex(CHA value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#if USING_STB == YES_0
+
 Centerf& Centerf::Hex(CHB value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
-#if USING_STC == YES_0
+
 Centerf& Centerf::Hex(CHC value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
+
 Centerf& Centerf::Hex(ISA value, ISW count) {
   element.Hex(value, count);
   return *this;
@@ -1515,59 +1436,55 @@ Centerf& Centerf::Hex(IUD value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#if USING_FPC == YES_0
+
 Centerf& Centerf::Hex(FPC value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
-#if USING_FPD == YES_0
+
 Centerf& Centerf::Hex(FPD value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
+
 
 DTW Centerf::Type() { return element.Type(); }
 
 Rightf::Rightf() {}
 Rightf::Rightf(CHA value, ISW count) : element(value, count) {}
 Rightf::Rightf(const CHA* value, ISW count) : element(value, count) {}
-#if USING_STB == YES_0
+
 Rightf::Rightf(CHB value, ISW count) : element(value, count) {}
 Rightf::Rightf(const CHB* value, ISW count) : element(value, count) {}
-#endif
-#if USING_STC == YES_0
+
 Rightf::Rightf(CHC value, ISW count) : element(value, count) {}
 Rightf::Rightf(const CHC* value, ISW count) : element(value, count) {}
-#endif
+
 Rightf::Rightf(ISC value, ISW count) : element(value, count) {}
 Rightf::Rightf(IUC value, ISW count) : element(value, count) {}
 Rightf::Rightf(ISD value, ISW count) : element(value, count) {}
 Rightf::Rightf(IUD value, ISW count) : element(value, count) {}
-#if USING_FPC == YES_0
+
 Rightf::Rightf(FPC value, ISW count) : element(value, count) {}
-#endif
-#if USING_FPD == YES_0
+
 Rightf::Rightf(FPD value, ISW count) : element(value, count) {}
-#endif
+
 
 Rightf& Rightf::Hex(CHA value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#if USING_STB == YES_0
+
 Rightf& Rightf::Hex(CHB value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
-#if USING_STC == YES_0
+
 Rightf& Rightf::Hex(CHC value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
+
 Rightf& Rightf::Hex(ISA value, ISW count) {
   element.Hex(value, count);
   return *this;
@@ -1600,22 +1517,20 @@ Rightf& Rightf::Hex(IUD value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#if USING_FPC == YES_0
+
 Rightf& Rightf::Hex(FPC value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
-#if USING_FPD == YES_0
+
 Rightf& Rightf::Hex(FPD value, ISW count) {
   element.Hex(value, count);
   return *this;
 }
-#endif
 
 DTW Rightf::Type() { return element.Type(); }
 
-Linef::Linef(CHA value, ISW count) : element(format, count), format("") {
+Linef::Linef(CHA value, ISW count) : element(value, count), format("") {
   CHA* cursor = format;
   *cursor++ = '\n';
   *cursor++ = value;
@@ -1638,15 +1553,15 @@ Repeatf::Repeatf(const CHC* element, ISW count) : element(element), count(count)
 
 Headingf::Headingf(const CHA* caption1)
     : element(caption1, AConsoleWidth),
-      style(NILP),
-      caption2(NILP),
-      caption3(NILP) {}
+      style(_NilP),
+      caption2(_NilP),
+      caption3(_NilP) {}
 
 Headingf::Headingf(const CHA* caption1, const CHA* caption2)
     : element(caption1, AConsoleWidth),
-      style(NILP),
+      style(_NilP),
       caption2(caption2),
-      caption3(NILP) {}
+      caption3(_NilP) {}
 
 Headingf::Headingf(const CHA* caption1, const CHA* caption2,
                    const CHA* caption3, const CHA* style, ISW count)
@@ -1658,21 +1573,18 @@ Headingf::Headingf(const CHA* caption1, const CHA* caption2,
 DTW Headingf::Type() { return element.Type(); }
 
 Charsf::Charsf(const void* start, const void* stop)
-    : element(TPtr<const CHA>(start),
-              TPtr<const CHA>(stop) - TPtr<const CHA>(start)) {}
+    : element(TRef<const CHA>(start),
+              TRef<const CHA>(stop) - TRef<const CHA>(start)) {}
 Charsf::Charsf(const void* start, ISW count)
-    : element(TPtr<const CHA>(start), count) {}
+    : element(TRef<const CHA>(start), count) {}
 
-#if USING_STB == YES_0
 Charsf::Charsf(const CHB* start, const CHB* stop)
     : element(start, stop - start) {}
 Charsf::Charsf(const CHB* start, ISW count) : element(start, count) {}
-#endif
-#if USING_STC == YES_0
+
 Charsf::Charsf(const CHC* start, const CHC* stop)
     : element(start, stop - start) {}
 Charsf::Charsf(const CHC* start, ISW count) : element(start, count) {}
-#endif
 
 DTW Charsf::Type() { return element.Type(); }
 
@@ -1686,44 +1598,34 @@ Sizef::Sizef(ISC size) : size(size) {}
 Sizef::Sizef(ISD size) : size(size) {}
 
 }  //< namespace _
+#endif
 
-#if SEAM >= CRABS_FTOS
-#if SEAM == CRABS_FTOS
+#if _Seam >= _CrabsFToS
+#if _Seam == _CrabsFToS
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
 
-#include <cstdio>  // For sprintf_s
 
 namespace _ {
 
 CHA* SPrint(CHA* start, CHA* stop, FPC value) {
-  if (IsError(start) || start >= stop) return NILP;
-  ISW size = stop - start;
-  D_COUT("\nString:" << Hexf(start) << " end:" << Hexf(stop) << 
-         " size:" << size << "\nExpecting:" << value);
-  ISC count = sprintf(start, "%f", value);
-  if (count <= 0) return NILP;
-  return start + count;
+  if (IsError(start) || start >= stop) return _NilP;
+  return TRyuF2S(value, start, static_cast<ISW>(stop - start));
 }
 inline CHA* SPrint(CHA* start, ISW size, FPC item) {
   return SPrint(start, start + size, item);
 }
 
-#if USING_FPD == YES_0
 CHA* SPrint(CHA* start, CHA* stop, FPD value) {
-  if (IsError(start) || start >= stop) return NILP;
-  ISW size = stop - start;
-  ISC count = sprintf(start, "%lf", value);
-  if (count <= 0) return NILP;
-  return start + count;
+  if (IsError(start) || start >= stop) return _NilP;
+  return TRyuD2S(value, start, static_cast<ISW>(stop - start));
 }
 inline CHA* SPrint(CHA* start, ISW size, FPD item) {
   return SPrint(start, start + size, item);
 }
-#endif
 
 }  //< namespace _
-#endif
-#endif
+#endif  //< _Seam >= _CrabsFToS
+#endif  //< _CrabsStringfHXX

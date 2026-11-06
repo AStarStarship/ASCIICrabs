@@ -1,7 +1,12 @@
 // Copyright AStarship <https://astarship.net>.
-//
+#pragma once
+#ifndef _CrabsOcclusionH
+#define _CrabsOcclusionH
+#include <_ConfigHeader.h>
+#include "Homotuples.h"
+namespace _ {
+
 // TOcclusion.h — headless occlusion / line-of-sight map for TileWorld.
-//
 // This is the "headless with sprites that have an occlusion map" primitive.
 // It makes the world *spatially aware* without any renderer:
 //
@@ -17,15 +22,6 @@
 //
 // The DDA (Amanatides & Woo grid traversal) is pure FPC/ISC math.
 
-#pragma once
-#include <_ConfigHeader.h>
-#include "TVec.h"
-
-#ifndef CRABS_TOCCLUSION_H
-#define CRABS_TOCCLUSION_H
-
-namespace _ {
-
 /* Max observers per occlusion map (player + enemies). Fixed so the
    visibility storage is a flat caller buffer of ObsMax * W * H bytes. */
 static const ISC TOcclusionObsMax = 8;
@@ -33,7 +29,7 @@ static const ISC TOcclusionObsMax = 8;
 // Local abs for the DDA (avoid <cmath>); input is any FPC.
 inline FPC fabs_step(FPC v) { return v < 0 ? -v : v; }
 
-struct TOcclusionMap {
+struct OcclusionMap {
   ISC width;    // grid cells in x
   ISC height;   // grid cells in y
   ISC obs_count;
@@ -49,12 +45,12 @@ struct TOcclusionMap {
   // line-of-sight to cell (x,y). Rebuilt by Recompute.
   IUA* vis;  // [obs_count * width * height], caller owns/frees
 
-  TOcclusionMap()
-      : width(0), height(0), obs_count(0), occluded(NILP), vis(NILP) {}
+  OcclusionMap()
+      : width(0), height(0), obs_count(0), occluded(_NilP), vis(_NilP) {}
 
-  ~TOcclusionMap() {
-    if (occluded != NILP) delete[] occluded;
-    if (vis != NILP) delete[] vis;
+  ~OcclusionMap() {
+    if (occluded != _NilP) delete[] occluded;
+    if (vis != _NilP) delete[] vis;
   }
 
   /* Allocate the grids for a width x height map. */
@@ -62,8 +58,8 @@ struct TOcclusionMap {
     if (w <= 0 || h <= 0) return false;
     width = w;
     height = h;
-    if (occluded != NILP) delete[] occluded;
-    if (vis != NILP) delete[] vis;
+    if (occluded != _NilP) delete[] occluded;
+    if (vis != _NilP) delete[] vis;
     occluded = new IUA[IUD(w) * IUD(h)]();
     // vis is sized for the max observer count so Recompute can fill any
     // obs_count <= TOcclusionObsMax without reallocation.
@@ -150,7 +146,7 @@ struct TOcclusionMap {
      For each observer, every cell with clear line-of-sight is marked 1.
      O(obs_count * width * height * avg_path_len). */
   void Recompute() {
-    if (vis == NILP || occluded == NILP) return;
+    if (vis == _NilP || occluded == _NilP) return;
     for (ISC o = 0; o < obs_count; ++o) {
       IUA* row = &vis[IUD(o) * IUD(width) * IUD(height)];
       FPC ox = obs_pos[o].x;
@@ -174,4 +170,4 @@ struct TOcclusionMap {
 
 }  // namespace _
 
-#endif  // CRABS_TOCCLUSION_H
+#endif  //< _CrabsOcclusionH

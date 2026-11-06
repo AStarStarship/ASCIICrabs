@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_SLOT_HPP
-#define CRABS_SLOT_HPP
+#ifndef _CrabsSlotHPP
+#define _CrabsSlotHPP
 #include "Slot.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* @defgroup Slot
@@ -33,7 +33,7 @@ inline T TSlotSpace(IUA* start, IUA* stop, ISW size) {
   return T(start + size - stop);
 }
 // @} Slot
-}  //< namespace _
 
-#endif
-#endif
+}  //< namespace _
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsSlotHPP

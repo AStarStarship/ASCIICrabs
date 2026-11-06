@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsMorseCodeHXX
+#define _CrabsMorseCodeHXX
 #include <_Config.h>
 namespace _ {
 /* This code doesn't really seam to match with Crabs's mission other than a
@@ -148,3 +151,5 @@ const CHA* ToMorseCode(CHA code) {
 }
 
 }  //< namespace _
+
+#endif  //< _CrabsMorseCodeHXX

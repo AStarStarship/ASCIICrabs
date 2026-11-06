@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_MIRROR_DECL
-#define CRABS_MIRROR_DECL
+#ifndef _CrabsMirrorH
+#define _CrabsMirrorH
 #include <_Config.h>
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "BIn.h"
 #include "BOut.h"
 #include "Op.h"
@@ -115,5 +115,5 @@ const Op* MirrorResult(Mirror* mirror, AError error, const DTB* header,
                        ISC offset, CHA* address);
 
 }  //< namespace _
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsMirrorH

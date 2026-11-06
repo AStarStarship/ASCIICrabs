@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_HASH_HEADER_IMPL
-#define CRABS_HASH_HEADER_IMPL
+#ifndef _CrabsHashHPP
+#define _CrabsHashHPP
 #include <_Config.h>
-#if SEAM >= CRABS_TABLE
+#if _Seam >= _CrabsTable
 
 namespace _ {
 /* Returns the highest signed prime that can fit in type IS.
@@ -67,8 +67,8 @@ inline CHS* THashPrimePrint(CHS* start, CHS* stop, const CHY* item, HSH& hash,
   ISZ& length) {
   D_CHECK_PTR_RETURN(start);
   if (start >= stop) 
-    D_RETURN_TPTR_ERROR(CHS, AErrorInvalidBoofer);
-  D_CHECK_CPTR_RETURN(CHS, item);
+    _DReturnTPointerError(CHS, AErrorInvalidBuffer);
+  _DCheckCPointerTReturn(CHS, item);
   THashPrimePrint<HSH, ISZ, CHS, CHY>(start, stop, item, hash, length);
 }
 
@@ -116,5 +116,5 @@ ISY THashFindFirstUnsorted(const HSH* start, const HSH* stop) {
 }
 
 }  // namespace _
-#endif
-#endif
+#endif  //< _Seam >= _CrabsCore
+#endif  //< _CrabsHashHPP

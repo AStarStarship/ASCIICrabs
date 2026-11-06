@@ -1,17 +1,18 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ROOM_HPP
-#define CRABS_ROOM_HPP
+#ifndef _CrabsRoomHPP
+#define _CrabsRoomHPP
 #include <_Config.h>
-#if SEAM >= CRABS_ROOM
+#if _Seam >= _CrabsRoom
 #include "Interrupts.h"
 #include "BOut.hpp"
 #include "Wall.hpp"
 #include "AType.hpp"
 #include "List.hpp"
+#include "Dic.hpp"
 #include "Op.hpp"
 #define ROM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, \
-  typename ISY = ISQ, typename DT = DTB, typename HSH = IUN
+  typename ISY = ISR, typename DT = DTB, typename HSH = IUN
 #define ROM_P CHS, CHT, ISZ, ISY, DT, HSH
 #define ROM TRoom<ROM_P>
 /* @defgroup Room
@@ -176,14 +177,15 @@ class TRoom : public Operand {
  public:
 
   enum {
-    FloorSize = 1024,           //< Room Floor in bytes.
+    FloorSize = 2048,           //< Room Floor in bytes.
     FloorSizeWords = FloorSize / sizeof(IUW) + 2,  //< +2 socket.
     WallCountMax = 5,           //< Additional borrowed walls; Floor is separate.
     FloorTupleMax = 16,         //< Fixed index capacity of the inline ASCII List.
+    FloorKeysSize = 512,        //< Key Table bytes inside the Floor Dic.
   };
 
   /* Creates a Room with the given size.
-  @param floor Boofer used to create the Wall Stack. Set to NILP to
+  @param floor Buffer used to create the Wall Stack. Set to _NilP to
   enable dynamic memory.
   @param size  The room size that is bounded between the RoomBytesMin and
   RoomTotal. */
@@ -191,31 +193,44 @@ class TRoom : public Operand {
     state_(1),
     state_count_(state_count < 1 ? 1 : state_count),
     wall_count_(0),
-    xoff_(NILP),
-    device_(NILP),
-    devices_(NILP) {
+    xoff_(_NilP),
+    device_(_NilP),
+    devices_(_NilP) {
     for (ISN i = 0; i < WallCountMax; ++i)
-      walls_[i] = NILP;
+      walls_[i] = _NilP;
     *name_ = '\0';
     SetRoomName(room_name);
-    expr_ = NILP;
-    Floor()->bytes = ISZ(FloorSize);
-    TListInit<ISZ, ISY, DT>(Floor(), ISY(FloorTupleMax));
+    expr_ = _NilP;
+    Floor()->values.bytes = ISZ(FloorSize);
+    TDicInit<DIC_P>(Floor(), ISY(FloorTupleMax), ISZ(FloorKeysSize));
   }
 
   TRoom(const TRoom&) = delete;
   TRoom& operator=(const TRoom&) = delete;
 
-  /** Borrow the inline ASCII List. Tuples belong to this Room and are
-   * invalidated by ClearFloor or destruction. No OS allocation or I/O.
-   * This is a native in-memory representation, not a portable wire format. */
-  TList<ISZ, ISY, DT>* Floor() {
-    return TPtr<TList<ISZ, ISY, DT>>(origin_);
+  /** Borrow the inline ASCII List (Dictionary layout). Tuples belong to
+   * this Room and are invalidated by ClearFloor or destruction. No OS
+   * allocation or I/O. This is a native in-memory representation, not
+   * a portable wire format. The Floor is a TDic: a TList of values with
+   * a TTable of keys at index 0 (the ASCII KV rule — keys in element 0). */
+  TDic<DIC_P>* Floor() {
+    return TRef<TDic<DIC_P>>(origin_);
   }
-  const TList<ISZ, ISY, DT>* Floor() const {
-    return TPtr<TList<ISZ, ISY, DT>>(origin_);
+  const TDic<DIC_P>* Floor() const {
+    return TRef<const TDic<DIC_P>>(origin_);
   }
-  void ClearFloor() { TListClear<ISZ, ISY, DT>(Floor()); }
+  void ClearFloor() {
+    TDic<DIC_P>* floor = TRef<TDic<DIC_P>>(origin_);
+    TListClear<ISZ, ISY, DT>(&floor->values);
+    // Re-initialize the keys Table at value index 0 after the clear.
+    DTB KeysType = CTableKeysType<TBL_P>();
+    ISY keys_index = TListAlloc<ISZ, ISY, DT>(&floor->values, KeysType,
+        ISZ(FloorKeysSize));
+    (void)keys_index;
+    TBL* keys = TListValue<ISZ, ISY, DT, TBL>(&floor->values, keys_index);
+    TTableInit<TBL_P>(keys, ISY(FloorTupleMax));
+    TTableAppend<TBL_P>(keys, TSEmpty<CHS>());
+  }
 
   /* RAMFactory. */
   virtual ~TRoom() {}
@@ -260,14 +275,14 @@ class TRoom : public Operand {
   /* Gets the given wall by index.
   @return Nil if the index is invalid. */
   TWall<ISZ, ISY>* GetWall(ISN wall_number) {
-    if (wall_number < 0 || wall_number >= wall_count_) return NILP;
+    if (wall_number < 0 || wall_number >= wall_count_) return _NilP;
     return walls_[wall_number];
   }
 
   /* Adds a wall to the room.
   @return The inputted new_wall pointer upon success or nil upon failure. */
   TWall<ISZ, ISY>* AddWall(TWall<ISZ, ISY>* new_wall) {
-    if (new_wall == NILP || wall_count_ >= WallCountMax) return NILP;
+    if (new_wall == _NilP || wall_count_ >= WallCountMax) return _NilP;
     walls_[wall_count_++] = new_wall;
     return new_wall;
   }
@@ -299,24 +314,24 @@ class TRoom : public Operand {
 
   /* Sets up the Room. */
   virtual const Op* Init(Crabs* crabs) {
-    if (crabs != NILP) {
+    if (crabs != _NilP) {
       // @todo We need to load a stored Room state.
-      return NILP;
+      return _NilP;
     }
-    return NILP;
+    return _NilP;
   }
 
   /* Handler for shut down event. */
-  virtual void ShutDown() { D_COUT("\nShutting down..."); }
+  virtual void ShutDown() { _DROut("\nShutting down..."); }
 
   /* Handler go to sleep event. */
-  virtual void Sleep() { D_COUT("\nGoing to sleep..."); }
+  virtual void Sleep() { _DROut("\nGoing to sleep..."); }
 
   /* Handler for wake from sleep event. */
-  virtual void Wake() { D_COUT("\nWaking up..."); }
+  virtual void Wake() { _DROut("\nWaking up..."); }
 
   /* Handler for recovering from an external crash message. */
-  virtual void Crash() { D_COUT("\nRoom crash!"); }
+  virtual void Crash() { _DROut("\nRoom crash!"); }
 
   /* Main program loop. */
   virtual const Op* Loop() { return 0; }
@@ -327,16 +342,16 @@ class TRoom : public Operand {
   /* The default main function.
       Please feel free to override this with your own main function. */
   virtual ISC Main(const CHA** args, ISC args_count) {
-    const Op* result = NILP;
-    D_COUT("\nInitializing Chinese Room with " << args_count << " args:");
-#ifdef D_THIS
+    const Op* result = _NilP;
+    _DROut("\nInitializing Chinese Room with " << args_count << " args:");
+#ifdef _DThis
     for (ISC i = 0; i < args_count; ++i)
-      D_COUT('\n' << i << ":\"" << args[i] << '\"');
+      _DROut('\n' << i << ":\"" << args[i] << '\"');
 #endif
-    D_COUT('\n');
+    _DROut('\n');
     while (IsOn()) {
       try {
-        result = Init(NILP);
+        result = Init(_NilP);
         if (result) return 1;
         do {
           // Doors are now in the List, not embedded in the Room.
@@ -347,7 +362,7 @@ class TRoom : public Operand {
         ShutDown();
       }
       catch (...) {
-        D_COUT("\nRoom crashed!");
+        _DROut("\nRoom crashed!");
         return 3;
       }
     }
@@ -366,7 +381,7 @@ class TRoom : public Operand {
    * operations fail explicitly; the base Room has no demo side effects. */
   virtual const Op* Star(CHC index, Crabs* crabs) override {
     static const Op This = {
-      "Room", NILP, NILP, "An abstract Chinese Room.", ';', '}', 0, NILP
+      "Room", _NilP, _NilP, "An abstract Chinese Room.", ';', '}', 0, _NilP
     };
     (void)crabs;
     return index == '?' ? &This : OpError(AErrorInvalidOp);
@@ -404,4 +419,4 @@ class TRoom : public Operand {
 
 /* @} */  // End of Room group.
 #endif
-#endif
+#endif  //< _CrabsRoomHPP

@@ -1,5 +1,7 @@
-# [Crabs](github.com/AStarStarship/Crabs)
-
+---
+title: ASCIICrabs
+description: Automaton Standard Code for Information Interchange Chinese Room Abstract Stack Machine.
+---
 ```AsciiArt
  /\                 /$$$$$$                     /$$                
 ( /   @ @    ()    /$$__  $$                   | $$                
@@ -11,15 +13,9 @@
   /         \      \______/ |__/      \_______/|_______/ |_______/ 
 ```
 
-[![GitHub version](https://badge.fury.io/gh/AStarStarship%2FCrabs.svg)](https://badge.fury.io/gh/AStarStarship%2FCrabs)
-
-> **🚀 We are calling all pioneers!** We are building a new foundation for software, and we need your help to build the next generation of **Games, Apps, and AI**. [Join the Mission](#join-the-mission) below.
-
 ## What is Crabs?
 
-The Chinese Room Abstract Stack (Crabs) Machine is a high-performance, cross-platform implementation of the **SCRIPT Specification** (Serial Chinese Room, Interprocess, and Telemetry Specification).
-
-We are remaining the C++ ecosystem by replacing the standard library with a modern, embedded-friendly alternative. Crabs is designed for **Webapps**, **Games**, **Artificial Intelligence**, and **Distributed Systems** where performance, determinism, and precise memory control are paramount.
+The Chinese Room Abstract Stack (Crabs) Machine is a high-performance, cross-platform implementation of the **SCRIPT Specification** (Serial Chinese Room, Interprocess, and Telemetry Specification). This is a miccroframework for building other frameworks and languages out of, please see [CrabsTK](https://github.com/AStarStarship/CrabsTK) for an example of a Chinese Room Concrete Stack Machine API, this is the abstract toolkit, but you can still make apps with it, it just lacks OS and hardware specific code.
 
 ### Why Crabs?
 
@@ -28,25 +24,12 @@ We are remaining the C++ ecosystem by replacing the standard library with a mode
 *   **🎮 Game Engine Ready:** With optional dynamic memory and no garbage collection pauses, Crabs provides the low-level control required for high-performance game engines.
 *   **🛠️ Modern Embedded-C++:** A clean slate. We use a simplified **Crabs Module** format and custom containers (`Array`, `List`, `Stack`) to create a robust, dependency-free environment.
 
-## Join the Mission
-
-We are an ambitious open-source project looking for volunteers who want to learn deep C++ and help shape a new ecosystem. Whether you are a veteran systems engineer or a student looking to learn, there is a place for you here.
-
-We need help with:
-*   **Webapp Development:** Building cross-platform app libraries with async IO and that easily map to any programming language and operate across assembly line boundaries.
-*   **Game Development:** Building demos, physics integrations, and rendering loops using Crabs.
-*   **AI Integration:** Implementing the Chinese Room logic and linear ID systems.
-*   **Core Systems:** optimizing our custom memory allocators and data structures.
-*   **Community & Docs:** Helping others understand the ASCII Chinese Room philosophy.
-
-**"I've been working on this specification for a long time, and I am looking for a community to help bring this vision to life. I worked for many years to make the ASCII Data Specification make sense for creating a Chinese Room, and it would be a lot of fun to make some modern AI, games, and apps with it."** — *AStarCale, Founder/Code Monkey*
-
-👉 **Ready to help?** Check out our [Good First Issues](https://github.com/AStarStarship/Crabs/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) or introduce yourself in the Discussions!
+👉 **Ready to help?** Check out our [Good First Issues](https://github.com/AStarStarship/ASCIICrabs/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) or introduce yourself in the Discussions!
 
 ## Key Features
 
 *   **ASCII Data Specification:** An Abstract Data Type Specification defining a contiguous memory layout optimized for Data Driven Design and Development.
-*   **Uniprinter:** Ultra-fast Unicode string processing featuring the [Puff Algorithm](https://github.com/AStarStarship/Crabs/wiki/Fastest-Method-to-Print-Integers-and-Floating-point-Numbers), the world's fastest integer-to-string algorithm that uses discrete math to eliminate over half the division instructions of the industry-standard mod 100 div 100 loop.
+*   **Uniprinter:** Ultra-fast Unicode string processing featuring the [Puff Algorithm](https://github.com/AStarStarship/ASCIICrabs/wiki/Fastest-Method-to-Print-Integers-and-Floating-point-Numbers), the world's fastest integer-to-string algorithm that uses discrete math to eliminate over half the division instructions of the industry-standard mod 100 div 100 loop.
 *   **Seam Testing:** A low-cost, in-order tree-based unit test framework for Agile and Issue Driven Development.
 
 ## Documentation
@@ -57,7 +40,7 @@ We need help with:
 
 1.  **Set Breakpoints:** Open `Test.hpp` and set a breakpoint in the first function where the comment instructs. This allows us to capture the stack frame programmatically.
 2.  **Setup Workspace:** Copy the `_Seams` directory to your workspace and rename the folder to your liking.
-3.  **Run Tests:** Delete unneeded seams and modify the `COut` seam test to suit your project.
+3.  **Run Tests:** Delete unneeded seams and modify the `ROut` seam test to suit your project.
 
 ## License
 

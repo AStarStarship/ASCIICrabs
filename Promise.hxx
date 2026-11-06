@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_PROMISE_HXX
-#define CRABS_PROMISE_HXX
+#ifndef _CrabsPromiseHXX
+#define _CrabsPromiseHXX
 #include "Promise.h"
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* Gets the promise state from a Slot.
@@ -14,11 +14,11 @@ inline IUW PromiseState(Slot* slot) {
   if (!slot || !SlotIsReadable(slot))
     return PromisePending;
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
-  void** result = TPtr<void*>(&args[2]);
-  CHA** fulfilledKey = TPtr<CHA*>(&args[3]);
-  CHA** rejectedKey = TPtr<CHA*>(&args[4]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
+  void** result = TRef<void*>(&args[2]);
+  CHA** fulfilledKey = TRef<CHA*>(&args[3]);
+  CHA** rejectedKey = TRef<CHA*>(&args[4]);
 
   static const DTB params[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = SlotRead(slot, params, args);
@@ -49,8 +49,8 @@ inline TMC PromiseTimestamp(Slot* slot) {
   if (!slot || !SlotIsReadable(slot))
     return 0;
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
 
   static const DTB params[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = SlotRead(slot, params, args);
@@ -76,24 +76,24 @@ inline const Op* PromiseSetResult(Slot* slot, IUW newState, void* result,
   SlotClear(&target);
 
   IUD pcCtx = 0;
-  const Op* op = NILP; // BOutConnect(target.bout, "", pcCtx);
+  const Op* op = _NilP; // BOutConnect(target.bout, "", pcCtx);
   if (op) return op;
 
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
-  void** resultPtr = TPtr<void*>(&args[2]);
-  CHA** fulfilledKey = TPtr<CHA*>(&args[3]);
-  CHA** rejectedKey = TPtr<CHA*>(&args[4]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
+  void** resultPtr = TRef<void*>(&args[2]);
+  CHA** fulfilledKey = TRef<CHA*>(&args[3]);
+  CHA** rejectedKey = TRef<CHA*>(&args[4]);
 
   *timestamp = StdCrabs()->epoch;
   *state = newState;
   *resultPtr = result;
-  *fulfilledKey = NILP;
-  *rejectedKey = NILP;
+  *fulfilledKey = _NilP;
+  *rejectedKey = _NilP;
 
   static const DTB outParams[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
-  return NILP; // BOutWrite(target.bout, outParams, args, pcCtx);
+  return _NilP; // BOutWrite(target.bout, outParams, args, pcCtx);
 }
 
 /* Triggers fulfillment callbacks by writing result to output TBOut. */
@@ -123,21 +123,21 @@ inline const Op* PromiseTriggerRejection(Crabs* crabs, Slot* promise_slot) {
 @return Returns a pointer to the newly created promise Slot, or nil on error. */
 inline Slot* CrabsCreatePromise(Crabs* crabs, TMC timestamp) {
   if (IsError(crabs))
-    return NILP;
+    return _NilP;
   Slot& slot = crabs->slot;
   SlotClear(&slot);
   void* args[5];
-  *TPtr<TMC>  (&args[0]) = timestamp;
-  *TPtr<IUW>  (&args[1]) = PromisePending;
-	*TPtr<void*>(&args[2]) = NILP;  //< Result pointer
-	*TPtr<CHA*> (&args[3]) = NILP;   //< Fulfillment callback key
-  *TPtr<CHA*> (&args[4]) = NILP;   //< Rejected
+  *TRef<TMC>  (&args[0]) = timestamp;
+  *TRef<IUW>  (&args[1]) = PromisePending;
+	*TRef<void*>(&args[2]) = _NilP;  //< Result pointer
+	*TRef<CHA*> (&args[3]) = _NilP;   //< Fulfillment callback key
+  *TRef<CHA*> (&args[4]) = _NilP;   //< Rejected
   
   static const DTB params[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   IUD pcCtx = 0;
   const Op* op = SlotWrite(&slot, params, args);
   if (op)
-    return NILP; 
+    return _NilP; 
   return &crabs->slot;
 }
 
@@ -149,7 +149,7 @@ inline Slot* CrabsCreatePromise(Crabs* crabs, TMC timestamp) {
 inline const Op* CrabsResolvePromise(Crabs* crabs, Slot* promise_slot, void* value) {
   if (IsError(crabs) || !promise_slot || !value) return OpError(AErrorNil);
   
-  return PromiseSetResult(promise_slot, PromiseFulfilled, value, NILP);
+  return PromiseSetResult(promise_slot, PromiseFulfilled, value, _NilP);
 }
 
 /* Rejects a promise with an error reason.
@@ -160,7 +160,7 @@ inline const Op* CrabsResolvePromise(Crabs* crabs, Slot* promise_slot, void* val
 inline const Op* CrabsRejectPromise(Crabs* crabs, Slot* promise_slot, void* error) {
   if (IsError(crabs) || !promise_slot || !error)
     return OpError(AErrorNil);
-  return PromiseSetResult(promise_slot, PromiseRejected, error, NILP);
+  return PromiseSetResult(promise_slot, PromiseRejected, error, _NilP);
 }
 
 /* Attaches a fulfillment handler to a promise (.then()).
@@ -172,11 +172,11 @@ inline const Op* CrabsThenPromise(Crabs* crabs, Slot* promise_slot, CHA* onFulfi
   if (IsError(crabs) || !promise_slot)
     return OpError(AErrorNil);
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
-  void** result = TPtr<void*>(&args[2]);
-  CHA** fulfilledKey = TPtr<CHA*>(&args[3]);
-  CHA** rejectedKey = TPtr<CHA*>(&args[4]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
+  void** result = TRef<void*>(&args[2]);
+  CHA** fulfilledKey = TRef<CHA*>(&args[3]);
+  CHA** rejectedKey = TRef<CHA*>(&args[4]);
   
   static const DTB ReadParams[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = SlotRead(promise_slot, ReadParams, args);
@@ -198,11 +198,11 @@ inline const Op* CrabsCatchPromise(Crabs* crabs, Slot* promise_slot, CHA* on_rej
   if (IsError(crabs) || !promise_slot)
     return OpError(AErrorNil);
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
-  void** result = TPtr<void*>(&args[2]);
-  CHA** fulfilledKey = TPtr<CHA*>(&args[3]);
-  CHA** rejectedKey = TPtr<CHA*>(&args[4]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
+  void** result = TRef<void*>(&args[2]);
+  CHA** fulfilledKey = TRef<CHA*>(&args[3]);
+  CHA** rejectedKey = TRef<CHA*>(&args[4]);
   
   static const DTB readParams[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = SlotRead(promise_slot, readParams, args);
@@ -222,8 +222,8 @@ inline IUW CrabsReadPromiseState(TBIn<ISC>* bin) {
   if (!bin) return PromisePending;
   
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
   
   static const DTB readParams[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = BInRead(bin, readParams, args, 0);
@@ -240,9 +240,9 @@ inline const Op* CrabsWritePromiseResult(TBOut<ISC>* bout, Slot* promise_slot) {
   if (!bout || !promise_slot) return OpError(AErrorNil);
   
   void* args[5];
-  TMC* timestamp = TPtr<TMC>(&args[0]);
-  IUW* state = TPtr<IUW>(&args[1]);
-  void** result = TPtr<void*>(&args[2]);
+  TMC* timestamp = TRef<TMC>(&args[0]);
+  IUW* state = TRef<IUW>(&args[1]);
+  void** result = TRef<void*>(&args[2]);
   
   static const DTB readParams[] = { 5, _TMC, _IUW, _PMS, _CHA, _CHA };
   const Op* op = SlotRead(promise_slot, readParams, args);
@@ -256,4 +256,4 @@ inline const Op* CrabsWritePromiseResult(TBOut<ISC>* bout, Slot* promise_slot) {
 }  //< namespace _
 
 #endif
-#endif
+#endif  //< _CrabsPromiseHXX

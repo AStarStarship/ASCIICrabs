@@ -1,14 +1,17 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsATypeHXX
+#define _CrabsATypeHXX
 #include "AType.hpp"
 //
 #include "Array.h"
-#if SEAM == CRABS_COUT
+#if _Seam == _CrabsCore
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
 
-#if SEAM >= CRABS_COUT
+#if _Seam >= _CrabsCore
 namespace _ {
 
 BOL ATypeIsPOD(DTB type) {
@@ -74,6 +77,10 @@ DTB ATypeCNS_MDC(DTW type) {
   return DTB(ATypeCNSBit | ATypeMDC(type));
 }
 
+// IUE/ISE struct constructors — only compiled when the platform lacks a
+// native 128-bit type (see AType.h). On GCC/Clang, IUE/ISE are
+// unsigned __int128/__int128 and have no member constructors.
+#if !defined(HAS_128_BIT_INT)
 IUE::IUE(IUB v1, IUB v2, IUB v3, IUB v4, IUB v5, IUB v6, IUB v7, IUB v8) :
   lsb(IUC(v1) & IUD(v2) << 16 & IUD(v3) << 32 & IUD(v4) << 48),
   msb(IUD(v5) & IUD(v6) << 16 & IUD(v7) << 32 & IUD(v8) << 48) {}
@@ -93,12 +100,13 @@ ISE::ISE(IUC v1, IUC v2, IUC v3, IUC v4) :
   msb(IUD(v2)& IUD(v3) << 32) {}
 
 ISE::ISE(IUD lsb, IUD msb) : lsb(lsb), msb(msb) {}
+#endif  //< !defined(HAS_128_BIT_INT)
 
-#if CPU_SIZE == CPU_2_BYTES
+#if _CPUSize == CPU_2_BYTES
 FPC::FPC(IUB lsb, IUB msb) : lsb(lsb), msb(msb) {}
 #endif
 
-#if CPU_SIZE <= CPU_4_BYTES
+#if _CPUSize <= CPU_4_BYTES
 FPD::FPD(IUB v1, IUB v2, IUB v3, IUB v4) :
   lsb(IUB(v1) & IUB(v2) << 32),
   msb(IUB(v2) & IUB(v3) << 32) {}
@@ -165,10 +173,10 @@ ISA ATypeSizeOfPOD(DTB type) {
 #if USING_CT4
   if (type <= _CT4) return 8;
 #endif
-#if USING_CT3
+#if _UsingCT3
   if (type <= _CT3) return 4;
 #endif
-#if USING_CT2
+#if _UsingCT2
   if (type <= _CT2) return 2;
 #endif
   if (type <= 31) return 1;
@@ -225,11 +233,11 @@ ISW ATypeBytes(const void* value, DTB type) {
 }
 
 ISW ATypeBytes(const void* value_base, ISA bytes, DTB type) {
-  return ATypeBytes(TPtr<>(value_base, bytes), type);
+  return ATypeBytes(TRef<>(value_base, bytes), type);
 }
 
 void* ATypeValueEnd(void* value, DTB type) {
-  return TPtr<void>(value, ATypeBytes(value, type));
+  return TRef<void>(value, ATypeBytes(value, type));
 }
 
 /* Gets the alignment mask of the given type. */
@@ -283,12 +291,12 @@ inline DTW TypeOf(const void* item) { return _CNS_PTR; }
 
 // Returns an array of the customizable POD type sizes.
 //const ISA* ATypeCustomSize() {
-//  return NILP;
+//  return _NilP;
 //}
 
 // Returns an array of the user-defined type alignment masks.
 //const ISA* ATypeCustomAlignMask() {
-//  return NILP;
+//  return _NilP;
 //}
 
 // Returns the custom time alignment mask for the given type.
@@ -325,7 +333,7 @@ DTB ATypeToEXT_NC(DTW type_msb, DTW type_pod) {
   return -((3 << 3) | (pod - _FPB)); //< H
 }
 DTB ATypeToEXT(DTW type) {
-  type &= (~DTB(0) >> 2); //< Don't care if it's const or ptr.
+  type &= (~DTB(0) >> 2); //< Don't care if it's const or pointer.
   const DTW SW_VT = type >> ATypeVTBit0;
   return ATypeToEXT_NC(SW_VT, type ^ SW_VT << ATypeVTBit0);
 }
@@ -348,7 +356,7 @@ BOL ATypeIsEXT(DTW sw_vt, DTW pod) {
 /* Checks if the type is an Extended Type.
 @see ~/Spec/Data/ExtendedTypes#FasterEXTBooleanMethod */
 BOL ATypeIsEXT(DTW type) {
-  type &= ~(3 << ATypeMDBit0); //< Don't care if it's const or ptr.
+  type &= ~(3 << ATypeMDBit0); //< Don't care if it's const or pointer.
   //type &= ATypePODMask;
   const DTW MSb = type >> ATypeVTBit0;
   return ATypeIsEXT(MSb, type ^ (MSb << ATypeVTBit0));
@@ -359,7 +367,7 @@ BOL ATypeIsCTX(DTW sw_vt, DTW pod) {
 }
 
 BOL ATypeIsCTX(DTW type) {
-  type &= (DTW(-1) >> 2); //< Don't care if it's const or ptr.
+  type &= (DTW(-1) >> 2); //< Don't care if it's const or pointer.
   const DTW SW_VT = type >> ATypeVTBit0;
   return ATypeIsCTX(SW_VT, type ^ (SW_VT << DTW(ATypeVTBit0)));
 }
@@ -380,7 +388,7 @@ Nil::Nil() {}
 constexpr ISW Nil::Size() { return 0; }
 constexpr ISW Nil::CBytes() { return 0; }
 constexpr ISW Nil::SizeWords() { return 0; }
-IUW* Nil::Words() { return NILP; }
+IUW* Nil::Words() { return _NilP; }
 
 
 
@@ -398,74 +406,64 @@ IUW* Nil::Words() { return NILP; }
 
 ATypeValue::ATypeValue() : type_(_NIL), value_(0), vmsb_(0) {}
 
-#if USING_STA == YES_0
 ATypeValue::ATypeValue(CHA value) : type_(_CHA), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(const CHA* value)
     : type_(_STA), value_(IUW(value)), vmsb_(0) {}
-#endif
-#if USING_STB == YES_0
 ATypeValue::ATypeValue(CHB value) : type_(_CHB), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(const CHB* value)
     : type_(_STB), value_(IUW(value)), vmsb_(0) {}
-#endif
-#if USING_STC == YES_0
 ATypeValue::ATypeValue(CHC value) : type_(_CHC), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(const CHC* value)
     : type_(_STC), value_(IUW(value)), vmsb_(0) {}
-#endif
 ATypeValue::ATypeValue(ISA value) : type_(_ISA), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(IUA value) : type_(_IUA), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(ISB value) : type_(_ISB), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(IUB value) : type_(_IUB), value_(IUW(value)), vmsb_(0) {}
-#if CPU_SIZE == CPU_2_BYTE
+#if _CPUSize == _CPU16Bit
 AValue::AValue(ISC value) : type_(_ISC) {
   // @todo I don't know if this is going to be needed. In my mind the compiler
   // will push the word_ onto the program stack because of the *reintpret_cast.
   // This might however get optimized into just storing value. Dissassemble me!
-  *TPtr<ISC>(&word_) = value;
+  *TRef<ISC>(&word_) = value;
 }
 #else
 ATypeValue::ATypeValue(ISC value) : type_(_ISC), value_(IUW(value)), vmsb_(0) {}
 #endif
 
-#if CPU_SIZE == CPU_2_BYTE
+#if _CPUSize == _CPU16Bit
 AValue::AValue(IUC value) : type_(_IUC) {
-  *TPtr<IUC>(&word_) = value;
+  *TRef<IUC>(&word_) = value;
 }
 #else
 ATypeValue::ATypeValue(IUC value) : type_(_IUC), value_(IUW(value)), vmsb_(0) {}
 #endif
 
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(ISD value) : type_(_ISD), value_(IUW(value)), vmsb_(0) {}
 #else
-AValue::AValue(ISD value) : type_(_ISD) { *TPtr<ISD>(&word_) = value; }
+AValue::AValue(ISD value) : type_(_ISD) { *TRef<ISD>(&word_) = value; }
 #endif
 
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(IUD value) : type_(_IUD), value_(IUW(value)), vmsb_(0) {}
 #else
 AValue::AValue(IUD value) : type_(_IUD) {
-  *TPtr<IUD>(&word_) = value;
+  *TRef<IUD>(&word_) = value;
 }
 
 #endif
-#if USING_FPC == YES_0
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(FPC value)
     : type_(_FPC), value_(ToUnsigned(value)), vmsb_(0) {}
 #else
-AValue::AValue(FPC value) : type_(_FPC) { *TPtr<FPC>(&word_) = value; }
-#endif
+AValue::AValue(FPC value) : type_(_FPC) { *TRef<FPC>(&word_) = value; }
 #endif
 
-#if USING_FPD == YES_0
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(FPD value)
     : type_(_FPD), value_(ToUnsigned(value)), vmsb_(0) {}
 #else
-AValue::AValue(FPD value) : type_(_FPD) { *TPtr<FPD>(&word_) = value; }
-#endif
+AValue::AValue(FPD value) : type_(_FPD) { *TRef<FPD>(&word_) = value; }
 #endif
 
 ATypeValue::ATypeValue(void* value) : 
@@ -473,20 +471,20 @@ ATypeValue::ATypeValue(void* value) :
 ATypeValue::ATypeValue(const void* value) :
   type_(_CNS_PTR), value_(IUW(value)), vmsb_(0) {}
 
-ATypeValue::ATypeValue(void* base_ptr, ISW offset) :
-  type_(_PTR), value_(IUW(ISW(base_ptr) + offset)), vmsb_(0) {}
-ATypeValue::ATypeValue(const void* base_ptr, ISW offset) :
-  type_(_CNS_PTR), value_(IUW(ISW(base_ptr) + offset)), vmsb_(0) {}
+ATypeValue::ATypeValue(void* base_ref, ISW offset) :
+  type_(_PTR), value_(IUW(ISW(base_ref) + offset)), vmsb_(0) {}
+ATypeValue::ATypeValue(const void* base_ref, ISW offset) :
+  type_(_CNS_PTR), value_(IUW(ISW(base_ref) + offset)), vmsb_(0) {}
 
 ATypeValue::ATypeValue(DTW type, void* value) :
   type_(type), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(DTW type, const void* value) :
   type_(type), value_(IUW(value)), vmsb_(0) {}
 
-ATypeValue::ATypeValue(DTW type, void* base_ptr, ISW offset) :
-  type_(type), value_(IUW(ISW(base_ptr) + offset)), vmsb_(0) {}
-ATypeValue::ATypeValue(DTW type, const void* base_ptr, ISW offset) :
-  type_(type), value_(IUW(ISW(base_ptr) + offset)), vmsb_(0) {}
+ATypeValue::ATypeValue(DTW type, void* base_ref, ISW offset) :
+  type_(type), value_(IUW(ISW(base_ref) + offset)), vmsb_(0) {}
+ATypeValue::ATypeValue(DTW type, const void* base_ref, ISW offset) :
+  type_(type), value_(IUW(ISW(base_ref) + offset)), vmsb_(0) {}
 
 ATypeValue::ATypeValue(DTW type, void* value, void* value_end) :
   type_(type) {
@@ -498,23 +496,23 @@ ATypeValue::ATypeValue(DTW type, const void* value, const void* value_end) :
   Set(type, value, value_end);
 }
 
-ATypeValue::ATypeValue(DTW type, void* base_ptr, ISW offset, void* value_end) {
-  Set(type, base_ptr, offset, value_end);
+ATypeValue::ATypeValue(DTW type, void* base_ref, ISW offset, void* value_end) {
+  Set(type, base_ref, offset, value_end);
 }
 
-ATypeValue::ATypeValue(DTW type, const void* base_ptr, ISW offset, 
+ATypeValue::ATypeValue(DTW type, const void* base_ref, ISW offset, 
                        const void* value_end) {
-  Set(type, base_ptr, offset, value_end);
+  Set(type, base_ref, offset, value_end);
 }
 
-ATypeValue::ATypeValue(DTW type, void* base_ptr, ISW offset,
+ATypeValue::ATypeValue(DTW type, void* base_ref, ISW offset,
   ISW base_bytes) {
-  Set(type, base_ptr, offset, base_bytes);
+  Set(type, base_ref, offset, base_bytes);
 }
 
-ATypeValue::ATypeValue(DTW type, const void* base_ptr, ISW offset, 
+ATypeValue::ATypeValue(DTW type, const void* base_ref, ISW offset, 
                        ISW base_bytes) {
-  Set(type, base_ptr, offset, base_bytes);
+  Set(type, base_ref, offset, base_bytes);
 }
 
 
@@ -524,31 +522,31 @@ DTW ATypeValue::UnicodeFormat() { return ATypeTextFormat(type_); }
 
 void* ATypeValue::WordPTR() { return &value_; }
 
-void* ATypeValue::ToPTR() { return TPtr<void>(value_); }
-CHA* ATypeValue::ToSTA() { return TPtr<CHA>(value_); }
-CHB* ATypeValue::ToSTB() { return TPtr<CHB>(value_); }
-CHC* ATypeValue::ToSTC() { return TPtr<CHC>(value_); }
+void* ATypeValue::ToPTR() { return TRef<void>(value_); }
+CHA* ATypeValue::ToSTA() { return TRef<CHA>(value_); }
+CHB* ATypeValue::ToSTB() { return TRef<CHB>(value_); }
+CHC* ATypeValue::ToSTC() { return TRef<CHC>(value_); }
 IUA ATypeValue::ToIUA() { return IUA(value_); }
 IUB ATypeValue::ToIUB() { return IUB(value_); }
 IUN ATypeValue::ToIUN() { return IUN(value_); }
 IUC ATypeValue::ToIUC() {
-#if CPU_SIZE == CPU_2_BYTE
+#if _CPUSize == _CPU16Bit
   // @todo Inspect dissassembly to check if we even need the #if #else here.
   // I have a feeling the compiler will optmize away memory copies I think
   // I'm avoiding.
-  return *TPtr<IUC>(&word_);
+  return *TRef<IUC>(&word_);
 #else
   return IUC(value_);
 #endif
 }
 IUD ATypeValue::ToUID() {
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
   return value_;
 #else
   // @todo Inspect dissassembly to check if we even need the #if #else here.
   // I have a feeling the compiler will optmize away memory copies I think
   // I'm avoiding.
-  return *TPtr<IUD>(&word_);
+  return *TRef<IUD>(&word_);
 #endif
 }
 
@@ -564,105 +562,104 @@ void ATypeValue::SetNIL(IUW value) {
 }
 
 inline void* ATypeValue::Set(void* value) {
-  if (IsError(value)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(value)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(_PTR);
   value_ = IUW(value);
-  return NILP;
+  return _NilP;
 }
 
 inline const void* ATypeValue::Set(const void* value)
 {
-  if (IsError(value)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(value)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(_PTR);
   value_ = IUW(value);
-  return NILP;
+  return _NilP;
 }
 
-inline void* ATypeValue::Set(void* base_ptr, ISW voffset) {
-  if (IsError(base_ptr)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+inline void* ATypeValue::Set(void* base_ref, ISW voffset) {
+  if (IsError(base_ref)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(_PTR);
-  value_ = IUW(ISW(base_ptr) + voffset);
-  return NILP;
+  value_ = IUW(ISW(base_ref) + voffset);
+  return _NilP;
 }
 
-inline const void* ATypeValue::Set(const void* base_ptr, ISW voffset)
+inline const void* ATypeValue::Set(const void* base_ref, ISW voffset)
 {
-  if (IsError(base_ptr)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(base_ref)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(_PTR);
-  value_ = IUW(ISW(base_ptr) + voffset);
-  return NILP;
+  value_ = IUW(ISW(base_ref) + voffset);
+  return _NilP;
 }
 
 inline void* ATypeValue::Set(DTW type, void* value) {
   if (IsError(value))
-    D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+    _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
   value_ = IUW(value);
   vmsb_  = 0;
-  return NILP;
+  return _NilP;
 }
 
 inline const void* ATypeValue::Set(DTW type, const void* value)
 {
-  if (IsError(value)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(value)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
   value_ = IUW(value);
   vmsb_ = 0;
-  return NILP;
+  return _NilP;
 }
 
-inline void* ATypeValue::Set(DTW type, void* base_ptr, ISW voffset) {
-  if (IsError(base_ptr) || voffset < 0) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+inline void* ATypeValue::Set(DTW type, void* base_ref, ISW voffset) {
+  if (IsError(base_ref) || voffset < 0) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
-  value_ = IUW(ISW(base_ptr) + voffset);
-  return NILP;
+  value_ = IUW(ISW(base_ref) + voffset);
+  return _NilP;
 }
 
-inline const void* ATypeValue::Set(DTW type, const void* base_ptr, ISW voffset) {
-  if (IsError(base_ptr) || voffset < 0) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+inline const void* ATypeValue::Set(DTW type, const void* base_ref, ISW voffset) {
+  if (IsError(base_ref) || voffset < 0) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
-  value_ = IUW(ISW(base_ptr) + voffset);
-  return NILP;
+  value_ = IUW(ISW(base_ref) + voffset);
+  return _NilP;
 }
 
 inline void* ATypeValue::Set(DTW type, void* value, void* value_end) {
-  if (IsError(value) || IsError(value_end)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(value) || IsError(value_end)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
   value_ = IUW(value);
   vmsb_ = IUW(value_end);
-  return NILP;
+  return _NilP;
 }
 
 inline const void* ATypeValue::Set(DTW type, const void* value, 
                                    const void* value_end) {
-  if (IsError(value) || IsError(value_end)) D_RETURN_TPTR_ERROR(void, -AErrorParamPointer);
+  if (IsError(value) || IsError(value_end)) _DReturnTPointerError(void, -AErrorParamPointer);
   ATypeMakePtr(type);
   value_ = IUW(value);
   vmsb_ = IUW(value_end);
-  return NILP;
+  return _NilP;
 }
 
-inline void* ATypeValue::Set(DTW type, void* base_ptr, ISW offset, 
+inline void* ATypeValue::Set(DTW type, void* base_ref, ISW offset, 
                              void* value_end) {
-  return Set(type, TPtr<>(base_ptr, offset), value_end);
+  return Set(type, TRef<>(base_ref, offset), value_end);
 }
 
-inline const void* ATypeValue::Set(DTW type, const void* base_ptr, ISW offset,
+inline const void* ATypeValue::Set(DTW type, const void* base_ref, ISW offset,
                                    const void* value_end) {
-  return Set(type, TPtr<>(base_ptr, offset), value_end);
+  return Set(type, TRef<>(base_ref, offset), value_end);
 }
 
-inline void* ATypeValue::Set(DTW type, void* base_ptr, ISW offset, 
+inline void* ATypeValue::Set(DTW type, void* base_ref, ISW offset, 
                              ISW base_bytes) {
-  return Set(type, TPtr<>(base_ptr, offset), TPtr<>(base_ptr, base_bytes));
+  return Set(type, TRef<>(base_ref, offset), TRef<>(base_ref, base_bytes));
 }
 
-inline const void* ATypeValue::Set(DTW type, const void* base_ptr, ISW offset,
+inline const void* ATypeValue::Set(DTW type, const void* base_ref, ISW offset,
                                    ISW base_bytes) {
-  return Set(type, TPtr<>(base_ptr, offset), TPtr<>(base_ptr, base_bytes));
+  return Set(type, TRef<>(base_ref, offset), TRef<>(base_ref, base_bytes));
 }
 
-#if USING_STA == YES_0
 void ATypeValue::Set(CHA value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
@@ -673,8 +670,6 @@ void ATypeValue::Set(const CHA* value) {
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#endif
-#if USING_STB == YES_0
 void ATypeValue::Set(CHB value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
@@ -685,8 +680,6 @@ void ATypeValue::Set(const CHB* value) {
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#endif
-#if USING_STC == YES_0
 void ATypeValue::Set(CHC value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
@@ -697,7 +690,6 @@ void ATypeValue::Set(const CHC* value) {
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#endif
 void ATypeValue::Set(ISA value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
@@ -743,25 +735,21 @@ void ATypeValue::Set(IUD value) {
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#if USING_FPC == YES_0
 void ATypeValue::Set(FPC value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#endif
-#if USING_FPD == YES_0
 void ATypeValue::Set(FPD value) {
   type_ = TypeOf(value);
   value_ = IUW(value);
   vmsb_ = 0;
 }
-#endif
 
 }  //< namespace _
 #endif
 
-#if SEAM >= CRABS_UNIPRINTER
+#if _Seam >= _CrabsUniprinter
 namespace _ {
 DTB ATypeRemapEP(DTW sw_vt_bits, DTW pod_type, DTD ep_remap) {
   return DTB((pod_type >> (pod_type - _PCa) * 5) & ATypePODMask);
@@ -818,7 +806,7 @@ DTW ACTXHandlerDefault(void* begin, void* end, DTW type, IUW value, IUW vmsb) {
     ACPUAlignE,
     ACPUAlignE,
   };
-#if CPU_SIZE != CPU_2_BYTES
+#if _CPUSize != CPU_2_BYTES
   const DTW Action = type >> 16;
   type ^= Action << 16;
 #endif
@@ -834,23 +822,23 @@ DTW ACTXHandlerDefault(void* begin, void* end, DTW type, IUW value, IUW vmsb) {
   if (IsError(begin)) return ATypeRemapEP(SW_VT, POD, Map);
   if (IsError(end)) return DTW(PCStrings + (POD - _PCa));
 
-#if CPU_SIZE != CPU_2_BYTE
+#if _CPUSize != _CPU16Bit
   switch (Action) {
-#ifdef USING_STA
+#ifdef _UsingSTA
   case _SWA: {
     TSPrinter<CHA> p_a((CHA*)begin, (CHA*)end);
     while (ctx_index-- > 0) p_a.Hex(IUA(ctx_index));
     return DTW(p_a.start);
   }
 #endif
-#ifdef USING_STB
+#ifdef _UsingSTB
   case _SWB: {
     TSPrinter<CHB> p_b((CHB*)begin, (CHB*)end);
     while (ctx_index-- > 0) p_b.Hex(IUA(ctx_index));
     return DTW(p_b.start);
   }
 #endif
-#ifdef USING_STC
+#ifdef _UsingSTC
   case _SWC: {
     TSPrinter<CHC> p_c((CHC*)begin, (CHC*)end);
     while (ctx_index-- > 0) p_c.Hex(IUA(ctx_index));
@@ -858,7 +846,7 @@ DTW ACTXHandlerDefault(void* begin, void* end, DTW type, IUW value, IUW vmsb) {
   }
 #endif
   case ACTXFunWrite: {
-#if SEAM >= CRABS_STACK
+#if _Seam >= _CrabsStack
     return ArrayCopy(begin, end, (void*)value, ISW(vmsb));
 #else
     return 0;
@@ -871,7 +859,7 @@ DTW ACTXHandlerDefault(void* begin, void* end, DTW type, IUW value, IUW vmsb) {
 }
 
 ACTXFrame::ACTXFrame() :
-  handler(ACTX_HANDLER_INIT),
+  handler(_AContextHandlerInit),
   epoch(AClockEpochYearInit)
 {
 }
@@ -892,4 +880,6 @@ DTW ACTXHandle(void* begin, void* end, DTW type, IUW value, IUW vmsb) {
 }
 
 }  //< namespace _
-#endif
+
+#endif  //< _Seam >= _CrabsCore
+#endif  //< _CrabsATypeHXX

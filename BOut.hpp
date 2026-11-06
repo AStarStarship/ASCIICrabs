@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BOUT_HPP
-#define CRABS_BOUT_HPP
+#ifndef _CrabsBOutHPP
+#define _CrabsBOutHPP
 #include "BOut.h"
-#if SEAM >= CRABS_OP
-#if SEAM == CRABS_OP
+#if _Seam >= _CrabsOp
+#if _Seam == _CrabsOp
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -14,7 +14,7 @@ namespace _ {
 
 template<typename Printer>
 Printer& TBOutPrint(Printer& o, const TBOut<ISC>* bout) {
-  A_ASSERT(bout);
+  _AAssert(bout);
   ISN size = bout->bytes;
   o << Linef("\n___") << "\nBOut: size:" << size
     << " origin:" << bout->origin << " stop:" << bout->stop
@@ -24,7 +24,7 @@ Printer& TBOutPrint(Printer& o, const TBOut<ISC>* bout) {
 
 template<typename Printer>
 Printer& TBOutPrintVars(Printer& printer, TBOut<ISC>* bout) {
-  A_ASSERT(bout);
+  _AAssert(bout);
   ISN size = bout->bytes;
   return printer << Linef('_', 80) << "\nBOut: size:" << size
     << " start:" << bout->origin << " stop:" << bout->stop
@@ -33,11 +33,11 @@ Printer& TBOutPrintVars(Printer& printer, TBOut<ISC>* bout) {
 
 template<typename Printer>
 Printer& TBOutPrint(Printer& printer, TBOut<ISC>* bout) {
-  A_ASSERT(bout);
+  _AAssert(bout);
   ISN size = bout->bytes;
   return printer << Linef('_', 80) << "\nBOut: size:" << size
           << " start:" << bout->origin << " stop:" << bout->stop
-          << " read:" << bout->read << Charsf(BOutBoofer(bout), size - 1);
+          << " read:" << bout->read << Charsf(BOutBuffer(bout), size - 1);
 }
 }  //< namespace _
 #endif

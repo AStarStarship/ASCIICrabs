@@ -1,8 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsOperandHXX
+#define _CrabsOperandHXX
 #include "Operand.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "Op.hpp"
-#if SEAM == CRABS_OP
+#if _Seam == _CrabsOp
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -10,35 +13,35 @@
 namespace _ {
 
 const CHA* OperandName(Operand* operand) {
-  A_ASSERT(operand);
-  const Op* op = operand->Star('?', NILP);
-  A_ASSERT(op);
+  _AAssert(operand);
+  const Op* op = operand->Star('?', _NilP);
+  _AAssert(op);
 
   return op->name;
 }
 
 IUW OperandCount(Operand* operand) {
-  A_ASSERT(operand);
-  const Op* op = operand->Star(0, NILP);
-  return (op == NILP) ? 0 : IUW(op->in);
+  _AAssert(operand);
+  const Op* op = operand->Star(0, _NilP);
+  return (op == _NilP) ? 0 : IUW(op->in);
 }
 
 CHC OperandIndex(Operand* operand, CHA* origin, CHA* stop) {
-  A_ASSERT(operand);
-  const Op* op = operand->Star('?', NILP);
-  A_ASSERT(op);
+  _AAssert(operand);
+  const Op* op = operand->Star('?', _NilP);
+  _AAssert(op);
   CHC index = OpFirst(op),
       last  = OpLast (op);
-  A_ASSERT(index);
+  _AAssert(index);
   for (; index <= last; ++index) {
-    if (TSEquals<CHA>(origin, stop, operand->Star(index, NILP)->name)) {
+    if (TSEquals<CHA>(origin, stop, operand->Star(index, _NilP)->name)) {
       return index;
     }
   }
   return 0;
 }
 
-#if USING_CRABS_TEXT
+#if _CrabsUsingText
 /*
 UTF& Print (UTF& utf, const Operand* op) {
     utf << "\n Op:\n" << op->name << "\nparams_in:"
@@ -53,11 +56,11 @@ UTF& Print (UTF& utf, const Operand* op) {
 }*/
 
 UTF1& PrintOperand(UTF1& utf, Operand* operand) {
-  A_ASSERT(operand);
+  _AAssert(operand);
 
-  const Op* op = operand->Star('?', NILP);
+  const Op* op = operand->Star('?', _NilP);
 
-  A_ASSERT(op);
+  _AAssert(op);
 
   IUW num_ops = IUW(op->in),
       op_num = IUW(op->out), last_op = op_num + num_ops - 1;
@@ -66,25 +69,25 @@ UTF1& PrintOperand(UTF1& utf, Operand* operand) {
   }
   utf << "\nOperand         :" << op->name << Line('-', 80);
   for (; op_num <= last_op; ++op_num) {
-    op = operand->Star((CHC)op_num, NILP);
+    op = operand->Star((CHC)op_num, _NilP);
     utf << "\nOp \'" << op_num << "\':" << op_num << ' ' << op << Line('-', 80);
   }
   return utf;
 }
 
 Slot& OperandQuery(Operand* root, const CHA* address, Slot& slot) {
-  A_ASSERT(address);
-  A_ASSERT(root);
+  _AAssert(address);
+  _AAssert(root);
 
   ISC index = *address++;
-  const Op* op = root->Star(index, NILP);
+  const Op* op = root->Star(index, _NilP);
   CHA socket[1024];
-  D_COUT(op->name)
+  _DROut(op->name)
   index = *address++;
   while (index) {
-    op = root->Star(index, NILP);
-    A_ASSERT(op);
-    D_COUT('.' << op->name)
+    op = root->Star(index, _NilP);
+    _AAssert(op);
+    _DROut('.' << op->name)
     index = *address++;
   }
   slot.Write(socket);
@@ -94,3 +97,5 @@ Slot& OperandQuery(Operand* root, const CHA* address, Slot& slot) {
 #endif
 }  //< namespace _
 #endif
+
+#endif  //< _CrabsOperandHXX

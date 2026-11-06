@@ -1,57 +1,56 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_CLOCK
+#if _Seam >= _CrabsClock
 #include "../Clock.hpp"
 #include "../Uniprinter.hpp"
-#if SEAM == CRABS_CLOCK
+#if _Seam == _CrabsClock
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
-
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 static const CHA* UUID(const CHA* args) {
-#if SEAM >= CRABS_CLOCK
+#if _Seam >= _CrabsClock
 
-  D_COUT(Headingf("Testing UUID Generation and Conversion"));
+  _DROut(Headingf("Testing UUID Generation and Conversion"));
 
   IUD hot_source_id = GenerateHotSourceID();
-  D_COUT("Hot UUID Source ID (28-bit): 0x" << Hexf(hot_source_id));
-  A_ASSERT(hot_source_id < (IUD(1) << 28));
+  _DROut("Hot UUID Source ID (28-bit): 0x" << Hexf(hot_source_id));
+  _AAssert(hot_source_id < (IUD(1) << 28));
 
   IUD Evergreen_source_id = GenerateEvergreenSourceID();
-  D_COUT("Evergreen UUID Source ID (34-bit): 0x" << Hexf(Evergreen_source_id));
-  A_ASSERT(Evergreen_source_id < (IUD(1) << 34));
+  _DROut("Evergreen UUID Source ID (34-bit): 0x" << Hexf(Evergreen_source_id));
+  _AAssert(Evergreen_source_id < (IUD(1) << 34));
 
   ISC seconds = 1234567;
   ISC ticks = 42;
   IUD source_id = GenerateHotSourceID();
 
   IUD hot_uuid = CreateHotUUID(seconds, ticks, source_id);
-  D_COUT("Hot UUID: 0x" << Hexf(hot_uuid));
+  _DROut("Hot UUID: 0x" << Hexf(hot_uuid));
   {
     SSD s_hot(hot_uuid);
-    A_ASSERT(s_hot.IsHot());
-    A_ASSERT(!s_hot.IsEvergreen());
-    A_ASSERT(s_hot.Source() == source_id);
-    A_ASSERT(s_hot.Ticker() == ticks);
+    _AAssert(s_hot.IsHot());
+    _AAssert(!s_hot.IsEvergreen());
+    _AAssert(s_hot.Source() == source_id);
+    _AAssert(s_hot.Ticker() == ticks);
   }
 
   IUD Evergreen_uuid = ClockHotToEvergreen(hot_uuid, Evergreen_source_id);
-  D_COUT("Evergreen UUID: 0x" << Hexf(Evergreen_uuid));
+  _DROut("Evergreen UUID: 0x" << Hexf(Evergreen_uuid));
   {
     SSD s_ever(Evergreen_uuid);
-    A_ASSERT(s_ever.IsEvergreen());
-    A_ASSERT(!s_ever.IsHot());
+    _AAssert(s_ever.IsEvergreen());
+    _AAssert(!s_ever.IsHot());
   }
 
   IUD Evergreen_uuid2 = CreateEvergreenUUID(seconds, Evergreen_source_id);
   {
     SSD s_ever2(Evergreen_uuid2);
-    A_ASSERT(s_ever2.IsEvergreen());
-    A_ASSERT(!s_ever2.IsHot());
+    _AAssert(s_ever2.IsEvergreen());
+    _AAssert(!s_ever2.IsHot());
   }
 
   // Converting an existing Hot TMD to Evergreen must flip the marker bits.
@@ -60,8 +59,8 @@ static const CHA* UUID(const CHA* args) {
   IUD converted = ClockHotToEvergreen(tmd_test, new_source_id);
   {
     SSD s_converted(converted);
-    A_ASSERT(s_converted.IsEvergreen());
-    A_ASSERT(!s_converted.IsHot());
+    _AAssert(s_converted.IsEvergreen());
+    _AAssert(!s_converted.IsHot());
   }
 
   // A Hot UUID converted to Cold keeps its fields and only clears the MSb.
@@ -69,26 +68,26 @@ static const CHA* UUID(const CHA* args) {
     SSD s_hot2(hot_uuid);
     IUD cold_uuid = s_hot2.ToCold(0);
     SSD s_cold(cold_uuid);
-    A_ASSERT(s_cold.IsCold());
-    A_ASSERT(!s_cold.IsHot());
-    A_ASSERT(!s_cold.IsEvergreen());
-    A_ASSERT(s_cold.Ticker() == ticks);
-    A_ASSERT(s_cold.Source() == source_id);
+    _AAssert(s_cold.IsCold());
+    _AAssert(!s_cold.IsHot());
+    _AAssert(!s_cold.IsEvergreen());
+    _AAssert(s_cold.Ticker() == ticks);
+    _AAssert(s_cold.Source() == source_id);
   }
 
-  D_COUT(Headingf("UUID Tests Complete! :-)"));
+  _DROut(Headingf("UUID Tests Complete! :-)"));
 
 #endif
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* Clock(const CHA* args) {
-#if SEAM >= CRABS_CLOCK
-  A_TEST_BEGIN;
+#if _Seam >= _CrabsClock
+  _ATestBegin;
 
   UUID(args);
 
-  D_COUT(Headingf("Testing TScanTime..."));
+  _DROut(Headingf("Testing TScanTime..."));
 
   ISC t, t_found;
   const CHA* result;
@@ -117,14 +116,14 @@ static const CHA* Clock(const CHA* args) {
   };
 
   for (TMC i = 0; i < 18; ++i) {
-    D_COUT(Linef('-') << "\n    " << i << ".) " << Strings[i] << " -> ");
+    _DROut(Linef('-') << "\n    " << i << ".) " << Strings[i] << " -> ");
     TMC t = -1;
     result = SScanTime(Strings[i], t);
-    A_ASSERT(result);
-    // A_ASSERT (!ClockCompare (t, 2018, 8, 9, 0, 0, 0));
+    _AAssert(result);
+    // _AAssert (!ClockCompare (t, 2018, 8, 9, 0, 0, 0));
   }
 
-  D_COUT("\n\nTesting TestTimes...\n\n");
+  _DROut("\n\nTesting TestTimes...\n\n");
 
   enum { Size = 128, TestTimeCount = 3 };
   CHA socket[Size];
@@ -134,7 +133,7 @@ static const CHA* Clock(const CHA* args) {
     { 2038,  1, 19, 23, 59, 59, 1970 },
   };
   for (ISN i = 0; i < TestTimeCount; ++i) {
-    D_COUT("\n\n" << i << ".) Testing: " << TestTimes[i][0] << '-' << TestTimes[i][1] << '-' <<
+    _DROut("\n\n" << i << ".) Testing: " << TestTimes[i][0] << '-' << TestTimes[i][1] << '-' <<
       TestTimes[i][2] << '@' << TestTimes[i][3] << ':' << TestTimes[i][4] <<
       ':' << TestTimes[i][5] << " epoch:" << TestTimes[i][6]);
 
@@ -142,56 +141,56 @@ static const CHA* Clock(const CHA* args) {
       TestTimes[i][3], TestTimes[i][4], TestTimes[i][5], TestTimes[i][6]);
     AClock clock;
     ClockInit(clock, t);
-    D_COUT("\nAClock:");
-    #if D_THIS
-    TClockPrint<::_::COut>(StdOut(), clock);
+    _DROut("\nAClock:");
+    #if _DThis
+    TClockPrint<::_::ROut>(RefOut(), clock);
     #endif
     ClockPrint(socket, socket + Size, t);
-    D_COUT("\n\n  Before:\"" << socket << '\"');
+    _DROut("\n\n  Before:\"" << socket << '\"');
     result = SScanTime(socket, t_found);
-    D_COUT("\n\nresult:\"" << TClock<ISC>(t_found) << "\"\"");
-    A_ASSERT(ClockCompare(t_found, t));
+    _DROut("\n\nresult:\"" << TClock<ISC>(t_found) << "\"\"");
+    _AAssert(ClockCompare(t_found, t));
   }
 
-  D_COUT(Headingf("Testing invalid input"));
+  _DROut(Headingf("Testing invalid input"));
   TSScan<CHA>("cat", t);
 
   TSScan<CHA>("2017-30-40", t);
 
-  D_COUT("\nDone testing date parsing utils! :-)\n");
+  _DROut("\nDone testing date parsing utils! :-)\n");
 
-  D_COUT(Headingf("Testing ClockDayToMonth..."));
+  _DROut(Headingf("Testing ClockDayToMonth..."));
 
   TMC year = 2021; //< Not a leap year.
-  A_AVOW(ISA(MonthJanuary  ), ClockDayToMonth(DaysJanuaryStart   - 1, year));
-  A_AVOW(ISA(MonthJanuary  ), ClockDayToMonth(DaysJanuaryStop    - 1, year));
-  A_AVOW(ISA(MonthFebruary ), ClockDayToMonth(DaysFebruaryStart  - 1, year));
-  A_AVOW(ISA(MonthFebruary ), ClockDayToMonth(DaysFebruaryStop   - 1, year));
-  A_AVOW(ISA(MonthMarch    ), ClockDayToMonth(DaysMarchStart     - 1, year));
-  A_AVOW(ISA(MonthMarch    ), ClockDayToMonth(DaysMarchStop      - 1, year));
-  A_AVOW(ISA(MonthApril    ), ClockDayToMonth(DaysAprilStart     - 1, year));
-  A_AVOW(ISA(MonthApril    ), ClockDayToMonth(DaysAprilStop      - 1, year));
-  A_AVOW(ISA(MonthMay      ), ClockDayToMonth(DaysMayStart       - 1, year));
-  A_AVOW(ISA(MonthMay      ), ClockDayToMonth(DaysMayStop        - 1, year));
-  A_AVOW(ISA(MonthJune     ), ClockDayToMonth(DaysJuneStart      - 1, year));
-  A_AVOW(ISA(MonthJune     ), ClockDayToMonth(DaysJuneStop       - 1, year));
-  A_AVOW(ISA(MonthJuly     ), ClockDayToMonth(DaysJulyStart      - 1, year));
-  A_AVOW(ISA(MonthJuly     ), ClockDayToMonth(DaysJulyStop       - 1, year));
-  A_AVOW(ISA(MonthAugust   ), ClockDayToMonth(DaysAugustStart    - 1, year));
-  A_AVOW(ISA(MonthAugust   ), ClockDayToMonth(DaysAugustStop     - 1, year));
-  A_AVOW(ISA(MonthSeptember), ClockDayToMonth(DaysSeptemberStart - 1, year));
-  A_AVOW(ISA(MonthSeptember), ClockDayToMonth(DaysSeptemberStop  - 1, year));
-  A_AVOW(ISA(MonthOctober  ), ClockDayToMonth(DaysOctoberStart   - 1, year));
-  A_AVOW(ISA(MonthOctober  ), ClockDayToMonth(DaysOctoberStop    - 1, year));
-  A_AVOW(ISA(MonthNovember ), ClockDayToMonth(DaysNovemberStop   - 1, year));
-  A_AVOW(ISA(MonthNovember ), ClockDayToMonth(DaysNovemberStop   - 1, year));
-  A_AVOW(ISA(MonthDecember ), ClockDayToMonth(DaysDecemberStart  - 1, year));
-  A_AVOW(ISA(MonthDecember ), ClockDayToMonth(DaysDecemberStop   - 1, year));
+  _AAvow(ISA(MonthJanuary  ), ClockDayToMonth(DaysJanuaryStart   - 1, year));
+  _AAvow(ISA(MonthJanuary  ), ClockDayToMonth(DaysJanuaryStop    - 1, year));
+  _AAvow(ISA(MonthFebruary ), ClockDayToMonth(DaysFebruaryStart  - 1, year));
+  _AAvow(ISA(MonthFebruary ), ClockDayToMonth(DaysFebruaryStop   - 1, year));
+  _AAvow(ISA(MonthMarch    ), ClockDayToMonth(DaysMarchStart     - 1, year));
+  _AAvow(ISA(MonthMarch    ), ClockDayToMonth(DaysMarchStop      - 1, year));
+  _AAvow(ISA(MonthApril    ), ClockDayToMonth(DaysAprilStart     - 1, year));
+  _AAvow(ISA(MonthApril    ), ClockDayToMonth(DaysAprilStop      - 1, year));
+  _AAvow(ISA(MonthMay      ), ClockDayToMonth(DaysMayStart       - 1, year));
+  _AAvow(ISA(MonthMay      ), ClockDayToMonth(DaysMayStop        - 1, year));
+  _AAvow(ISA(MonthJune     ), ClockDayToMonth(DaysJuneStart      - 1, year));
+  _AAvow(ISA(MonthJune     ), ClockDayToMonth(DaysJuneStop       - 1, year));
+  _AAvow(ISA(MonthJuly     ), ClockDayToMonth(DaysJulyStart      - 1, year));
+  _AAvow(ISA(MonthJuly     ), ClockDayToMonth(DaysJulyStop       - 1, year));
+  _AAvow(ISA(MonthAugust   ), ClockDayToMonth(DaysAugustStart    - 1, year));
+  _AAvow(ISA(MonthAugust   ), ClockDayToMonth(DaysAugustStop     - 1, year));
+  _AAvow(ISA(MonthSeptember), ClockDayToMonth(DaysSeptemberStart - 1, year));
+  _AAvow(ISA(MonthSeptember), ClockDayToMonth(DaysSeptemberStop  - 1, year));
+  _AAvow(ISA(MonthOctober  ), ClockDayToMonth(DaysOctoberStart   - 1, year));
+  _AAvow(ISA(MonthOctober  ), ClockDayToMonth(DaysOctoberStop    - 1, year));
+  _AAvow(ISA(MonthNovember ), ClockDayToMonth(DaysNovemberStop   - 1, year));
+  _AAvow(ISA(MonthNovember ), ClockDayToMonth(DaysNovemberStop   - 1, year));
+  _AAvow(ISA(MonthDecember ), ClockDayToMonth(DaysDecemberStart  - 1, year));
+  _AAvow(ISA(MonthDecember ), ClockDayToMonth(DaysDecemberStop   - 1, year));
 
-  A_AVOW(ISA(-1), ClockDayToMonth(-1, year));
-  A_AVOW(ISA(-1), ClockDayToMonth(366, year));
-  D_COUT("\nDone testing ClockDayToMonth! :-)\n");
+  _AAvow(ISA(-1), ClockDayToMonth(-1, year));
+  _AAvow(ISA(-1), ClockDayToMonth(366, year));
+  _DROut("\nDone testing ClockDayToMonth! :-)\n");
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

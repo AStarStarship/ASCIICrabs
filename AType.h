@@ -1,16 +1,16 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_TYPES_DECL
-#define CRABS_TYPES_DECL
+#ifndef _CrabsTypesH
+#define _CrabsTypesH
 #include <_Config.h>
 
 /* Function that remaps a Standard Data Type to an Extended Plain or Extended
-Custom Type or prints it to a SPrinter or writes it to a boofer.
+Custom Type or prints it to a SPrinter or writes it to a buffer.
 Control Bits:
 I have no clue what we're going to do with the control bits right now but we
 have a word, we only need 16-bits, so why not reserve the entire word?
-@param  begin The first byte in the CHR boofer.
-@param  end   The CHR after the last char in the boofer.
+@param  begin The first byte in the CHR buffer.
+@param  end   The CHR after the last char in the buffer.
 @param  type  A 16-bit ASCII Type in the LSB and control bits in the MSb.
 @param  value A pointer to a value to print.
 @return If start is nil the remapped Extended Plain Type.
@@ -31,7 +31,7 @@ struct IUE {
 namespace _ {
 
 /* A Slot in a Door in a Chinese Room to pass messages through.
-A Slot is Ring Boofer Socket similar to a TCP port. The operation of the
+A Slot is Ring Buffer Socket similar to a TCP port. The operation of the
 Slot is similar to the Text class except that it introduces two more
 pointers for the (socket) origin and (data) origin of the ring socket and
 you may write packed data. */
@@ -58,7 +58,7 @@ struct alignas(ACPUCacheLineSize) ACTXFrame {
   };
   ACTXHandler handler;            //< ASCII Context Handler.
   ISW epoch;                      //< 32-bit Unix timestamp epoch.
-#if CPU_SIZE != CPU_2_BYTE
+#if _CPUSize != _CPU16Bit
   IUW scratchpad[BytesReserved] = {0};  //< Cache line alignment words.
 #endif
 
@@ -105,6 +105,11 @@ DTB ATypeMakePtrCNS(DTW type);
 DTB ATypeCrabsIndexCNS(DTW type);
 
 // A 128-bit unsigned integer.
+// Only needed when the platform lacks a native 128-bit type (e.g. MSVC x64).
+// On GCC/Clang, IUE/ISE are typedef'd to unsigned __int128/__int128 in
+// _ConfigFooter.h, and this struct would shadow that typedef (breaking
+// native 128-bit arithmetic such as Ryu's IUE * IUD).
+#if !defined(HAS_128_BIT_INT)
 struct IUE {
   IUD lsb;    //< Least significant 64 bits.
   IUD msb;    //< Most significant 64 bits.
@@ -127,18 +132,10 @@ struct ISE {
 
   ISE(IUD lsb, IUD msb = 0);
 };
+#endif  //< !defined(HAS_128_BIT_INT)
 
-#if USING_SOFTWARE_FPC == YES_0
-#if CPU_SIZE == CPU_2_BYTES
-// A 32-bit floating-point number.
-struct FPC {
-  IUB lsb;    //< Least significant 16 bits.
-  IUB msb;    //< Most significant 16 bits.
-
-  FPC(IUB lsb, IUB msB = 0);
-};
-#else
-// A 32-bit floating-point number.
+#if _CPUSize == CPU_2_BYTES
+// A 32-bit floating-point number (16-bit CPU: two 16-bit halves).
 struct FPC {
   IUB lsb;    //< Least significant 16 bits.
   IUB msb;    //< Most significant 16 bits.
@@ -146,8 +143,7 @@ struct FPC {
   FPC(IUB lsb, IUB msB = 0);
 };
 #endif
-#endif
-#if CPU_SIZE < CPU_8_BYTES
+#if _CPUSize < CPU_8_BYTES
 // A 64-bit floating-point number.
 struct FPD {
   IUC lsb;    //< Least significant 32 bits.
@@ -301,18 +297,12 @@ class ATypeValue {
   /* Stores a NIL type with indeterminate word_. */
   ATypeValue();
 
-#if USING_STA == YES_0
   explicit ATypeValue(CHA value);
   explicit ATypeValue(const CHA* value);
-#endif
-#if USING_STB == YES_0
   explicit ATypeValue(CHB value);
   explicit ATypeValue(const CHB* value);
-#endif
-#if USING_STC == YES_0
   explicit ATypeValue(CHC value);
   explicit ATypeValue(const CHC* value);
-#endif
   explicit ATypeValue(ISA value);
   explicit ATypeValue(IUA value);
   explicit ATypeValue(ISB value);
@@ -321,34 +311,30 @@ class ATypeValue {
   explicit ATypeValue(IUC value);
   explicit ATypeValue(ISD value);
   explicit ATypeValue(IUD value);
-#if USING_FPC == YES_0
   explicit ATypeValue(FPC value);
-#endif
-#if USING_FPD == YES_0
   explicit ATypeValue(FPD value);
-#endif
 
   /* Stores the value to the word_ and the ASCII type of the value. */
   explicit ATypeValue(void* value);
   explicit ATypeValue(const void* value);
 
-  explicit ATypeValue(void* base_ptr, ISW offset);
-  explicit ATypeValue(const void* base_ptr, ISW offset);
+  explicit ATypeValue(void* base_ref, ISW offset);
+  explicit ATypeValue(const void* base_ref, ISW offset);
 
   explicit ATypeValue(DTW type, void* value);
   explicit ATypeValue(DTW type, const void* value);
 
-  explicit ATypeValue(DTW type, void* base_ptr, ISW offset);
-  explicit ATypeValue(DTW type, const void* base_ptr, ISW offset);
+  explicit ATypeValue(DTW type, void* base_ref, ISW offset);
+  explicit ATypeValue(DTW type, const void* base_ref, ISW offset);
 
   explicit ATypeValue(DTW type, void* value, void* value_end);
   explicit ATypeValue(DTW type, const void* value, const void* value_end);
 
-  explicit ATypeValue(DTW type, void* base_ptr, ISW offset, void* value_end);
-  explicit ATypeValue(DTW type, const void* base_ptr, ISW offset, const void* value_end);
+  explicit ATypeValue(DTW type, void* base_ref, ISW offset, void* value_end);
+  explicit ATypeValue(DTW type, const void* base_ref, ISW offset, const void* value_end);
 
-  explicit ATypeValue(DTW type, void* base_ptr, ISW offset, ISW base_bytes);
-  explicit ATypeValue(DTW type, const void* base_ptr, ISW offset, ISW base_bytes);
+  explicit ATypeValue(DTW type, void* base_ref, ISW offset, ISW base_bytes);
+  explicit ATypeValue(DTW type, const void* base_ref, ISW offset, ISW base_bytes);
 
   /* Gets the type_. */
   DTW Type();
@@ -391,39 +377,33 @@ class ATypeValue {
   void* Set(void* value);
   const void* Set(const void* value);
 
-  void* Set(void* base_ptr, ISW voffset);
-  const void* Set(const void* base_ptr, ISW voffset);
+  void* Set(void* base_ref, ISW voffset);
+  const void* Set(const void* base_ref, ISW voffset);
 
   void* Set(DTW type, void* value);
   const void* Set(DTW type, const void* value);
 
-  void* Set(DTW type, void* base_ptr, ISW voffset);
-  const void* Set(DTW type, const void* base_ptr, ISW voffset);
+  void* Set(DTW type, void* base_ref, ISW voffset);
+  const void* Set(DTW type, const void* base_ref, ISW voffset);
 
   void* Set(DTW type, void* value, void* value_end);
   const void* Set(DTW type, const void* value, const void* value_end);
 
-  void* Set(DTW type, void* base_ptr, ISW offset, void* value_end);
-  const void* Set(DTW type, const void* base_ptr, ISW offset, 
+  void* Set(DTW type, void* base_ref, ISW offset, void* value_end);
+  const void* Set(DTW type, const void* base_ref, ISW offset, 
                          const void* value_end);
 
-  void* Set(DTW type, void* base_ptr, ISW offset, ISW base_byes);
-  const void* Set(DTW type, const void* base_ptr, ISW offset, 
+  void* Set(DTW type, void* base_ref, ISW offset, ISW base_byes);
+  const void* Set(DTW type, const void* base_ref, ISW offset, 
                          ISW base_byes);
 
   /*Sets the word_ to the given value and updates the type. */
-#if USING_STA == YES_0
   void Set(CHA value);
   void Set(const CHA* value);
-#endif
-#if USING_STB == YES_0
   void Set(CHB value);
   void Set(const CHB* value);
-#endif
-#if USING_STC == YES_0
   void Set(const CHC* value);
   void Set(CHC value);
-#endif
   void Set(ISA value);
   void Set(IUA value);
   void Set(ISB value);
@@ -433,13 +413,9 @@ class ATypeValue {
   void Set(IUC value);
   void Set(ISD value);
   void Set(IUD value);
-#if USING_FPC == YES_0
   void Set(FPC value);
-#endif
-#if USING_FPD == YES_0
   void Set(FPD value);
-#endif
 };
 
 }  //< namespace _
-#endif
+#endif  //< _CrabsTypesH

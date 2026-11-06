@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_PUFF_DECL
-#define CRABS_PUFF_DECL
+#ifndef _CrabsPuffH
+#define _CrabsPuffH
 #include <_Config.h>
-#if SEAM >= CRABS_ITOS
+#if _Seam >= _CrabsIToS
 namespace _ {
 
 /* Lookup table of ASCII CHS pairs for 00, 01, ..., 99. */
@@ -32,7 +32,7 @@ ISC STRLength(ISC value);
 ISC STRLength(IUD value);
 ISC STRLength(ISD value);
 
-#if SEAM >= CRABS_FTOS
+#if _Seam >= _CrabsFToS
 
 /* IEEE754 Powers of 10 integral portions LUT. */
 const void* Binary32Pow10IntegralPortions();
@@ -44,7 +44,6 @@ const void* Binary64Pow10IntegralPortions();
  */
 const void* BinaryPow10Exponents();
 
-#if USING_FPC == YES_0
 /* Gets the maximum number_ of digits required to represent a FPC as in
 ASCII. */
 ISC FPCDigitsMax();
@@ -57,9 +56,7 @@ BOL IsInfinite(FPC value);
 
 /* Returns the ceiling of the given value to the next highest up integer. */
 FPC Ceiling(FPC value);
-#endif
 
-#if USING_FPD == YES_0
 /* Gets the maximum number_ of digits required to represent a FPD as in
 ASCII. */
 ISC FPDDigitsMax();
@@ -72,9 +69,8 @@ BOL IsInfinite(FPD value);
 
 /* Returns the ceiling of the given value to the next highest up integer. */
 FPD Ceiling(FPD value);
-#endif
 
 #endif
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsPuffH

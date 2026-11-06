@@ -1,19 +1,17 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_EXCEPTIONS_DECL
-#define CRABS_EXCEPTIONS_DECL
+#ifndef _CrabsInterruptsH
+#define _CrabsInterruptsH
 #include <_Config.h>
-#if SEAM >= CRABS_OP
-#if USING_CRABS_INTERRUPTS == YES_0
+#if _Seam >= _CrabsOp
+#ifdef _CrabsUsingInterrupts
 namespace _ {
 
-#if USING_TEXT_SCRIPT == YES_0
 /* Exception thrown to interrupt and crash the program. */
 struct RoomCrashException : public std::exception {
   RoomCrashException() {}
 };
-#endif  //< USING_CRABS_INTERRUPTS == YES_0
 }  //< namespace _
 #endif
 #endif
-#endif
+#endif  //< _CrabsInterruptsH

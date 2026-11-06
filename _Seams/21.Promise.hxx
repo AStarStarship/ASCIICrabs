@@ -1,92 +1,92 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_PROMISE
+#if _Seam >= _CrabsPromise
 #include "../Promise.h"
-#if SEAM == CRABS_PROMISE
+#if _Seam == _CrabsPromise
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 static const CHA* Promise(const CHA* args) {
-#if SEAM == CRABS_PROMISE
-  A_TEST_BEGIN;
+#if _Seam == _CrabsPromise
+  _ATestBegin;
   
   enum {
-    BooferBytes = 512,
-    BooferWords = BooferBytes / sizeof(IUW),
+    BufferBytes = 512,
+    BufferWords = BufferBytes / sizeof(IUW),
     StackTotal = 8,
   };
   
-  D_COUT("\nTesting Promise API...\n");
+  _DROut("\nTesting Promise API...\n");
   
-  IUW boofer[BooferWords],
-      unpackedExpr[BooferWords];
+  IUW buffer[BufferWords],
+      unpackedExpr[BufferWords];
   IUD pcCtx = 0;
   
   StarTest starTest;
-  Crabs* crabs = CrabsInit(boofer, BooferBytes, StackTotal, &starTest,
-                           unpackedExpr, BooferBytes, pcCtx);
+  Crabs* crabs = CrabsInit(buffer, BufferBytes, StackTotal, &starTest,
+                           unpackedExpr, BufferBytes, pcCtx);
   
   TMC now = crabs->epoch;
   Slot* promiseSlot = CrabsCreatePromise(crabs, now);
   
   if (!promiseSlot) {
-    D_COUT("Error: Failed to create promise slot");
-    return TPtr<const CHA>(AErrorNil);
+    _DROut("Error: Failed to create promise slot");
+    return TRef<const CHA>(AErrorNil);
   }
   
-  D_COUT("\nPromise created at timestamp:" << now);
-  D_COUT("Promise state (should be 0=pending):" << PromiseState(promiseSlot));
-  A_AVOW(IUW(PromisePending), PromiseState(promiseSlot));
+  _DROut("\nPromise created at timestamp:" << now);
+  _DROut("Promise state (should be 0=pending):" << PromiseState(promiseSlot));
+  _AAvow(IUW(PromisePending), PromiseState(promiseSlot));
   
   IUW resultValue = 42;
   const Op* op = CrabsResolvePromise(crabs, promiseSlot, &resultValue);
   if (op) {
-    D_COUT("Error: Failed to resolve promise");
-    return NILP; //<  return op; //< ???
+    _DROut("Error: Failed to resolve promise");
+    return _NilP; //<  return op; //< ???
   }
   
-  D_COUT("\nPromise resolved with value:" << resultValue);
-  D_COUT("Promise state (should be 1=fulfilled):" << PromiseState(promiseSlot));
-  A_AVOW(IUW(PromiseFulfilled), PromiseState(promiseSlot));
+  _DROut("\nPromise resolved with value:" << resultValue);
+  _DROut("Promise state (should be 1=fulfilled):" << PromiseState(promiseSlot));
+  _AAvow(IUW(PromiseFulfilled), PromiseState(promiseSlot));
   
   TMC resolutionTime = PromiseTimestamp(promiseSlot);
-  D_COUT("Resolution time:" << resolutionTime);
+  _DROut("Resolution time:" << resolutionTime);
   
   Slot* promiseSlot2 = CrabsCreatePromise(crabs, now + 1000);
   IUB errorValue = 123;
   op = CrabsRejectPromise(crabs, promiseSlot2, &errorValue);
   if (op) {
-    D_COUT("Error: Failed to reject promise");
-    return NILP; //<  return op; //< ???
+    _DROut("Error: Failed to reject promise");
+    return _NilP; //<  return op; //< ???
   }
   
-  D_COUT("\nPromise rejected with error:" << errorValue);
-  D_COUT("Promise state (should be 2=rejected):" << PromiseState(promiseSlot2));
-  A_AVOW(IUW(PromiseRejected), PromiseState(promiseSlot2));
+  _DROut("\nPromise rejected with error:" << errorValue);
+  _DROut("Promise state (should be 2=rejected):" << PromiseState(promiseSlot2));
+  _AAvow(IUW(PromiseRejected), PromiseState(promiseSlot2));
   
   CHA onFulfilledKey[] = "onFulfill";
   op = CrabsThenPromise(crabs, promiseSlot, onFulfilledKey);
   if (op) {
-    D_COUT("Error: Failed to attach then handler");
-    return NILP; //<  return op; //< ???
+    _DROut("Error: Failed to attach then handler");
+    return _NilP; //<  return op; //< ???
   }
-  D_COUT("\n.then() handler attached");
+  _DROut("\n.then() handler attached");
   
   CHA onRejectedKey[] = "onReject";
   op = CrabsCatchPromise(crabs, promiseSlot2, onRejectedKey);
   if (op) {
-    D_COUT("Error: Failed to attach catch handler");
-    return NILP; //<  return op; //< ???
+    _DROut("Error: Failed to attach catch handler");
+    return _NilP; //<  return op; //< ???
   }
-  D_COUT(".catch() handler attached");
+  _DROut(".catch() handler attached");
   
-  D_COUT("\n| Promise tests completed successfully\n");
+  _DROut("\n| Promise tests completed successfully\n");
 #endif
-  return NILP;
+  return _NilP;
 }
 
 }  //< namespace CRTest

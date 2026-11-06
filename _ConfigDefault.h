@@ -1,50 +1,40 @@
 // Copyright AStarship <https://astarship.net>.
 
-#define CRABS_RUN_TESTS YES_0
-#define CRABS_ROOM_BYTES (1 << 20)
-#define CRABS_ROOM_NAME_LENGTH_MAX  16
+#define _CrabsRunTests
+#define _CrabsRoomBytes (1 << 20)
+#define _CrabsRoomNameLengthMax  16
 
-#define USING_CRABS_1_BYTE_TYPES
-#define USING_CRABS_2_BYTE_TYPES
-#define USING_CRABS_4_BYTE_TYPES
-#define USING_CRABS_8_BYTE_TYPES
+#define _CrabsUsing1ByteTypes
+#define _CrabsUsing2ByteTypes
+#define _CrabsUsing4ByteTypes
+#define _CrabsUsing8ByteTypes
 
-#define CPU_SIZE CPU_8_BYTE
-#define CPU_ENDIAN CPU_ENDIAN_LITTLE
+#define _CPUSize _CPU8Byte
+#define _CPUEndian _CPUEndianLittle
 
-#define USING_CONSOLE YES_0
+#define _DefaultIntSize _AType4Byte
 
-#define USING_STA YES_0
-#define USING_STB YES_0
-#define USING_STC YES_0
-#define DEFAULT_INT_SIZE ATYPE_32BIT
+#define _LargestChar _StringTypeA
+#define _LargestSTR _StringTypeA
 
-#define LARGEST_CHAR STRING_TYPE_A
-#define USING_STR STRING_TYPE_A
-#define USING_LOM _ARC_CHA
+#define _FPNative FPD
 
-#define USING_FP 8
-#define USING_FPC YES_0
-#define USING_FPD YES_0
+#define _UsingSoftwareFPE
 
-#define USING_SOFTWARE_FPC  NO_0
-#define USING_SOFTWARE_FPD  NO_0
-#define USING_SOFTWARE_FPE  YES_0
+#define _Using16ByteTypes
 
-#define USING_16_BYTE_POD_TYPES NO_0
-
-#define BOL_SIZE 4 //< Size of boolean in bytes.
+#define _BOLSize 4 //< Size of boolean in bytes.
 
 // Last 128-bit custom type; to disable define as 19 (ASCII BOL).
-#define ETE_STOP 19
+#define _ETEStop 19
 
-// Last 64-bit custom type; to disable define as CT5_STOP.
-#define ETD_STOP ETE_STOP
+// Last 64-bit custom type; to disable define as _CT5Stop.
+#define _ETDStop _ETEStop
 
-// Last 32-bit custom type; to disable define as CT4_STOP.
-#define ETC_STOP ETD_STOP
+// Last 32-bit custom type; to disable define as _CT4Stop.
+#define ETCStop _ETDStop
 
-// Last 16-bit custom type; to disable define as CT3_STOP.
-#define ECB_STOP ETC_STOP
+// Last 16-bit custom type; to disable define as _CT3Stop.
+#define _ETBStop ETCStop
 
-#define ACTX_HANDLER_INIT ACTXHandlerDefault
+#define _AContextHandlerInit ACTXHandlerDefault

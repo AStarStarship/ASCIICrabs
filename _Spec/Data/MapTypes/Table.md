@@ -12,26 +12,26 @@ The memory layout shall be optimized by need to minimize lookup time, which star
 |_____ | Collision 0   ISY Collision   |
 |_____ v Collision N          Pile     |
 +--------------------------------------+
-|_____   Boofer Stop                   |
-|_____   Boofer                        |
-|_____   Boofer Start                  |
+|_____   Buffer Stop                   |
+|_____   Buffer                        |
+|_____   Buffer Start                  |
 +--------------------------------------+
 |_____ ^ Key N                 CHS     |
 |_____ | Key 0                Keys     |
 +--------------------------------------+
-|_____   Boofer                ISY     |
+|_____   Buffer                ISY     |
 |_____ ^ Unsorted Index N    Unsorted  |
 |      | Unsorted Index 0    Indexes   |
 +--------------------------------------+
-|_____   Boofer                ISY     |
+|_____   Buffer                ISY     |
 |_____ ^ Collision Index N  Collision  |
 |      | Collision Index 0   Indexes   |
 +--------------------------------------+
-|_____   Boofer                ISZ     |
+|_____   Buffer                ISZ     |
 |_____ ^ Key Offset N          Key     |
 |      | Key Offset 0        Offsets   |
 +--------------------------------------+
-|_____   Boofer                HSH     |
+|_____   Buffer                HSH     |
 |_____ ^ Sorted Hash N        Hashes   |
 |      | Sorted Hash 0                 |
 +--------------------------------------+  ^ Up in addresses.
@@ -43,11 +43,11 @@ The memory layout shall be optimized by need to minimize lookup time, which star
 template<typename CHS = CHR, typename ISZ = ISR, typename ISY = ISQ, typename HSH = IUN>
 struct TTable {
   ISZ bytes,          //< Size of this object in bytes.
-      stop;           //< Keys boofer stop offset or start if count == total.
+      stop;           //< Keys buffer stop offset or start if count == total.
   TStack<SCK_P> map;  //< A Stack of offset mappings to strings.
 ```
 
-When the count is less than the map.total, the stop of the keys boofer is stored in the stop ISZ value, and the start of the keys boofer is stored in the `keys_map[count]`. When the map.count is equal to the map.total the stop variable stores the keys start offset, and when the map.count returns to being less than the total
+When the count is less than the map.total, the stop of the keys buffer is stored in the stop ISZ value, and the start of the keys buffer is stored in the `keys_map[count]`. When the map.count is equal to the map.total the stop variable stores the keys start offset, and when the map.count returns to being less than the total
 
 ## Hash Function
 

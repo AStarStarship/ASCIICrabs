@@ -1,6 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsErrorHXX
+#define _CrabsErrorHXX
 #include "Error.hpp"
-#if SEAM >= CRABS_STACK
+#if _Seam >= _CrabsStack
 namespace _ {
 const CHA* ASCIIErrorSTA() {
   return TAErrors<CHA>();
@@ -18,3 +21,5 @@ BOL AIsError(const void* result) {
 
 }  //< namespace _
 #endif
+
+#endif  //< _CrabsErrorHXX

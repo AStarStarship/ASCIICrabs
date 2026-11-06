@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ADDRESS
-#define CRABS_ADDRESS
+#ifndef _CrabsAddressH
+#define _CrabsAddressH
 #include <_Config.h>
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 /* @defgroup Address
 @brief Crabs Address utilities.
 */

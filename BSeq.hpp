@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BSQ_HPP
-#define CRABS_BSQ_HPP
+#ifndef _CrabsBSeqHPP
+#define _CrabsBSeqHPP
 #include "BSeq.h"
-#if SEAM >= CRABS_LIST
-#if SEAM == CRABS_LIST
+#if _Seam >= _CrabsList
+#if _Seam == _CrabsList
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -16,7 +16,7 @@ template<typename ISY = ISN, typename DT = DTB>
 struct TBSeq {
   const DT* params;  //< BSeq params.
 
-  TBSeq(const DT* params = NILP) : params(params) {}
+  TBSeq(const DT* params = _NilP) : params(params) {}
 
   constexpr const DT* CParams() { return params; }
 };
@@ -25,7 +25,7 @@ enum {
   BSQMax = 420   //< Max number of elements in a BSQ.
 };
 
-#if CPU_SIZE == CPU_2_BYTE
+#if _CPUSize == _CPU16Bit
 inline ISB UnpackISV(ISB value) {
   if (value < 0) {
     IUB result = 0x8000;
@@ -41,8 +41,8 @@ inline ISB PackISV(ISB value) {
   }
   return value;
 }
-#elif CPU_SIZE == CPU_4_BYTE
-#elif CPU_SIZE == CPU_8_BYTE
+#elif _CPUSize == _CPU32Bit
+#elif _CPUSize == _CPU8Byte
 #endif
 
 /* Creates a immutable Type Sequence (TSQ).
@@ -62,12 +62,12 @@ constexpr const CHR* CCHRSQ() {
 }
 
 /* Writes the given value to the socket between begin and end without any checks.
-@warning You must memory align begin and end and verify the boofer fits before
+@warning You must memory align begin and end and verify the buffer fits before
 calling. */
 template<typename IS = ISR>
 void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value, 
                     IUW value_msb = 0) {
-  D_COUT(" value:" << value << " value_msb:" << value_msb);
+  _DROut(" value:" << value << " value_msb:" << value_msb);
   // | b15 | b14:b13 | b12:b9 | b8:b7 | b6:b5 | b4:b0 |
   // |:---:|:-------:|:------:|:-----:|:-----:|:-----:|
   // | CNS |    MD   |   MT   |  SW   |  VT   |  POD  |
@@ -78,59 +78,59 @@ void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value,
   ISW freespace = ISW(end) - ISW(begin);
   if (type <= _CHA) {
    Write1Byte:
-    auto ptr = TPtr<IUA>(begin);
-    if (freespace < 1) return NILP;
-    *ptr++ = MD ? *TPtr<IUA>(value)
+    auto pointer = TRef<IUA>(begin);
+    if (freespace < 1) return _NilP;
+    *pointer++ = MD ? *TRef<IUA>(value)
                 : IUA(value);
-    return ptr;
+    return pointer;
   }
   if (type <= _CHB) {
    Write2Bytes:
-    if (freespace < 2) return NILP;
-    auto ptr = TPtr<IUB>(begin);
-    *ptr++ = MD ? *TPtr<IUB>(value)
+    if (freespace < 2) return _NilP;
+    auto pointer = TRef<IUB>(begin);
+    *pointer++ = MD ? *TRef<IUB>(value)
                 : IUB(value);
-    return ptr;
+    return pointer;
   }
   if (type <= _CHC) {
    Write4Bytes:
-    if (freespace < 4) return NILP;
-    auto ptr = TPtr<IUC>(begin);
-    *ptr++ = MD ? *TPtr<IUC>(value)
+    if (freespace < 4) return _NilP;
+    auto pointer = TRef<IUC>(begin);
+    *pointer++ = MD ? *TRef<IUC>(value)
                 : IUC(value);
-    return ptr;
+    return pointer;
   }
   if (type <= _SSD) {
    Write8Bytes:
-    if (freespace < 8) return NILP;
-    auto ptr = TPtr<IUD>(begin);
-    *ptr++ = MD ? *TPtr<IUD>(value)
+    if (freespace < 8) return _NilP;
+    auto pointer = TRef<IUD>(begin);
+    *pointer++ = MD ? *TRef<IUD>(value)
                 : IUD(value);
-    return ptr;
+    return pointer;
   }
   if (type <= _SSE) {
    Write16Bytes:
-    if (freespace < 16) return NILP;
-    auto dcursor = TPtr<IUW>(begin);
+    if (freespace < 16) return _NilP;
+    auto dcursor = TRef<IUW>(begin);
     if (MD) {
-      auto vcursor = TPtr<IUW>(value);
+      auto vcursor = TRef<IUW>(value);
       *dcursor++ = *vcursor++;
-      #if CPU_SIZE == CPU_2_BYTE
-      *dcursor++ = *vcursor++;
-      *dcursor++ = *vcursor++;
+      #if _CPUSize == _CPU16Bit
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
-      #elif CPU_SIZE == CPU_4_BYTE
+      *dcursor++ = *vcursor++;
+      *dcursor++ = *vcursor++;
+      #elif _CPUSize == _CPU32Bit
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
       *dcursor++ = *vcursor++;
       #endif
       return dcursor;
     }
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
     *dcursor++ = value;
     *dcursor++ = value_msb;
 #endif
@@ -152,7 +152,7 @@ void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value,
   //@todo Fix me!
   if (vt == 0) { // Vector of Homotuples.
     auto bytes = (1 << vt) * ATypeSizeOfPOD(type);
-    return TPtr<ISA>(begin) + bytes;
+    return TRef<ISA>(begin) + bytes;
   }
   else {
     /* Write varint length as VUC (32-bit unsigned varint).
@@ -165,17 +165,17 @@ void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value,
       tmp >>= 7;
       ++varint_bytes;
     }
-    if (freespace < varint_bytes) return NILP;
-    IUA* ptr = TPtr<IUA>(begin);
+    if (freespace < varint_bytes) return _NilP;
+    IUA* pointer = TRef<IUA>(begin);
     for (IUC i = 0; i < varint_bytes; ++i) {
       IUA byte = IUA(length & 0x7F);
       length >>= 7;
       if (length > 0) byte |= 0x80;
-      *ptr++ = byte;
+      *pointer++ = byte;
     }
-    return ptr;
+    return pointer;
   }
-  return NILP;
+  return _NilP;
 }
 template<typename IS = ISR>
 void* TBSeqWrite_NC(void* begin, void* end, DTB type, const void* value) {
@@ -269,5 +269,5 @@ Printer& TBSeqPrint(Printer& o, const DTB* params) {
 
 }  //< namespace _
 
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsBSeqHPP

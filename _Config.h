@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef PACKAGE_CONFIGURATION
-#define PACKAGE_CONFIGURATION
-#include "_ConfigDefault.h"
+#ifndef _CrabsPackageConfigH
+#define _CrabsPackageConfigH
 #include "_ConfigHeader.h"
+#include "_ConfigDefault.h"
 #include "_ConfigFooter.h"
-#endif
+#endif  //< _CrabsPackageConfigH
 

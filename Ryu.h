@@ -6,10 +6,10 @@
 // ~/3P/ryu/LICENSE-Boost). The C algorithm is preserved verbatim; only the
 // types were mapped onto the ASCII Data Types.
 #pragma once
-#ifndef CRABS_RYU_H
-#define CRABS_RYU_H
+#ifndef _CrabsRyuH
+#define _CrabsRyuH
 #include <_Config.h>
-#if SEAM >= CRABS_FTOS
+#if _Seam >= _CrabsFToS
 namespace _ {
 
 /* Maximum Ryu output length including the nil character.
@@ -58,5 +58,5 @@ written); the string begins at @p result. */
 CHA* RyuD2S(FPD value, CHA* result);
 
 }  //< namespace _
-#endif
-#endif
+#endif  // _Seam >= _CrabsFToS
+#endif  //< _CrabsRyuH

@@ -1,33 +1,30 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_PUFF_HPP
-#define CRABS_PUFF_HPP
+#ifndef _CrabsPuffHPP
+#define _CrabsPuffHPP
 #include "Puff.h"
 #include "Ryu.hpp"  //< TRyuF2S/TRyuD2S shortest round-trip float print.
-#if SEAM >= CRABS_ITOS
+#if _Seam >= _CrabsIToS
 #include "Binary.hpp"
-#if SEAM == CRABS_ITOS
-#include <iostream>
-#undef D_COUT
-#define D_COUT(item) std::cout << item
+#if _Seam == _CrabsIToS
 namespace _ {
 template<typename CHS = CHR>
-CHS* TPrintPrinted(CHS* start = NILP) {
-  static CHS* boofer_begin = 0;
+CHS* TPrintPrinted(CHS* start = _NilP) {
+  static CHS* buffer_begin = 0;
   if (start) {
-    boofer_begin = start;
+    buffer_begin = start;
     return start;
   }
-  std::cout << "\n    Printed \"";
-  CHS* string = boofer_begin;
+  RefOut() << "\n    Printed \"";
+  CHS* string = buffer_begin;
   if (IsError(string)) 
     return string;
   CHS c = *string++;
   while (c) {
-    std::cout << CHA(c);
+    RefOut() << CHA(c);
     c = *string++;
   }
-  std::cout << '\"';
+  RefOut() << '\"';
   return string;
 }
 
@@ -38,11 +35,11 @@ CHS* TPrintPrinted(CHS* start = NILP) {
   TPrintPrinted<CHS>(cursor);                              \
   for (ISN i = 0; i < String_length; ++i) cursor[i] = 'x'; \
   cursor[String_length] = 0;                               \
-  std::cout << "Expecting:" << value << " length:" << String_length
+  RefOut() << "Expecting:" << value << " length:" << String_length
 #define D_PRINT_PRINTED TPrintPrinted<CHS>()
 
 #else
-#define D_COUT(item)
+#define _DROut(item)
 #define BEGIN_ITOS_ALGORITHM
 #define D_PRINT_PRINTED
 #endif
@@ -60,7 +57,7 @@ inline CHS* TSPrintNil(CHS* start) {
 @warning This function DOES NOT do any error checking!  */
 template<typename CHS = CHR>
 inline CHS* TSPrintDecimal(CHS* cursor, CHS value) {
-  *TPtr<CHS>(cursor) = '0' + value;
+  *TRef<CHS>(cursor) = '0' + value;
   D_PRINT_PRINTED;
   return cursor;
 }
@@ -82,13 +79,13 @@ inline CHB* Write(CHB* cursor, CHB c) { return TSPrintChar<CHB>(cursor, c); }
 inline CHC* Write(CHC* cursor, CHC c) { return TSPrintChar<CHC>(cursor, c); }
 
 /* Prints a two decimals to the socket.
-If the SEAM == _0_0_0 (1), then this function will utf debug data.
+If the _Seam == _0_0_0 (1), then this function will utf debug data.
 @warning This function DOES NOT do any error checking! */
 template<typename CHS = CHR>
 inline CHS* TSPrint2Decimals(CHS* socket, IUB decimal_pair) {
   // The LUT packs its first character into the native first byte. Write
   // code units, not an IUB through a possibly unaligned packed-text cursor.
-#if CPU_ENDIAN == CPU_ENDIAN_LITTLE
+#if _CPUEndian == _CPUEndianLittle
   socket[0] = CHS(IUA(decimal_pair));
   socket[1] = CHS(decimal_pair >> 8);
 #else
@@ -114,7 +111,7 @@ inline void SPrintCharPair(CHC* cursor, IUB decimal_pair) {
 /* Prints 8 decimals to the given socket with given LUT.*/
 template<typename CHS = CHR>
 CHS* TSPrint8Decimals(CHS* cursor, IUC value, const IUB* lut) {
-  D_COUT("\n    Printing 8 decimals:" << value);
+  _DROut("\n    Printing 8 decimals:" << value);
   IUB pow_10_ui2 = 10000, digits6and5 = IUB(value / pow_10_ui2),
     digits2and1 = value - pow_10_ui2 * digits6and5;
   pow_10_ui2 = 100;
@@ -138,11 +135,11 @@ template<typename CHS = CHR>
 inline void TSPrint8or16Decimals(CHS* cursor, IUC lsd, const IUB* lut,
   IUC middle_sd, IUC delta) {
   if (delta == 8) {
-    D_COUT("\n    Printing less than 17 decimals:");
+    _DROut("\n    Printing less than 17 decimals:");
     TSPrint8Decimals<CHS>(cursor, lsd, lut);
   }
   else {
-    D_COUT("\n    Printing more than 16 decimals:");
+    _DROut("\n    Printing more than 16 decimals:");
     cursor = TSPrint8Decimals<CHS>(cursor, middle_sd, lut);
     TSPrint8Decimals<CHS>(cursor, lsd, lut);
   }
@@ -160,9 +157,9 @@ template<typename IU = IUW, typename CHS = CHR>
 CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
   BEGIN_ITOS_ALGORITHM;
 
-  if (IsErrorSocket(cursor, stop)) return NILP;
+  if (IsErrorSocket(cursor, stop)) return _NilP;
 
-  CHS* nil_ptr;
+  CHS* nil_ref;
   IUB pow_10_ui2, delta = 0;
   IUC pow_10_ui4;
   const IUB* lut = BinaryLUTDecimals();
@@ -174,18 +171,18 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
   // always be the LSD and digits4and3 and digits8and7 will always be the MSD.
 
   if (value < 10) {
-    D_COUT("\n    Range:[0, 9] length:1 ");
+    _DROut("\n    Range:[0, 9] length:1 ");
   Print1:
-    nil_ptr = cursor + delta + 1;
-    if (nil_ptr >= stop) return NILP;
+    nil_ref = cursor + delta + 1;
+    if (nil_ref >= stop) return _NilP;
     TSPrintDecimal<CHS>(cursor, CHS(value));
     return TSPrintNil<CHS>(cursor + delta + 1);
   }
   else if (value < 100) {
   Print2:
-    D_COUT("\n    Range:[10, 99] length:2 ");
-    nil_ptr = cursor + delta + 2;
-    if (cursor + delta + 2 >= stop) return NILP;
+    _DROut("\n    Range:[10, 99] length:2 ");
+    nil_ref = cursor + delta + 2;
+    if (cursor + delta + 2 >= stop) return _NilP;
     SPrintCharPair(cursor, lut[value]);
     return TSPrintNil<CHS>(cursor + delta + 2);
   }
@@ -194,11 +191,11 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
       pow_10_ui2 = 1000;
       if (value >= pow_10_ui2) {
       Print4B:
-        D_COUT("\n    Range:[1000, 1023] length:4");
-        nil_ptr = cursor + delta + 4;
-        if (nil_ptr >= stop) return NILP;
+        _DROut("\n    Range:[1000, 1023] length:4");
+        nil_ref = cursor + delta + 4;
+        if (nil_ref >= stop) return _NilP;
         IUB digits2and1 = IUB(value - pow_10_ui2);
-#if CPU_ENDIAN == CPU_ENDIAN_LITTLE
+#if _CPUEndian == _CPUEndianLittle
         cursor[0] = '1';
         cursor[1] = '0';
 #else
@@ -206,35 +203,35 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
         cursor[1] = '1';
 #endif
         SPrintCharPair(cursor + 2, lut[digits2and1]);
-        return TSPrintNil<CHS>(nil_ptr);
+        return TSPrintNil<CHS>(nil_ref);
       }
     Print3:
-      D_COUT("\n    Range:[100, 999] length:3");
-      nil_ptr = cursor + delta + 3;
-      if (nil_ptr >= stop) return NILP;
+      _DROut("\n    Range:[100, 999] length:3");
+      nil_ref = cursor + delta + 3;
+      if (nil_ref >= stop) return _NilP;
       IUB digits2and1 = IUB(value), pow_10_ui2 = 100;
       CHS digit = (CHS)(digits2and1 / pow_10_ui2);
       digits2and1 -= IUB(digit) * pow_10_ui2;
       TSPrintDecimal<CHS>(cursor, digit);
       SPrintCharPair(cursor + 1, lut[digits2and1]);
-      return TSPrintNil<CHS>(nil_ptr);
+      return TSPrintNil<CHS>(nil_ref);
     }
     else if ((value >> 14) == 0) {
       pow_10_ui2 = 10000;
       if (value >= pow_10_ui2) {
       Print5B:
-        D_COUT("\n    Range:[10000, 16383] length:5");
-        nil_ptr = cursor + delta + 5;
-        if (nil_ptr >= stop) return NILP;
+        _DROut("\n    Range:[10000, 16383] length:5");
+        nil_ref = cursor + delta + 5;
+        if (nil_ref >= stop) return _NilP;
         cursor = TSPrintChar<CHS>(cursor, '1');
         value -= pow_10_ui2;
       }
       else {
       Print4:
-        D_COUT("\n    Range:[1024, 9999] length:4");
-        nil_ptr = cursor + delta + 4;
-        if (nil_ptr >= stop) return NILP;
-        TSPrintNil<CHS>(nil_ptr);
+        _DROut("\n    Range:[1024, 9999] length:4");
+        nil_ref = cursor + delta + 4;
+        if (nil_ref >= stop) return _NilP;
+        TSPrintNil<CHS>(nil_ref);
       }
       pow_10_ui2 = 100;
       IUB digits2and1 = IUB(value),
@@ -242,18 +239,18 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
       digits2and1 -= digits4and3 * pow_10_ui2;
       SPrintCharPair(cursor, lut[digits4and3]);
       SPrintCharPair(cursor + 2, lut[digits2and1]);
-      return TSPrintNil<CHS>(nil_ptr);
+      return TSPrintNil<CHS>(nil_ref);
     }
     else if ((value >> 17) == 0) {
       if (value >= 100000) {
       Print6B:
-        D_COUT("\n    Range:[65536, 131071] length:6");
+        _DROut("\n    Range:[65536, 131071] length:6");
         goto Print6;
       }
     Print5:
-      D_COUT("\n    Range:[10000, 65535] length:5");
-      nil_ptr = cursor + delta + 5;
-      if (nil_ptr >= stop) return NILP;
+      _DROut("\n    Range:[10000, 65535] length:5");
+      nil_ref = cursor + delta + 5;
+      if (nil_ref >= stop) return _NilP;
       IUC value_ui4 = ToIUC(value);
       pow_10_ui2 = 10000;
       CHS digit6 = IUA(value_ui4 / pow_10_ui2);
@@ -264,24 +261,24 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
         digits2and1 = IUB(value_ui4 - digits4and3 * pow_10_ui2);
       SPrintCharPair(cursor, lut[digits4and3]);
       SPrintCharPair(cursor + 2, lut[digits2and1]);
-      return TSPrintNil<CHS>(nil_ptr);
+      return TSPrintNil<CHS>(nil_ref);
     }
     else if ((value >> 20) == 0) {
       pow_10_ui4 = 1000000;
       if (value >= pow_10_ui4) {
       Print7B:
-        D_COUT("\n    Range:[100000, 1048575] length:7");
-        nil_ptr = cursor + delta + 7;
-        if (nil_ptr >= stop) return NILP;
+        _DROut("\n    Range:[100000, 1048575] length:7");
+        nil_ref = cursor + delta + 7;
+        if (nil_ref >= stop) return _NilP;
         cursor = TSPrintChar<CHS>(cursor, '1');
         value -= pow_10_ui4;
       }
       else {
       Print6:
-        D_COUT("\n    Range:[131072, 999999] length:6");
-        nil_ptr = cursor + delta + 6;
-        if (nil_ptr >= stop) return NILP;
-        TSPrintNil<CHS>(nil_ptr);
+        _DROut("\n    Range:[131072, 999999] length:6");
+        nil_ref = cursor + delta + 6;
+        if (nil_ref >= stop) return _NilP;
+        TSPrintNil<CHS>(nil_ref);
       }
       IUC value_ui4 = IUC(value);
       pow_10_ui2 = 10000;
@@ -295,19 +292,19 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
       SPrintCharPair(cursor, lut[digits6and5]);
       SPrintCharPair(cursor + 2, lut[digits4and3]);
       SPrintCharPair(cursor + 4, lut[digits2and1]);
-      return nil_ptr;
+      return nil_ref;
     }
     else if ((value >> 24) == 0) {
       pow_10_ui4 = 10000000;  //< 10^7
       if (value >= pow_10_ui4) {
-        D_COUT("\n    Range:[10000000, 16777216] length:8");
+        _DROut("\n    Range:[10000000, 16777216] length:8");
         cursor = TSPrint8Decimals<CHS>(cursor, ToIUC(value), lut);
         return TSPrintNil<CHS>(cursor);
       }
     Print7:
-      D_COUT("\n    Range:[1048576, 9999999] length:7");
-      nil_ptr = cursor + delta + 7;
-      if (nil_ptr >= stop) return NILP;
+      _DROut("\n    Range:[1048576, 9999999] length:7");
+      nil_ref = cursor + delta + 7;
+      if (nil_ref >= stop) return _NilP;
       IUB pow_10_ui2 = 10000;
       IUC value_ui4 = ToIUC(value);
       IUB digits6and5 = value_ui4 / pow_10_ui2,
@@ -321,7 +318,7 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
       SPrintCharPair(cursor + 1, lut[digits6and5]);
       SPrintCharPair(cursor + 3, lut[digits4and3]);
       SPrintCharPair(cursor + 5, lut[digits2and1]);
-      return TSPrintNil<CHS>(nil_ptr);
+      return TSPrintNil<CHS>(nil_ref);
     }
     else {
       IUC comparator = 100000000;  // 10^8
@@ -332,88 +329,88 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
         delta = 16;
         value = msd / comparator;
         middle_sd = ToIUC(msd - value * comparator);
-        D_COUT("\n    Printing " << value << '_' << middle_sd << '_' << lsd);
+        _DROut("\n    Printing " << value << '_' << middle_sd << '_' << lsd);
       }
       else {
         value = msd;
         middle_sd = 0;
         delta = 8;
-        D_COUT("\n    Printing " << value << '_' << lsd);
+        _DROut("\n    Printing " << value << '_' << lsd);
       }
       if (value == 0) {
-        D_COUT("\n    Length:8");
+        _DROut("\n    Length:8");
         TSPrint8or16Decimals<CHS>(cursor, lsd, lut, middle_sd, delta);
         return TSPrintNil<CHS>(cursor + 8);
       }
       else if (value < 10) {
-        D_COUT("\n    Length:9");
+        _DROut("\n    Length:9");
         TSPrint8or16Decimals<CHS>(cursor + 1, lsd, lut, middle_sd, delta);
         goto Print1;
       }
       else if (value < 100) {
-        D_COUT("\n    Length:10");
+        _DROut("\n    Length:10");
         TSPrint8or16Decimals<CHS>(cursor + 2, lsd, lut, middle_sd, delta);
         goto Print2;
       }
       else if ((value >> 10) == 0) {
         pow_10_ui2 = 1000;
         if (value >= pow_10_ui2) {
-          D_COUT("\n    Length:12B");
+          _DROut("\n    Length:12B");
           TSPrint8or16Decimals<CHS>(cursor + 4, lsd, lut, middle_sd, delta);
           goto Print4B;
         }
-        D_COUT("\n    Length:11");
+        _DROut("\n    Length:11");
         TSPrint8or16Decimals<CHS>(cursor + 3, lsd, lut, middle_sd, delta);
         goto Print3;
       }
       else if ((value >> 14) == 0) {
         pow_10_ui2 = 10000;
         if (value >= pow_10_ui2) {
-          D_COUT("\n    Length:13B");
+          _DROut("\n    Length:13B");
           TSPrint8or16Decimals<CHS>(cursor + 5, lsd, lut, middle_sd, delta);
           goto Print5B;
         }
-        D_COUT("\n    Length:12");
+        _DROut("\n    Length:12");
         TSPrint8or16Decimals<CHS>(cursor + 4, lsd, lut, middle_sd, delta);
         goto Print4;
       }
       else if ((value >> 17) == 0) {
         pow_10_ui4 = 100000;
         if (value >= pow_10_ui4) {
-          D_COUT("\n    Length:14B");
+          _DROut("\n    Length:14B");
           TSPrint8or16Decimals<CHS>(cursor + 6, lsd, lut, middle_sd, delta);
           goto Print6B;
         }
-        D_COUT("\n    Length:13");
+        _DROut("\n    Length:13");
         TSPrint8or16Decimals<CHS>(cursor + 5, lsd, lut, middle_sd, delta);
         goto Print5;
       }
       else if ((value >> 20) == 0) {
         pow_10_ui4 = 1000000;
         if (value >= pow_10_ui4) {
-          D_COUT("\n    Length:15B");
+          _DROut("\n    Length:15B");
           TSPrint8or16Decimals<CHS>(cursor + 7, lsd, lut, middle_sd, delta);
           goto Print7B;
         }
-        D_COUT("\n    Length:14");
+        _DROut("\n    Length:14");
         TSPrint8or16Decimals<CHS>(cursor + 6, lsd, lut, middle_sd, delta);
         goto Print6;
       }
       else {
         comparator = 10000000;
         if (value >= comparator) {
-          D_COUT("\n    Length:16");
+          _DROut("\n    Length:16");
           TSPrint8Decimals<CHS>(cursor, ToIUC(value), lut);
           TSPrint8Decimals<CHS>(cursor + 8, lsd, lut);
           return TSPrintNil<CHS>(cursor + 16);
         }
-        D_COUT("\n    Length:15");
+        _DROut("\n    Length:15");
         TSPrint8or16Decimals<CHS>(cursor + 7, lsd, lut, middle_sd, delta);
         goto Print7;
       }
     }
   }
-  return NILP;  //< Unreachable.
+  return _NilP;  //< Unreachable.
 }
 
 template<typename IU = IUD, typename CHS = CHR>
@@ -431,7 +428,7 @@ inline CHS* TSPrint(CHS* start, ISW size, IUD value) {
   return TSPrintUnsigned<IUD, CHS>(start, size, value);
 }
 
-#if CPU_SIZE < 64
+#if _CPUSize < 64
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, IUC value) {
   return TSPrintUnsigned<IUC, CHS>(start, stop, value);
@@ -460,7 +457,7 @@ success.
 @param value The value to write. */
 template<typename IS = ISD, typename IU = IUD, typename CHS = CHR>
 inline CHS* TSPrintSigned(CHS* start, CHS* stop, IS value) {
-  if (IsErrorSocket(start, stop)) return NILP;
+  if (IsErrorSocket(start, stop)) return _NilP;
   if (value >= 0) {
     return TSPrintUnsigned<IU, CHS>(start, stop, IU(value));
   }
@@ -487,7 +484,7 @@ inline CHS* TSPrint(CHS* start, ISW size, ISD value) {
   return TSPrintSigned<ISD, IUD, CHS>(start, size, value);
 }
 
-#if CPU_SIZE < 64
+#if _CPUSize < 64
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, ISC value) {
   return TSPrintSigned<ISC, IUC, CHS>(start, stop, value);
@@ -499,18 +496,18 @@ inline CHS* TSPrint(CHS* start, ISW size, ISC value) {
 #else
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, CHS* stop, ISC value) {
-  return TSPrint<CHS, CHT>(start, stop, (ISD)value);
+  return TSPrint<CHS, CHT>(start, stop, ISD(value));
 }
 template<typename CHS = CHR, typename CHT = CHD>
 inline CHS* TSPrint(CHS* start, ISW size, ISC value) {
-  return TSPrint<CHS, CHT>(start, size, (ISD)value);
+  return TSPrint<CHS, CHT>(start, size, ISD(value));
 }
 #endif
 }  //< namespace _
 #endif
 
-#if SEAM >= CRABS_FTOS
-#if SEAM == CRABS_FTOS
+#if _Seam >= _CrabsFToS
+#if _Seam == _CrabsFToS
 #include "_Debug.h"
 #define D_COUT_FLOAT_BINARY(integer, decimals, decimal_count) \
 Print("\nBinary:\"");                                       \
@@ -525,7 +522,7 @@ namespace _ {
 
 inline void FloatBytes(FPC value, CHA& byte_0, CHA& byte_1, CHA& byte_2,
   CHA& byte_3) {
-  IUC ui_value = *TPtr<IUC>(&value);
+  IUC ui_value = *TRef<IUC>(&value);
   byte_0 = CHA(ui_value);
   byte_1 = CHA(ui_value >> 8);
   byte_2 = CHA(ui_value >> 16);
@@ -534,7 +531,7 @@ inline void FloatBytes(FPC value, CHA& byte_0, CHA& byte_1, CHA& byte_2,
 
 inline void FloatBytes(FPD value, CHA& byte_0, CHA& byte_1, CHA& byte_2,
   CHA& byte_3, CHA& byte_4, CHA& byte_5, CHA& byte_6, CHA& byte_7) {
-  IUD ui_value = *TPtr<IUD>(&value);
+  IUD ui_value = *TRef<IUD>(&value);
   byte_0 = CHA(ui_value);
   byte_1 = CHA(ui_value >> 8);
   byte_2 = CHA(ui_value >> 16);
@@ -547,7 +544,7 @@ inline void FloatBytes(FPD value, CHA& byte_0, CHA& byte_1, CHA& byte_2,
 
 template<typename CHS = CHR>
 CHS* TSPrint3(CHS* string, CHS* stop, CHS a, CHS b, CHS c) {
-  if (IsError(string) || string + 3 >= stop) return NILP;
+  if (IsError(string) || string + 3 >= stop) return _NilP;
   *string++ = a;
   *string++ = b;
   *string++ = c;
@@ -621,7 +618,7 @@ public:
 
   // Converts a Float to a TDecimalFloat
   TDecimalFloat(Float value) {
-    IU ui = *TPtr<IU>(&value);
+    IU ui = *TRef<IU>(&value);
 
     IU biased_e = TMiddleBits<IU, MSb - 1, MantissaSize>(ui);
     IU coefficient = Coefficient(ui);
@@ -646,7 +643,7 @@ public:
     // Not handling NaN and inf
 
     if (IsNaN(value)) {
-      if (stop - socket < 4) return NILP;
+      if (stop - socket < 4) return _NilP;
       socket[0] = 'N';
       socket[1] = 'a';
       socket[2] = 'N';
@@ -654,8 +651,8 @@ public:
       return socket + 4;
     }
     if (IsInfinite(value)) {
-      if (stop - socket < 4) return NILP;
-      IU f = *TPtr<IU>(&value);
+      if (stop - socket < 4) return _NilP;
+      IU f = *TRef<IU>(&value);
       socket[0] = (f >> (sizeof(IU) * 8 - 1)) ? '-' : '+';
       socket[1] = 'i';
       socket[2] = 'n';
@@ -693,22 +690,22 @@ public:
     k = -(-IS(348) + (index << 3));
     // decimal exponent no need lookup table.
 
-    D_ASSERT(index < 87);
+    _DAssert(index < 87);
 
     const IU* f_lut = Pow10IntegralLUT();
-    const ISB* e_lut = TPtr<const ISB>(BinaryPow10Exponents());
+    const ISB* e_lut = TRef<const ISB>(BinaryPow10Exponents());
     return TDecimalFloat(f_lut[index], e_lut[index]);
   }
 
   TDecimalFloat Minus(const TDecimalFloat<Float, IS, IU>& value) const {
-    D_ASSERT(e == value.e);
-    D_ASSERT(f >= value.f);
+    _DAssert(e == value.e);
+    _DAssert(f >= value.f);
     return TDecimalFloat(f - value.f, e);
   }
 
-#ifdef D_THIS
+#ifdef _DThis
   static void PrintDebugInfo() {
-    D_COUT("\nSize:" << Size << " SizeBits:" << SizeBits << " MSbIndex:"
+    _DROut("\nSize:" << Size << " SizeBits:" << SizeBits << " MSbIndex:"
       << MSb << " StringLengthMax:" << StringLengthMax
       << "\nExponentSizeBits:" << ExponentSizeBits
       << " CoefficientSize:" << CoefficientSize
@@ -774,8 +771,8 @@ public:
   }
 
   TDecimalFloat operator-(const TDecimalFloat& rhs) const {
-    D_ASSERT(e == rhs.e);
-    D_ASSERT(f >= rhs.f);
+    _DAssert(e == rhs.e);
+    _DAssert(f >= rhs.f);
     return TDecimalFloat(f - rhs.f, e);
   }
 
@@ -789,32 +786,32 @@ private:
   }
 
   static const IU* Pow10IntegralLUT() {
-    const void* ptr =
+    const void* pointer =
       (sizeof(IU) == 4)
       ? Binary32Pow10IntegralPortions()
-      : (sizeof(IU) == 8) ? Binary64Pow10IntegralPortions() : NILP;
-    return TPtr<const IU>(ptr);
+      : (sizeof(IU) == 8) ? Binary64Pow10IntegralPortions() : _NilP;
+    return TRef<const IU>(pointer);
   }
 
   static void AlignLUT(CHA* origin, ISW size) {
-    D_ASSERT(size);
+    _DAssert(size);
     ISW lut_count = LUTCount();
     if (size != ((100 + lut_count) * 2 + lut_count * 8)) return;
-    IUB* iub_ptr = TPtr<IUB>(origin);
+    IUB* iub_ref = TRef<IUB>(origin);
 
     for (CHA tens = '0'; tens <= '9'; ++tens)
       for (ISN ones = '0'; ones <= '9'; ++ones)
 #if ENDIAN == LITTLE
-        * iub_ptr++ = (tens << 8) | ones;
+        * iub_ref++ = (tens << 8) | ones;
 #else
-        * iub_ptr++ = (ones << 8) | tens;
+        * iub_ref++ = (ones << 8) | tens;
 #endif
-    const IUB* e_lut = TPtr<const IUB>(BinaryPow10Exponents());
-    for (ISC i = 0; i < 87; ++i) *iub_ptr = e_lut[i];
+    const IUB* e_lut = TRef<const IUB>(BinaryPow10Exponents());
+    for (ISC i = 0; i < 87; ++i) *iub_ref = e_lut[i];
 
-    IUD* iud_ptr = TPtr<IUD>(iub_ptr);
+    IUD* iud_ref = TRef<IUD>(iub_ref);
     const IU* f_lut = Pow10IntegralLUT();
-    for (ISC i = 0; i < 87; ++i) *iud_ptr = f_lut[i];
+    for (ISC i = 0; i < 87; ++i) *iud_ref = f_lut[i];
   }
 
   template<typename CHS = CHR>
@@ -1011,7 +1008,7 @@ private:
       d = p_1 / pow_10;
       p_1 -= d * pow_10;
 
-      if (start >= stop) return NILP;
+      if (start >= stop) return _NilP;
 
       if (d) start = TSPrintDecimal<CHS>(start, d);
 
@@ -1030,7 +1027,7 @@ private:
       p_2 *= 10;
       delta *= 10;
       d = static_cast<IUC>(p_2 >> -one.e);
-      if (start >= stop) return NILP;
+      if (start >= stop) return _NilP;
       if (d) *start++ = '0' + d;
       p_2 &= one.f - 1;
       --kappa;
@@ -1151,6 +1148,6 @@ CHS* TSPrint(CHS* start, ISW size, FPD value) {
 }
 
 }  //< namespace _
-#endif
-#endif
-#undef D_COUT
+#endif  //< _Seam >= _CrabsIToS
+#endif  //< _CrabsPuffHPP
+#undef _DROut

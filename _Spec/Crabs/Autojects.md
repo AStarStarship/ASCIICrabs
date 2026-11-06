@@ -44,7 +44,7 @@ name does not mean that allocation is heap-free, and caller-owned stack memory
 must not be passed to the heap deleter.
 
 [Autoject.hpp](../../Autoject.hpp) also provides templated object factories
-and `Autoboofer`. The templated object factory writes an object-size header;
+and `Autobuffer`. The templated object factory writes an object-size header;
 the standalone allocation functions do not. The template's nil-origin,
 zero-size callback query returns its heap function for the current growth
 mechanism. That implementation detail is not a uniform RAMFactory query

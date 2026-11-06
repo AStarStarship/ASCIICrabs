@@ -3,19 +3,13 @@
 #ifndef CRABS_RANDOM_HXX
 #define CRABS_RANDOM_HXX
 #include "Random.h"
-// rand()/RAND_MAX/sqrt/log are used by the Box-Muller path in both seam
-// branches; <cstdlib>/<cmath> are C system headers (allowed under the
-// no-stdlib rule, which bans C++ standard *types/containers*, not the C
-// runtime).
+//> Don't move these, they are supposed to be here:
+#include <random>
 #include <cstdlib>
 #include <cmath>
-#if SEAM < CRABS_RANDOM
-#include <random>
-#endif
+//< End don't move these section.
 
 namespace _ {
-
-#if SEAM < CRABS_RANDOM
 
 static ::std::random_device seed_gen;
 static IUC seed = seed_gen();
@@ -29,45 +23,6 @@ void RandomizeSeed() {
   engine.seed(seed);
 }
 
-template<typename I, typename FP>
-I TRandom(I min, I max) {
-  ::std::uniform_int_distribution<I> dist(min, max);
-  return dist(engine);
-}
-
-template<typename I, typename FP>
-void TRandomBits(I& result, I bit_count) {
-  if (bit_count < 0) {
-    result = 0;
-    return;
-  }
-  if (bit_count >= sizeof(I) * 8) bit_count = sizeof(I) * 8;
-  ::std::uniform_int_distribution<I> dist(0, (I(1) << (bit_count - 1)) - 1);
-  result = dist(engine);
-}
-
-template<typename FP>
-inline FP TRandomSignedProbility(FP mean, FP std_dev) {
-  static FP spare;
-  static bool has_spare = false;
-
-  if (has_spare) {
-    has_spare = false;
-    return spare * std_dev + mean;
-  } else {
-    FP u, v, s;
-    do {
-      u = FP(2.0) * rand() / FP(RAND_MAX) - FP(1.0);
-      v = FP(2.0) * rand() / FP(RAND_MAX) - FP(1.0);
-      s = u * u + v * v;
-    } while (s >= FP(1.0) || s == FP(0.0));
-    s = sqrt(-FP(2.0) * log(s) / s);
-    spare = v * s;
-    has_spare = true;
-    return mean + std_dev * u * s;
-  }
-}
-#else
 template<typename FP = FPC>
 inline FP TRandomSignedProbility(FP mean, FP std_dev) {
   static FP spare;
@@ -123,7 +78,6 @@ void TRandomBits(I& result, I bit_count) {
   result = I(rnd * (FP(IUW(I(1)) << IUW(bit_count - 1)) * FP(2))) &
            (I(-1) >> (BitCountMax - bit_count));
 }
-#endif
 
 inline IUC IUCRandom() { return TRandom<IUC, FPC>(IUC(0), ~IUC(0)); }
 inline ISC ISCRandom() { return ISC(IUCRandom()); }
@@ -198,5 +152,6 @@ void RandomBits(ISD& result, ISD bit_count) {
   TRandomBits<ISD, FPD>(result, bit_count);
 }
 
+#endif  // _CrabsRandomHXX
+
 }  // namespace _
-#endif  // CRABS_RANDOM_HXX

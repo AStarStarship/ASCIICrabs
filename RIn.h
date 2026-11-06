@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_CIN_DECL
-#define CRABS_CIN_DECL
-#include "COut.h"
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
+#ifndef _CrabsRInH
+#define _CrabsRInH
+#include "ROut.h"
+#if _Seam >= _CrabsCore
 namespace _ {
 
 /* Checks if the given string is yes or no.
@@ -16,12 +16,12 @@ ISN IsYesNo(const CHC* string);
 @code
 ISC a;
 FL4 b;
-CIn cin;
-COut("\n\nEnter a value 0-1,000,000").Star() << cin.SScan(a)
+RIn cin;
+ROut("\n\nEnter a value 0-1,000,000").Star() << cin.SScan(a)
 @endcode
 */
-class CIn {
-  CHA boofer_[24];  //< Boofer for scanning numbers and short Strings.
+class RIn {
+  CHA buffer_[24];  //< Buffer for scanning numbers and short Strings.
 
  public:
   enum {
@@ -35,65 +35,50 @@ class CIn {
   };
 
   enum {
-    BooferSizeMin = 2,  //< This min size of a string boofer.
+    BufferSizeMin = 2,  //< This min size of a string buffer.
   };
 
   /* Pauses until any key is pressed. */
-  CIn();
+  RIn();
 
-#if USING_STA == YES_0
-  CIn(CHA& result);
-  /* CIns a string with a larger boofer than the */
-  CIn(CHA* result, ISW boofer_size);
-#endif
-#if USING_STB == YES_0
-  CIn(CHB& result);
-  CIn(CHB* result, ISW boofer_size);
-#endif
-#if USING_STC == YES_0
-  CIn(CHC& result);
-  CIn(CHC* result, ISW boofer_size);
-#endif
+  RIn(CHA& result);
+  /* RIns a string with a larger buffer than the */
+  RIn(CHA* result, ISW buffer_size);
+  RIn(CHB& result);
+  RIn(CHB* result, ISW buffer_size);
+  RIn(CHC& result);
+  RIn(CHC* result, ISW buffer_size);
 
-  /* Scans the given item to the CIn stream. */
-  CIn(ISA& result);
-  CIn(IUA& result);
-  CIn(ISB& result);
-  CIn(IUB& result);
-  CIn(ISC& result);
-  CIn(IUC& result);
-  CIn(ISD& result);
-  CIn(IUD& result);
-#if USING_FPC == YES_0
-  CIn(FPC& result);
-#endif
-#if USING_FPD == YES_0
-  CIn(FPD& result);
-#endif
+  /* Scans the given item to the RIn stream. */
+  RIn(ISA& result);
+  RIn(IUA& result);
+  RIn(ISB& result);
+  RIn(IUB& result);
+  RIn(ISC& result);
+  RIn(IUC& result);
+  RIn(ISD& result);
+  RIn(IUD& result);
+  RIn(FPC& result);
+  RIn(FPD& result);
 
-#if USING_STA == YES_0
-  /* Reads the character from the CIn stream. */
+  /* Reads the character from the RIn stream. */
   static BOL SScan(CHA& result);
 
-  /* Reads the string with the given boofer_size from the CIn stream. */
-  static BOL SScan(CHA* result, ISW boofer_size);
-#endif
-#if USING_STB == YES_0
-  /* Reads the character from the CIn stream. */
+  /* Reads the string with the given buffer_size from the RIn stream. */
+  static BOL SScan(CHA* result, ISW buffer_size);
+
+  /* Reads the character from the RIn stream. */
   static BOL SScan(CHB& result);
 
-  /* Reads the string with the given boofer_size from the CIn stream. */
-  static BOL SScan(CHB* result, ISW boofer_size);
-#endif
-#if USING_STC == YES_0
-  /* Reads the character from the CIn stream. */
+  /* Reads the string with the given buffer_size from the RIn stream. */
+  static BOL SScan(CHB* result, ISW buffer_size);
+  /* Reads the character from the RIn stream. */
   static BOL SScan(CHC& result);
 
-  /* Reads the string with the given boofer_size from the CIn stream. */
-  static BOL SScan(CHC* result, ISW boofer_size);
-#endif
+  /* Reads the string with the given buffer_size from the RIn stream. */
+  static BOL SScan(CHC* result, ISW buffer_size);
 
-  /* Reads the value from the CIn stream. */
+  /* Reads the value from the RIn stream. */
   static BOL SScan(ISA& result);
   static BOL SScan(IUA& result);
   static BOL SScan(ISB& result);
@@ -102,12 +87,8 @@ class CIn {
   static BOL SScan(IUC& result);
   static BOL SScan(ISD& result);
   static BOL SScan(IUD& result);
-#if USING_FPC == YES_0
   static BOL SScan(FPC& result);
-#endif
-#if USING_FPD == YES_0
   static BOL SScan(FPD& result);
-#endif
 
   /* Reads the current key depressed on the keyboard.
   @return A negative number_ (typically 1) if no keys are pressed. */
@@ -272,10 +253,10 @@ enum {
 };
 
 /* Gets the next key pressed in the keyboard event cue. */
-inline ISC CInKey();
+inline ISC RInKey();
 
 /* Gets the pressed state of the vk_code. */
-inline BOL CInState(ISC vk_code);
+inline BOL RInState(ISC vk_code);
 
 struct KeyId {
   ISC vk_code;
@@ -289,10 +270,10 @@ struct KeyId {
 
 }  //< namespace _
 
-::_::COut& operator<<(::_::COut& o, ::_::CIn i);
-::_::COut& operator<<(::_::COut& o, ::_::CIn& i);
+::_::ROut& operator<<(::_::ROut& o, ::_::RIn i);
+::_::ROut& operator<<(::_::ROut& o, ::_::RIn& i);
 
-::_::COut& operator<<(::_::COut& o, ::_::Pausef& i);
+::_::ROut& operator<<(::_::ROut& o, ::_::Pausef& i);
 
 #endif
 #endif

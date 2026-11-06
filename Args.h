@@ -1,1150 +1,1150 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ARGS
-#define CRABS_ARGS
+#ifndef _CrabsArgsH
+#define _CrabsArgsH
 #include "BSeq.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 
 namespace _ {
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a) {
-  ptrs[0] = a;
-  return ptrs;
+inline void** Args(void** pointers, void* a) {
+  pointers[0] = a;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  return ptrs;
+inline void** Args(void** pointers, void* a, void* b) {
+  pointers[0] = a;
+  pointers[1] = b;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  return ptrs;
+inline void** Args(void** pointers, void* a, void* b, void* c) {
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  return ptrs;
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d) {
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  return ptrs;
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e) {
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u, void* v) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  ptrs[20] = v;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  pointers[20] = v;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u, void* v, void* w) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  ptrs[21] = v;
-  ptrs[22] = w;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  pointers[21] = v;
+  pointers[22] = w;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u, void* v, void* w,
                    void* x) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  ptrs[21] = v;
-  ptrs[22] = w;
-  ptrs[23] = x;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  pointers[21] = v;
+  pointers[22] = w;
+  pointers[23] = x;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u, void* v, void* w,
                    void* x, void* y) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  ptrs[21] = v;
-  ptrs[22] = w;
-  ptrs[23] = x;
-  ptrs[24] = y;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  pointers[21] = v;
+  pointers[22] = w;
+  pointers[23] = x;
+  pointers[24] = y;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, void* a, void* b, void* c, void* d, void* e,
+inline void** Args(void** pointers, void* a, void* b, void* c, void* d, void* e,
                    void* f, void* g, void* h, void* i, void* j, void* k,
                    void* l, void* m, void* n, void* o, void* p, void* q,
                    void* r, void* s, void* t, void* u, void* v, void* w,
                    void* x, void* y, void* z) {
-  ptrs[0] = a;
-  ptrs[1] = b;
-  ptrs[2] = c;
-  ptrs[3] = d;
-  ptrs[4] = e;
-  ptrs[5] = f;
-  ptrs[6] = g;
-  ptrs[7] = h;
-  ptrs[8] = i;
-  ptrs[9] = j;
-  ptrs[10] = k;
-  ptrs[11] = l;
-  ptrs[12] = m;
-  ptrs[13] = n;
-  ptrs[14] = o;
-  ptrs[15] = p;
-  ptrs[16] = q;
-  ptrs[17] = r;
-  ptrs[18] = s;
-  ptrs[19] = t;
-  ptrs[20] = u;
-  ptrs[21] = v;
-  ptrs[22] = w;
-  ptrs[23] = x;
-  ptrs[24] = y;
-  ptrs[25] = z;
-  return ptrs;
+  pointers[0] = a;
+  pointers[1] = b;
+  pointers[2] = c;
+  pointers[3] = d;
+  pointers[4] = e;
+  pointers[5] = f;
+  pointers[6] = g;
+  pointers[7] = h;
+  pointers[8] = i;
+  pointers[9] = j;
+  pointers[10] = k;
+  pointers[11] = l;
+  pointers[12] = m;
+  pointers[13] = n;
+  pointers[14] = o;
+  pointers[15] = p;
+  pointers[16] = q;
+  pointers[17] = r;
+  pointers[18] = s;
+  pointers[19] = t;
+  pointers[20] = u;
+  pointers[21] = v;
+  pointers[22] = w;
+  pointers[23] = x;
+  pointers[24] = y;
+  pointers[25] = z;
+  return pointers;
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  return const_cast<void**>(const_ptrs);
+inline void** Args(void** pointers, const void* a) {
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  return const_cast<void**>(const_ptrs);
+inline void** Args(void** pointers, const void* a, const void* b) {
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  return const_cast<void**>(const_ptrs);
+inline void** Args(void** pointers, const void* a, const void* b, const void* c) {
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  return const_cast<void**>(const_pointers);
 }
 
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
 
-  return const_cast<void**>(const_ptrs);
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
 
-  return const_cast<void**>(const_ptrs);
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of
     the letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
 
-  return const_cast<void**>(const_ptrs);
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of
     the letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of
 the letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u, const void* v) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  const_ptrs[21] = v;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  const_pointers[21] = v;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u, const void* v, const void* w) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  const_ptrs[21] = v;
-  const_ptrs[21] = w;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  const_pointers[21] = v;
+  const_pointers[21] = w;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u, const void* v, const void* w,
                    const void* x) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  const_ptrs[21] = v;
-  const_ptrs[22] = w;
-  const_ptrs[23] = x;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  const_pointers[21] = v;
+  const_pointers[22] = w;
+  const_pointers[23] = x;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u, const void* v, const void* w,
                    const void* x, const void* y) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  const_ptrs[21] = v;
-  const_ptrs[22] = w;
-  const_ptrs[23] = x;
-  const_ptrs[24] = y;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  const_pointers[21] = v;
+  const_pointers[22] = w;
+  const_pointers[23] = x;
+  const_pointers[24] = y;
+  return const_cast<void**>(const_pointers);
 }
 
 /* Sets the params to the given pointers corresponding to the index 1-26 of the
 letters a-z. */
-inline void** Args(void** ptrs, const void* a, const void* b, const void* c,
+inline void** Args(void** pointers, const void* a, const void* b, const void* c,
                    const void* d, const void* e, const void* f, const void* g,
                    const void* h, const void* i, const void* j, const void* k,
                    const void* l, const void* m, const void* n, const void* o,
                    const void* p, const void* q, const void* r, const void* s,
                    const void* t, const void* u, const void* v, const void* w,
                    const void* x, const void* y, const void* z) {
-  const void** const_ptrs = const_cast<const void**>(ptrs);
-  const_ptrs[0] = a;
-  const_ptrs[1] = b;
-  const_ptrs[2] = c;
-  const_ptrs[3] = d;
-  const_ptrs[4] = e;
-  const_ptrs[5] = f;
-  const_ptrs[6] = g;
-  const_ptrs[7] = h;
-  const_ptrs[8] = i;
-  const_ptrs[9] = j;
-  const_ptrs[10] = k;
-  const_ptrs[11] = l;
-  const_ptrs[12] = m;
-  const_ptrs[13] = n;
-  const_ptrs[14] = o;
-  const_ptrs[15] = p;
-  const_ptrs[16] = q;
-  const_ptrs[17] = r;
-  const_ptrs[18] = s;
-  const_ptrs[19] = t;
-  const_ptrs[20] = u;
-  const_ptrs[21] = v;
-  const_ptrs[22] = w;
-  const_ptrs[23] = x;
-  const_ptrs[24] = y;
-  const_ptrs[25] = z;
-  return const_cast<void**>(const_ptrs);
+  const void** const_pointers = const_cast<const void**>(pointers);
+  const_pointers[0] = a;
+  const_pointers[1] = b;
+  const_pointers[2] = c;
+  const_pointers[3] = d;
+  const_pointers[4] = e;
+  const_pointers[5] = f;
+  const_pointers[6] = g;
+  const_pointers[7] = h;
+  const_pointers[8] = i;
+  const_pointers[9] = j;
+  const_pointers[10] = k;
+  const_pointers[11] = l;
+  const_pointers[12] = m;
+  const_pointers[13] = n;
+  const_pointers[14] = o;
+  const_pointers[15] = p;
+  const_pointers[16] = q;
+  const_pointers[17] = r;
+  const_pointers[18] = s;
+  const_pointers[19] = t;
+  const_pointers[20] = u;
+  const_pointers[21] = v;
+  const_pointers[22] = w;
+  const_pointers[23] = x;
+  const_pointers[24] = y;
+  const_pointers[25] = z;
+  return const_cast<void**>(const_pointers);
 }
 
 }  //< namespace _

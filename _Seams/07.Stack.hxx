@@ -1,68 +1,68 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_STACK
 #include "../Stack.hpp"
-using namespace ::_;
-#if SEAM == CRABS_STACK
+#if _Seam >= _CrabsStack
+#if _Seam == _CrabsStack
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
 namespace CRTest {
+using namespace ::_;
 
-#if SEAM >= CRABS_STACK
+#if _Seam >= _CrabsStack
 template<typename T, typename ISZ, typename ISY=ISZ>
 void TestStack(const CHA* args) {
-  D_COUT("Testing AStack<T" << CSizeCodef<T>() << ",IS" <<
+  _DROut("Testing AStack<T" << CSizeCodef<T>() << ",IS" <<
          CSizeCodef<ISZ>() << ">...\n");
 
   AStack<T, ISZ, ISZ, 8> stack;
 
-  D_COUT(Linef("\n+---\n| AStack: total:") << stack.Total() << 
+  _DROut(Linef("\n+---\n| AStack: total:") << stack.Total() << 
          " count:" << stack.Count() << " bytes:" << stack.CBytes() <<
          " size_words:" << stack.SizeWords());
-  D_COUT_OBJ(stack);
+  _DROutOBJ(stack);
 
   enum { TestCount = 32 };
-  D_COUT("\n\nPushing " << TestCount << " items on to the Stack...\n");
+  _DROut("\n\nPushing " << TestCount << " items on to the Stack...\n");
   T i;
   for (i = 0; i < TestCount; ++i) {
-    D_COUT("\n| " << i << ".) count:" << stack.Count() <<
+    _DROut("\n| " << i << ".) count:" << stack.Count() <<
            Linef("\n\n+---\n| ") << i << ".) ");
     auto result = stack.Push('0' + i);
-    D_COUT("\n| Result:" << result);
-    A_ASSERT(result <= stack.Total());
-    D_COUT_OBJ(stack);
-    D_AVOW(ISZ(i), result);
+    _DROut("\n| Result:" << result);
+    _AAssert(result <= stack.Total());
+    _DROutOBJ(stack);
+    _DAvow(ISZ(i), result);
   }
 
-  D_COUT(Headingf("\n\nPopping items off the Stack... ") << "i:" << i << 'n');
-  #if SEAM == CRABS_STACK
-  TStackPrint<::_::COut, SCK_P>(StdOut(), stack.This());
+  _DROut(Headingf("\n\nPopping items off the Stack... ") << "i:" << i << 'n');
+  #if _Seam == _CrabsStack
+  TStackPrint<::_::ROut, SCK_P>(RefOut(), stack.This());
   #endif
   for (i=i-1; i >= 0; --i) {
-    D_COUT_OBJ(stack);
+    _DROutOBJ(stack);
     auto value = stack.Pop();
-    A_AVOW_INDEX(i, value - '0', i);
-    D_COUT("\n| " << i << ".) Popping " << value << " count:" << stack.Count());
+    _AAvowIndex(i, value - '0', i);
+    _DROut("\n| " << i << ".) Popping " << value << " count:" << stack.Count());
   }
-  D_COUT("\n\nEnding stack.Count(): " << stack.Count() << " i: " << 
+  _DROut("\n\nEnding stack.Count(): " << stack.Count() << " i: " << 
          i << '\n');
-  D_COUT_OBJ(stack);
-  A_ASSERT(stack.Count() == 0);
+  _DROutOBJ(stack);
+  _AAssert(stack.Count() == 0);
 }
 #endif
 
 static const CHA* Stack(const CHA* args) {
-#if SEAM >= CRABS_STACK
-  A_TEST_BEGIN;
-  D_COUT(Headingf("TestStack"));
+#if _Seam >= _CrabsStack
+  _ATestBegin;
+  _DROut(Headingf("TestStack"));
 
   // TestStack<ISC, ISA>(args); //< Illegal!
   TestStack<ISC, ISC>(args);
   TestStack<ISD, ISD>(args);
   TestStack<ISD, ISC>(args);
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

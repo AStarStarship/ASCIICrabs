@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_WALL_HPP
-#define CRABS_WALL_HPP
+#ifndef _CrabsWallHPP
+#define _CrabsWallHPP
 #include <_Config.h>
-#if SEAM >= CRABS_DIC
+#if _Seam >= _CrabsDictionary
 #include "AType.hpp"
 // Op.hpp no longer needed here - Door.hpp provides forward declarations
 // and all template structs are in AType.hpp
@@ -36,7 +36,7 @@ TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, ISW bytes = WallBytesMin) {
 template<WAL_A>
 TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, IUW* socket, ISW bytes) {
   wall->is_dynamic_ = false;
-  TStackInit(TPtr<TStack<TDoor<ISZ>, ISZ, ISY>>(socket), bytes);
+  TStackInit(TRef<TStack<TDoor<ISZ>, ISZ, ISY>>(socket), bytes);
   return wall;
 }
 
@@ -68,5 +68,5 @@ BOL TWallCloseDoor(TWall<WAL_P>* wall, ISY index) { return false; }
 }  //< namespace _
 
 /* @} */  // End of Wall group.
-#endif
-#endif
+#endif  //< _Seam >= _CrabsDictionary
+#endif  //< _CrabsWallHPP

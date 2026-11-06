@@ -1,19 +1,19 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_ROOM
+#if _Seam >= _CrabsRoom
 #include "../Room.hpp"
 #include "../BIn.hpp"
 #include "../BOut.hpp"
 #include "../BSeq.hpp"
 #include "../Args.h"
-#if SEAM == CRABS_ROOM
+#if _Seam == _CrabsRoom
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #include "AType.hpp"
 #endif
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 /* Mock interprocess pipe test: two Rooms, each with a Door and TBIn (rx) and TBOut (tx), connected by a shared lock-free SPSC ring buffer (the Slot in the Door). 
 Read `15.CrabsOp.hxx` for the first part of the test.
@@ -29,8 +29,8 @@ lock-free logic lives). The TDoor/TWall/TRoom constructors that would wrap
 these rings into the full Chinese Room structure are still skeletons and are
 a follow-on. */
 static const CHA* Room(const CHA* args) {
-#if SEAM == CRABS_ROOM
-  A_TEST_BEGIN;
+#if _Seam == _CrabsRoom
+  _ATestBegin;
 
   // Shared ring: one 16-byte header (the SPSC head counters) + the byte
   // region. The producer (Room A's TBOut) and consumer (Room B's TBIn) ALIAS
@@ -44,21 +44,21 @@ static const CHA* Room(const CHA* args) {
 
   // ---- Ring 1: Room A -> Room B (the client-to-server direction) ----
   IUW  block_ab[1 + RingWords];
-  IUA* header_ab = TPtr<IUA>(block_ab);
+  IUA* header_ab = TRef<IUA>(block_ab);
   IUA* ring_ab   = header_ab + sizeof(TBOut<ISC>);
-  TBOut<ISC>* tx_a = TPtr<TBOut<ISC>>(header_ab);  //< Room A producer.
-  TBIn<ISC>*  rx_b = TPtr<TBIn<ISC>>(header_ab);   //< Room B consumer.
+  TBOut<ISC>* tx_a = TRef<TBOut<ISC>>(header_ab);  //< Room A producer.
+  TBIn<ISC>*  rx_b = TRef<TBIn<ISC>>(header_ab);   //< Room B consumer.
   BInAttach(rx_b, tx_a, ring_ab, RingBytes);
 
   // ---- Ring 2: Room B -> Room A (the server-to-client direction) ----
   IUW  block_ba[1 + RingWords];
-  IUA* header_ba = TPtr<IUA>(block_ba);
+  IUA* header_ba = TRef<IUA>(block_ba);
   IUA* ring_ba   = header_ba + sizeof(TBOut<ISC>);
-  TBOut<ISC>* tx_b = TPtr<TBOut<ISC>>(header_ba);  //< Room B producer.
-  TBIn<ISC>*  rx_a = TPtr<TBIn<ISC>>(header_ba);   //< Room A consumer.
+  TBOut<ISC>* tx_b = TRef<TBOut<ISC>>(header_ba);  //< Room B producer.
+  TBIn<ISC>*  rx_a = TRef<TBIn<ISC>>(header_ba);   //< Room A consumer.
   BInAttach(rx_a, tx_b, ring_ba, RingBytes);
 
-  D_COUT("\n| Two-Room Chinese Room: Room A <-> Room B over two "
+  _DROut("\n| Two-Room Chinese Room: Room A <-> Room B over two "
          << RingBytes << "-byte lock-free rings.");
 
   // ---- Message 1: a 32-bit int + a CHC + a string. ----
@@ -74,15 +74,15 @@ static const CHA* Room(const CHA* args) {
 
   // Room A (producer) writes the message into the shared ring.
   const Op* result = BOutWrite(tx_a, params, msg_args, pc_ctx);
-  A_ASSERT(!result);
-  D_COUT("\n| Room A wrote a message; write head=" << tx_a->stop << ".");
+  _AAssert(!result);
+  _DROut("\n| Room A wrote a message; write head=" << tx_a->stop << ".");
 
   // Round-robin the doors: poll the lockless ring for readable data.
   // (No "publish" step needed — tx and rx alias the same header, so the
   // consumer sees the producer's write head directly, as in a real pipe.)
-  D_COUT("\n| Round-robin polling Room B's door...");
-  A_ASSERT(BInIsReadable(rx_b));
-  D_COUT("| Room B's door has data (BInIsReadable).");
+  _DROut("\n| Round-robin polling Room B's door...");
+  _AAssert(BInIsReadable(rx_b));
+  _DROut("| Room B's door has data (BInIsReadable).");
 
   // Room B (consumer) reads the message out of the shared ring.
   IUC  got_int = 0;
@@ -93,39 +93,39 @@ static const CHA* Room(const CHA* args) {
   got_args[1] = &got_chc;
   got_args[2] = got_str;
   result = BInRead(rx_b, params, got_args, pc_ctx);
-  A_ASSERT(!result);
+  _AAssert(!result);
 
   // Verify the round-trip.
-  A_AVOW(msg_int, got_int);
-  A_AVOW(msg_chc, got_chc);
-  D_COUT("\n| Room B read back int=0x" << IUW(got_int) << " chc='"
+  _AAvow(msg_int, got_int);
+  _AAvow(msg_chc, got_chc);
+  _DROut("\n| Room B read back int=0x" << IUW(got_int) << " chc='"
          << got_chc << "' str=\"" << got_str << "\".");
 
   // ---- Wraparound: write many small messages to force the ring to wrap. ----
-  D_COUT("\n| Wraparound stress: 64 single-word messages...");
+  _DROut("\n| Wraparound stress: 64 single-word messages...");
   ISN wrap_ok = 0;
   for (ISN i = 0; i < 64; ++i) {
     IUC wval = IUC(i);
     void* wargs[1] = { &wval };
     auto wparams = TTSQ<_IUC>();
     result = BOutWrite(tx_a, wparams, wargs, pc_ctx);
-    A_ASSERT(!result);
-    A_ASSERT(BInIsReadable(rx_b));
+    _AAssert(!result);
+    _AAssert(BInIsReadable(rx_b));
     IUC rval = 0;
     void* rargs[1] = { &rval };
     result = BInRead(rx_b, wparams, rargs, pc_ctx);
-    A_ASSERT(!result);
-    A_AVOW(wval, rval);
+    _AAssert(!result);
+    _AAvow(wval, rval);
     ++wrap_ok;
   }
-  A_AVOW(ISN(64), wrap_ok);
-  D_COUT("| All 64 wraparound messages round-tripped correctly.");
+  _AAvow(ISN(64), wrap_ok);
+  _DROut("| All 64 wraparound messages round-tripped correctly.");
 
   // ---- Room B responds: "Hello world <N>" ----
   // The room reads the message, then writes a response back through
   // its own TBOut to Room A's TBIn. This exercises the bi-directional
   // Slot: A->B and B->A over two separate rings.
-  D_COUT("\n| Room B responding with 'Hello world <N>'...");
+  _DROut("\n| Room B responding with 'Hello world <N>'...");
 
   // Build the response: "Hello world " + the number from the message.
   CHA response[64] = {0};
@@ -155,25 +155,25 @@ static const CHA* Room(const CHA* args) {
   void* resp_args[1] = { response };
   auto resp_params = TTSQ<STR_>();
   result = BOutWrite(tx_b, resp_params, resp_args, pc_ctx);
-  A_ASSERT(!result);
-  D_COUT("| Room B wrote response; write head=" << tx_b->stop << ".");
+  _AAssert(!result);
+  _DROut("| Room B wrote response; write head=" << tx_b->stop << ".");
 
   // Room A polls its TBIn for the response.
-  D_COUT("| Round-robin polling Room A's door for response...");
-  A_ASSERT(BInIsReadable(rx_a));
-  D_COUT("| Room A's door has response data (BInIsReadable).");
+  _DROut("| Round-robin polling Room A's door for response...");
+  _AAssert(BInIsReadable(rx_a));
+  _DROut("| Room A's door has response data (BInIsReadable).");
 
   // Room A reads the response.
   CHA got_response[64] = {0};
   void* got_resp_args[1] = { got_response };
   result = BInRead(rx_a, resp_params, got_resp_args, pc_ctx);
-  A_ASSERT(!result);
+  _AAssert(!result);
 
   // Verify the round-trip.
-  D_COUT("\n| Room A read back response=\"" << got_response << "\".");
+  _DROut("\n| Room A read back response=\"" << got_response << "\".");
 
   // ---- Second message: with a number to repeat back. ----
-  D_COUT("\n| Message 2: 'Hello 123' -> expect 'Hello world 123'...");
+  _DROut("\n| Message 2: 'Hello 123' -> expect 'Hello world 123'...");
   CHA msg2_str[] = "Hello 123";
   IUC msg2_int = 123;
   void* msg2_args[2];
@@ -182,17 +182,17 @@ static const CHA* Room(const CHA* args) {
   auto params2 = TTSQ<_IUC, STR_>();
 
   result = BOutWrite(tx_a, params2, msg2_args, pc_ctx);
-  A_ASSERT(!result);
+  _AAssert(!result);
 
-  A_ASSERT(BInIsReadable(rx_b));
+  _AAssert(BInIsReadable(rx_b));
   IUC got2_int = 0;
   CHA got2_str[32] = {0};
   void* got2_args[2];
   got2_args[0] = &got2_int;
   got2_args[1] = got2_str;
   result = BInRead(rx_b, params2, got2_args, pc_ctx);
-  A_ASSERT(!result);
-  A_AVOW(msg2_int, got2_int);
+  _AAssert(!result);
+  _AAvow(msg2_int, got2_int);
 
   // Room B responds with "Hello world 123".
   CHA resp2[64] = {0};
@@ -211,18 +211,18 @@ static const CHA* Room(const CHA* args) {
 
   void* resp2_args[1] = { resp2 };
   result = BOutWrite(tx_b, resp_params, resp2_args, pc_ctx);
-  A_ASSERT(!result);
+  _AAssert(!result);
 
-  A_ASSERT(BInIsReadable(rx_a));
+  _AAssert(BInIsReadable(rx_a));
   CHA got_resp2[64] = {0};
   void* got_resp2_args[1] = { got_resp2 };
   result = BInRead(rx_a, resp_params, got_resp2_args, pc_ctx);
-  A_ASSERT(!result);
-  D_COUT("\n| Room A read back response=\"" << got_resp2 << "\".");
+  _AAssert(!result);
+  _DROut("\n| Room A read back response=\"" << got_resp2 << "\".");
 
-  D_COUT("\n| Done with two-Room Chinese Room demo.");
+  _DROut("\n| Done with two-Room Chinese Room demo.");
 #endif
-  return NILP;
+  return _NilP;
 }
 
 }  //< namespace CRTest

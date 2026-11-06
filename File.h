@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_FILE_DECL
-#define CRABS_FILE_DECL
+#ifndef _CrabsFileH
+#define _CrabsFileH
 #include <_Config.h>
-#if SEAM >= CRABS_FILE
+#if _Seam >= _CrabsFile
 // OS I/O shim layer: the platform headers live with the declarations so
 // File.hxx stays free of stdlib includes.
 #include <sys/stat.h>
@@ -12,11 +12,11 @@
 #include <stdio.h>
 #ifndef WIN32
 #include <unistd.h>
-#endif
+#endif 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
-#endif
+#endif  //< WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -51,8 +51,8 @@ struct File {
 
   /* Default constructor (for directory-scan scratch entries). */
   File() : is_directory_(0), is_reg_(0), path(), name(),
-           uri_(NILP), is_open_(0), extension(NILP),
-           last_time_modified_(0), fp_(NILP) {}
+           uri_(_NilP), is_open_(0), extension(_NilP),
+           last_time_modified_(0), fp_(_NilP) {}
 
   /* Returns reference to this. */
   File& Star();
@@ -107,14 +107,10 @@ struct File {
   /* Writes the given item to the file. */
   File& Write(CHA item);
   File& Write(const CHA* item);
-#if USING_STB == YES_0
   File& Write(CHB item);
   File& Write(const CHB* item);
-#endif
-#if USING_STC == YES_0
   File& Write(CHC item);
   File& Write(const CHC* item);
-#endif
   File& Write(ISA item);
   File& Write(IUA item);
   File& Write(ISB item);
@@ -184,14 +180,10 @@ struct TextFile {
   /* Prints the given item to the stdout. */
   TextFile& Print(CHA item);
   TextFile& Print(const CHA* item);
-#if USING_STB == YES_0
   TextFile& Print(CHB item);
   TextFile& Print(const CHB* item);
-#endif
-#if USING_STC == YES_0
   TextFile& Print(CHC item);
   TextFile& Print(const CHC* item);
-#endif
   TextFile& Print(ISC item);
   TextFile& Print(IUC item);
   TextFile& Print(ISD item);
@@ -221,14 +213,10 @@ struct TextFile {
   /* Prints a new line followed by the given item to the stdout. */
   TextFile& NL(CHA item);
   TextFile& NL(const CHA* item);
-#if USING_STB == YES_0
   TextFile& NL(CHB item);
   TextFile& NL(const CHB* item);
-#endif
-#if USING_STC == YES_0
   TextFile& NL(CHC item);
   TextFile& NL(const CHC* item);
-#endif
   TextFile& NL(ISC item);
   TextFile& NL(IUC item);
   TextFile& NL(ISD item);
@@ -236,7 +224,7 @@ struct TextFile {
   TextFile& NL(FPC item);
   TextFile& NL(FPD item);
 
-  /* Stores the given item to the boofer and store the size. */
+  /* Stores the given item to the buffer and store the size. */
   TextFile& Hex(const void* item);
   TextFile& Hex(const void* item, ISW size);
   TextFile& Hex(const void* item, const void* item_stop);
@@ -251,7 +239,7 @@ struct TextFile {
   TextFile& Hex(FPC item);
   TextFile& Hex(FPD item);
 
-  /* Stores the given item to the boofer and store the size. */
+  /* Stores the given item to the buffer and store the size. */
   TextFile& Binary(const void* item);
   TextFile& Binary(const void* item, ISW size);
   TextFile& Binary(const void* item, const void* item_stop);
@@ -302,15 +290,10 @@ struct Folder {
 
 ::_::File& operator<<(::_::File& o, CHA item);
 ::_::File& operator<<(::_::File& o, const CHA* item);
-
-#if USING_STB == YES_0
 ::_::File& operator<<(::_::File& o, CHB item);
 ::_::File& operator<<(::_::File& o, const CHB* item);
-#endif
-#if USING_STC == YES_0
 ::_::File& operator<<(::_::File& o, CHC item);
 ::_::File& operator<<(::_::File& o, const CHC* item);
-#endif
 ::_::File& operator<<(::_::File& o, IUA item);
 ::_::File& operator<<(::_::File& o, ISA item);
 ::_::File& operator<<(::_::File& o, IUB item);
@@ -321,24 +304,14 @@ struct Folder {
 ::_::File& operator<<(::_::File& o, ISC item);
 ::_::File& operator<<(::_::File& o, IUD item);
 ::_::File& operator<<(::_::File& o, ISD item);
-#if USING_FPC == YES_0
 ::_::File& operator<<(::_::File& o, FPC item);
-#endif
-#if USING_FPD == YES_0
 ::_::File& operator<<(::_::File& o, FPD item);
-#endif
-
 ::_::TextFile& operator<<(::_::TextFile& o, CHA item);
 ::_::TextFile& operator<<(::_::TextFile& o, const CHA* item);
-
-#if USING_STB == YES_0
 ::_::TextFile& operator<<(::_::TextFile& o, CHB item);
 ::_::TextFile& operator<<(::_::TextFile& o, const CHB* item);
-#endif
-#if USING_STC == YES_0
 ::_::TextFile& operator<<(::_::TextFile& o, CHC item);
 ::_::TextFile& operator<<(::_::TextFile& o, const CHC* item);
-#endif
 ::_::TextFile& operator<<(::_::TextFile& o, IUA item);
 ::_::TextFile& operator<<(::_::TextFile& o, ISA item);
 ::_::TextFile& operator<<(::_::TextFile& o, IUB item);
@@ -349,12 +322,8 @@ struct Folder {
 ::_::TextFile& operator<<(::_::TextFile& o, ISC item);
 ::_::TextFile& operator<<(::_::TextFile& o, IUD item);
 ::_::TextFile& operator<<(::_::TextFile& o, ISD item);
-#if USING_FPC == YES_0
 ::_::TextFile& operator<<(::_::TextFile& o, FPC item);
-#endif
-#if USING_FPD == YES_0
 ::_::TextFile& operator<<(::_::TextFile& o, FPD item);
-#endif
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::Hexf item);
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::Binaryf item);
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::Centerf item);
@@ -365,5 +334,5 @@ struct Folder {
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::Indentf item);
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::Charsf item);
 ::_::TextFile& operator<<(::_::TextFile& o, ::_::TextFile item);
-#endif
-#endif
+#endif  //< _Seam >= _CrabsFile
+#endif  //< _CrabsFileH

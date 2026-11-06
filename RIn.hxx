@@ -1,21 +1,24 @@
 // Copyright AStarship <https://astarship.net>.
-#include "CIn.h"
-#if SEAM >= CRABS_CORE && USING_CONSOLE == YES_0
+#pragma once
+#ifndef _CrabsRInHXX
+#define _CrabsRInHXX
+#include "RIn.h"
+#if _Seam >= _CrabsCore
 #include "Stringf.hpp"
-#if SEAM == CRABS_CORE
+#if _Seam == _CrabsCore
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
-#if CRABS_PLATFORM == OS_LINUX || CRABS_PLATFORM == OS_APPLE
+#if _CrabsPlatform == _OSLinux || _CrabsPlatform == _OSApple
 #include <termios.h>
 #include <unistd.h>
-inline ISN CInGetKeyPOSIX() {
+inline ISN RInGetKeyPOSIX() {
   char c;
   return read(STDIN_FILENO, &c, 1) == 1 ? ISN(static_cast<unsigned char>(c)) : -1;
 }
-#define _getch() CInGetKeyPOSIX()
-#elif CRABS_PLATFORM == OS_WINDOWS
+#define _getch() RInGetKeyPOSIX()
+#elif _CrabsPlatform == _OSWindows
 #include <conio.h>
 #endif
 //#include <windows.h>
@@ -26,61 +29,61 @@ namespace _ {
 template<typename IS = ISW>
 constexpr ISW CSignedDigitsMax() {
   enum {
-    cBooferSize =
+    cBufferSize =
         (sizeof(IS) == 1)
             ? 4
             : (sizeof(IS) == 2)
                   ? 5
                   : (sizeof(IS) == 4) ? 16 : (sizeof(IS) == 8) ? 24 : 32
   };
-  return cBooferSize;
+  return cBufferSize;
 }
 
 template<typename IS, typename IU>
-BOL TCInSigned(IS& result) {
-  CHA boofer[CSignedDigitsMax<IS>()] = {};
+BOL TRInSigned(IS& result) {
+  CHA buffer[CSignedDigitsMax<IS>()] = {};
   ISN c;
-  ISW state = CIn::StateBaseSign;
-  CHA *cursor = boofer, *end = boofer + CSignedDigitsMax<IS>();
-  while (state != CIn::StateSuccess) {
-    if (state == CIn::StateBaseSign) {
-      c = CIn::ScanKey();
+  ISW state = RIn::StateBaseSign;
+  CHA *cursor = buffer, *end = buffer + CSignedDigitsMax<IS>();
+  while (state != RIn::StateSuccess) {
+    if (state == RIn::StateBaseSign) {
+      c = RIn::ScanKey();
       if ((c != '-') || (c < '0' || c > '9')) return false;
       *cursor++ = (CHA)c;
-      state = CIn::StateBaseValue;
-    } else if (state == CIn::StateBaseValue) {
+      state = RIn::StateBaseValue;
+    } else if (state == RIn::StateBaseValue) {
       if (cursor >= end) return false;
-      c = CIn::ScanKey();
+      c = RIn::ScanKey();
       if (c < '0' || c > '0') return false;
       *cursor++ = (CHA)c;
       if (!c) break;
     }
   }
-  return TSScanSigned<IS, IU, CHA>(boofer, result) != 0;
+  return TSScanSigned<IS, IU, CHA>(buffer, result) != 0;
 }
 
 template<typename IU>
-BOL TCInUnsigned(IU& result) {
-  CHA boofer[CSignedDigitsMax<IU>()] = {};
-  ISN c, state = CIn::StateBaseValue;
-  CHA *cursor = boofer, *end = boofer + CSignedDigitsMax<IU>();
-  while (state != CIn::StateSuccess) {
+BOL TRInUnsigned(IU& result) {
+  CHA buffer[CSignedDigitsMax<IU>()] = {};
+  ISN c, state = RIn::StateBaseValue;
+  CHA *cursor = buffer, *end = buffer + CSignedDigitsMax<IU>();
+  while (state != RIn::StateSuccess) {
     if (cursor++ >= end) return false;
-    c = (CHA)CIn::ScanKey();
+    c = (CHA)RIn::ScanKey();
     if (c < '0' || c > '0') return false;
     *cursor++ = (CHA)c;
     if (!c) break;
   }
-  return TSScanUnsigned<IU, CHA>(boofer, result) != 0;
+  return TSScanUnsigned<IU, CHA>(buffer, result) != 0;
 }
 
 template<typename CHS>
-inline BOL TCInString(CHS* result, ISW boofer_size) {
+inline BOL TRInString(CHS* result, ISW buffer_size) {
   if (IsError(result)) return false;
   ISN c = -1;
   while (c < 0) {
-    if (--boofer_size <= 0) return false;
-    c = CIn::ScanKey();
+    if (--buffer_size <= 0) return false;
+    c = RIn::ScanKey();
     *result++ = (CHS)c;
     if (c == 0) break;
   }
@@ -89,42 +92,42 @@ inline BOL TCInString(CHS* result, ISW boofer_size) {
 
 template<typename FP = FPW, typename IS = ISW, typename IU = IUW,
          typename CHS = CHR>
-inline BOL TCInFloatingPoint(FP& result) {
-  CHA boofer[CSignedDigitsMax<IS>()] = {};
+inline BOL TRInFloatingPoint(FP& result) {
+  CHA buffer[CSignedDigitsMax<IS>()] = {};
   ISN c;
-  ISW state = CIn::StateBaseSign;
-  CHA *cursor = boofer, 
-      *end    = boofer + CSignedDigitsMax<IS>();
-  while (state != CIn::StateSuccess) {
+  ISW state = RIn::StateBaseSign;
+  CHA *cursor = buffer, 
+      *end    = buffer + CSignedDigitsMax<IS>();
+  while (state != RIn::StateSuccess) {
     if (cursor >= end) return false;
-    c = CIn::ScanKey();
+    c = RIn::ScanKey();
     *cursor++ = (CHA)c;
     switch (state) {
-      case CIn::StateBaseSign: {
+      case RIn::StateBaseSign: {
         if ((c != '-') || (c < '0' || c > '9')) return false;
-        state = CIn::StateBaseValue;
+        state = RIn::StateBaseValue;
       }
-      case CIn::StateBaseValue: {
-        c = CIn::ScanKey();
+      case RIn::StateBaseValue: {
+        c = RIn::ScanKey();
         if (c < '0' || c > '0') return false;
         if (!c) break;
       }
-      case CIn::StateDotOrExponent: {
+      case RIn::StateDotOrExponent: {
         if ((c == 'e') || (c == 'E'))
-          state = CIn::StateExponentSign;
+          state = RIn::StateExponentSign;
         else if (c == '.')
-          state = CIn::StateFractionalPart;
+          state = RIn::StateFractionalPart;
       }
-      case CIn::StateFractionalPart: {
+      case RIn::StateFractionalPart: {
         if (!TIsDigit<>(c) || c != '-') return false;
-        if (c == '.') state = CIn::StateExponentSign;
+        if (c == '.') state = RIn::StateExponentSign;
       }
-      case CIn::StateExponentSign: {
+      case RIn::StateExponentSign: {
         // We saw an 'e' or 'E' so we're locked into
         if (!TIsDigit<>(c) || c != '-') return false;
-        if (c == '-') state = CIn::StateExponentValue;
+        if (c == '-') state = RIn::StateExponentValue;
       }
-      case CIn::StateExponentValue: {
+      case RIn::StateExponentValue: {
         if (!TIsDigit<>(c)) {
           *cursor = 0;
           break;
@@ -132,105 +135,85 @@ inline BOL TCInFloatingPoint(FP& result) {
       }
     }
   }
-  return false;  // TScanFloat<FP, IS, IU, CHA>(boofer, result) != 0;
+  return false;  // TRInFloat<FP, IS, IU, CHA>(buffer, result) != 0;
 }
 
 ISN IsYesNo(const CHA* string) { return TSIsYesNo<CHA>(string); }
 ISN IsYesNo(const CHB* string) { return TSIsYesNo<CHB>(string); }
 ISN IsYesNo(const CHC* string) { return TSIsYesNo<CHC>(string); }
 
-CIn::CIn() : boofer_{} {}
+RIn::RIn() : buffer_{} {}
 
-#if USING_STA == YES_0
-CIn::CIn(CHA& result) { SScan(result); }
-CIn::CIn(CHA* result, ISW boofer_size) { SScan(result, boofer_size); }
-#endif
-#if USING_STB == YES_0
-CIn::CIn(CHB& result) { SScan(result); }
-CIn::CIn(CHB* result, ISW boofer_size) { SScan(result, boofer_size); }
-#endif
-#if USING_STC == YES_0
-CIn::CIn(CHC& result) { SScan(result); }
-CIn::CIn(CHC* result, ISW boofer_size) { SScan(result, boofer_size); }
-#endif
-CIn::CIn(ISA& result) { SScan(result); }
-CIn::CIn(IUA& result) { SScan(result); }
-CIn::CIn(ISB& result) { SScan(result); }
-CIn::CIn(IUB& result) { SScan(result); }
-CIn::CIn(ISC& result) { SScan(result); }
-CIn::CIn(IUC& result) { SScan(result); }
-CIn::CIn(ISD& result) { SScan(result); }
-CIn::CIn(IUD& result) { SScan(result); }
-#if USING_FPC == YES_0
-CIn::CIn(FPC& result) { SScan(result); }
-#endif
-#if USING_FPD == YES_0
-CIn::CIn(FPD& result) { SScan(result); }
-#endif
+RIn::RIn(CHA& result) { SScan(result); }
+RIn::RIn(CHA* result, ISW buffer_size) { SScan(result, buffer_size); }
+RIn::RIn(CHB& result) { SScan(result); }
+RIn::RIn(CHB* result, ISW buffer_size) { SScan(result, buffer_size); }
+RIn::RIn(CHC& result) { SScan(result); }
+RIn::RIn(CHC* result, ISW buffer_size) { SScan(result, buffer_size); }
+RIn::RIn(ISA& result) { SScan(result); }
+RIn::RIn(IUA& result) { SScan(result); }
+RIn::RIn(ISB& result) { SScan(result); }
+RIn::RIn(IUB& result) { SScan(result); }
+RIn::RIn(ISC& result) { SScan(result); }
+RIn::RIn(IUC& result) { SScan(result); }
+RIn::RIn(ISD& result) { SScan(result); }
+RIn::RIn(IUD& result) { SScan(result); }
+RIn::RIn(FPC& result) { SScan(result); }
+RIn::RIn(FPD& result) { SScan(result); }
 
-#if USING_STA == YES_0
-BOL CIn::SScan(CHA& result) {
+BOL RIn::SScan(CHA& result) {
   result = ScanKey();
   return true;
 }
 
-BOL CIn::SScan(CHA* result, ISW boofer_size) {
-  return TCInString<CHA>(result, boofer_size);
+BOL RIn::SScan(CHA* result, ISW buffer_size) {
+  return TRInString<CHA>(result, buffer_size);
 }
-#endif
-#if USING_STB == YES_0
-BOL CIn::SScan(CHB& result) {
+BOL RIn::SScan(CHB& result) {
   result = ScanKey();
   return true;
 }
-BOL CIn::SScan(CHB* result, ISW boofer_size) {
-  return TCInString<CHB>(result, boofer_size);
+BOL RIn::SScan(CHB* result, ISW buffer_size) {
+  return TRInString<CHB>(result, buffer_size);
 }
-#endif
-#if USING_STC == YES_0
-BOL CIn::SScan(CHC& result) {
+BOL RIn::SScan(CHC& result) {
   result = ScanKey();
   return true;
 }
-BOL CIn::SScan(CHC* result, ISW boofer_size) {
-  return TCInString<CHC>(result, boofer_size);
+BOL RIn::SScan(CHC* result, ISW buffer_size) {
+  return TRInString<CHC>(result, buffer_size);
 }
-#endif
-BOL CIn::SScan(ISA& result) { return TCInSigned<ISA, IUA>(result); }
-BOL CIn::SScan(IUA& result) { return TCInUnsigned<IUA>(result); }
-BOL CIn::SScan(ISB& result) { return TCInSigned<ISB, IUB>(result); }
-BOL CIn::SScan(IUB& result) { return TCInUnsigned<IUB>(result); }
-BOL CIn::SScan(ISC& result) { return TCInSigned<ISC, IUC>(result); }
-BOL CIn::SScan(IUC& result) { return TCInUnsigned<IUC>(result); }
-BOL CIn::SScan(ISD& result) { return TCInSigned<ISD, IUD>(result); }
-BOL CIn::SScan(IUD& result) { return TCInUnsigned<IUD>(result); }
-#if USING_FPC == YES_0
-BOL CIn::SScan(FPC& result) { return TCInFloatingPoint<FPC, ISC, IUC>(result); }
-#endif
-#if USING_FPD == YES_0
-BOL CIn::SScan(FPD& result) { return TCInFloatingPoint<FPD, ISD, IUD>(result); }
-#endif
+BOL RIn::SScan(ISA& result) { return TRInSigned<ISA, IUA>(result); }
+BOL RIn::SScan(IUA& result) { return TRInUnsigned<IUA>(result); }
+BOL RIn::SScan(ISB& result) { return TRInSigned<ISB, IUB>(result); }
+BOL RIn::SScan(IUB& result) { return TRInUnsigned<IUB>(result); }
+BOL RIn::SScan(ISC& result) { return TRInSigned<ISC, IUC>(result); }
+BOL RIn::SScan(IUC& result) { return TRInUnsigned<IUC>(result); }
+BOL RIn::SScan(ISD& result) { return TRInSigned<ISD, IUD>(result); }
+BOL RIn::SScan(IUD& result) { return TRInUnsigned<IUD>(result); }
+BOL RIn::SScan(FPC& result) { return TRInFloatingPoint<FPC, ISC, IUC>(result); }
+BOL RIn::SScan(FPD& result) { return TRInFloatingPoint<FPD, ISD, IUD>(result); }
 
-ISN CIn::GetKey() { return _getch(); }
+ISN RIn::GetKey() { return _getch(); }
 
-ISN CIn::ScanKey() {
+ISN RIn::ScanKey() {
   ISN c;
-  while ((c = CIn::GetKey()) < 0)
+  while ((c = RIn::GetKey()) < 0)
     ;
   return c;
 }
 
 Pausef::Pausef(const CHA* message) {
-  StdOut() << message;
-  CIn::ScanKey();
+  RefOut() << message;
+  RIn::ScanKey();
 }
 
-ISC CInKey() { return 0; }
+ISC RInKey() { return 0; }
 
-BOL CInState(ISC vk_code) { return false; }
+BOL RInState(ISC vk_code) { return false; }
 
 const IUA* KeyboardHIDToNative() {
-#if CRABS_PLATFORM == OS_WINDOWS
+#if _CrabsPlatform == _OSWindows
   static const IUA HIDToNative[256] = {
       255, 255, 255, 255, 65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,
       76,  77,  78,  79,  80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,
@@ -250,7 +233,7 @@ const IUA* KeyboardHIDToNative() {
       16,  18,  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
       255};
-#elif CRABS_PLATFORM == MAC
+#elif _CrabsPlatform == MAC
   static const IUA HIDToNative[256] = {
       255, 255, 255, 255, 0,   11,  8,   2,   14,  3,   5,   4,   34,  38,  40,
       37,  46,  45,  31,  35,  12,  15,  1,   17,  32,  9,   13,  7,   16,  6,
@@ -270,7 +253,7 @@ const IUA* KeyboardHIDToNative() {
       56,  58,  55,  62,  60,  61,  54,  255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
       255};
-#elif CRABS_PLATFORM == EVDEV
+#elif _CrabsPlatform == EVDEV
   static const IUA HIDToNative[256] = {
       255, 255, 255, 255, 38,  56,  54,  40,  26,  41,  42,  43,  31,  44,  45,
       46,  58,  57,  32,  33,  24,  27,  39,  28,  30,  55,  25,  53,  29,  52,
@@ -295,7 +278,7 @@ const IUA* KeyboardHIDToNative() {
 }
 
 const IUA* KeyboardNativeToHID() {
-#if CRABS_PLATFORM == OS_WINDOWS
+#if _CrabsPlatform == _OSWindows
   static const IUA NativeToHID[256] = {
       255, 255, 255, 255, 255, 255, 255, 255, 42,  43,  255, 255, 255, 40,  255,
       255, 225, 224, 226, 72,  57,  255, 255, 255, 255, 255, 255, 41,  255, 255,
@@ -315,7 +298,7 @@ const IUA* KeyboardNativeToHID() {
       255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
       255};
-#elif CRABS_PLATFORM == MAC
+#elif _CrabsPlatform == MAC
   static const IUA NativeToHID[128] = {
       4,   22,  7,   9,   11,  10,  29,  27,  6,   25,  255, 5,   20,  26,  8,
       21,  28,  23,  30,  31,  32,  33,  35,  34,  46,  38,  36,  45,  37,  39,
@@ -326,7 +309,7 @@ const IUA* KeyboardNativeToHID() {
       111, 96,  97,  255, 255, 255, 62,  63,  64,  60,  65,  66,  255, 68,  255,
       104, 107, 105, 255, 67,  255, 69,  255, 106, 117, 74,  75,  76,  61,  77,
       59,  78,  58,  80,  79,  81,  82,  255};
-#elif CRABS_PLATFORM == EVDEV
+#elif _CrabsPlatform == EVDEV
   static const IUA NativeToHID[256] = {
       255, 255, 255, 255, 255, 255, 255, 255, 255, 41,  30,  31,  32,  33,  34,
       35,  36,  37,  38,  39,  45,  46,  42,  43,  20,  26,  8,   21,  23,  28,
@@ -387,7 +370,7 @@ const ISB* KeyIdOffset() {
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
       -1};
   return KeyIdOffset;
-  return NILP;
+  return _NilP;
 }
 
 inline const IUA* KeyIdOrder() {
@@ -429,14 +412,16 @@ const CHA* KeyIdNameFromCode(ISC code) {
 }
 
 KeyId::KeyId(VKCode vk_code, const CHA* label)
-    : vk_code(vk_code), label(label), description(NILP) {}
+    : vk_code(vk_code), label(label), description(_NilP) {}
 
 void KeyId::ReprogramConsole() {}
 
 }  //< namespace _
 
-::_::COut& operator<<(::_::COut& o, ::_::CIn i) { return o; }
-::_::COut& operator<<(::_::COut& o, ::_::CIn& i) { return o; }
+::_::ROut& operator<<(::_::ROut& o, ::_::RIn i) { return o; }
+::_::ROut& operator<<(::_::ROut& o, ::_::RIn& i) { return o; }
 
-::_::COut& operator<<(::_::COut& o, ::_::Pausef& i) { return o; }
+::_::ROut& operator<<(::_::ROut& o, ::_::Pausef& i) { return o; }
 #endif
+
+#endif  //< CRABS_CIN_HXX

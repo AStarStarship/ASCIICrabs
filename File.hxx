@@ -1,9 +1,12 @@
 // Copyright AStarship <https://astarship.net>.
 // Based on TinyDir, a C library for reading directories transformed.
+#pragma once
+#ifndef _CrabsFileHXX
+#define _CrabsFileHXX
 #include "File.h"
 #include "Array.h"
 #include "Autoject.h"
-#if SEAM >= CRABS_FILE
+#if _Seam >= _CrabsFile
 #include "Stringf.hpp"
 #ifdef _MSC_VER
 enum {
@@ -18,8 +21,8 @@ enum {
 namespace _ {
 
 File::File(const CHR* uri) : is_directory_(0), is_reg_(0), path(), name(),
-                             uri_(uri), is_open_(0), extension(NILP),
-                             last_time_modified_(0), fp_(NILP) {}
+                             uri_(uri), is_open_(0), extension(_NilP),
+                             last_time_modified_(0), fp_(_NilP) {}
 
 File& File::Star() { return *this; }
 
@@ -33,7 +36,7 @@ const CHR* File::Extension() {
   // URI-constructed files have the opposite.
   const CHR* source = name[0] ? name : uri_;
   const CHR* ext = TSFindLast<CHR>(source, '.');
-  if (ext != NILP) ++ext;
+  if (ext != _NilP) ++ext;
   return ext;
 }
 
@@ -140,7 +143,7 @@ inline ISN File::Open(const CHR* path) {
       result = -1;
       goto bail;
     }
-    if (TSEquals<CHR>(entry.Name(), base_name) != NILP) {
+    if (TSEquals<CHR>(entry.Name(), base_name) != _NilP) {
       found = 1;
       break;
     }
@@ -162,12 +165,12 @@ ISN File::OpenRead(const CHR* path) {
     errno = EINVAL;
     return -AErrorInvalidInput;
   }
-  if (fp_ != NILP) {
+  if (fp_ != _NilP) {
     fclose(fp_);
-    fp_ = NILP;
+    fp_ = _NilP;
   }
   fp_ = fopen(path, "rb");
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return -1;
   }
   is_open_ = 1;
@@ -179,12 +182,12 @@ ISN File::OpenWrite(const CHR* path) {
     errno = EINVAL;
     return -AErrorInvalidInput;
   }
-  if (fp_ != NILP) {
+  if (fp_ != _NilP) {
     fclose(fp_);
-    fp_ = NILP;
+    fp_ = _NilP;
   }
   fp_ = fopen(path, "wb");
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return -1;
   }
   is_open_ = 1;
@@ -196,7 +199,7 @@ ISW File::Read(void* buf, ISW bytes) {
     errno = EINVAL;
     return 0;
   }
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     errno = EBADF;
     return 0;
   }
@@ -207,7 +210,7 @@ ISW File::Read(void* buf, ISW bytes) {
 }
 
 ISW File::Seek(ISW offset, ISN whence) {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     errno = EBADF;
     return 0;
   }
@@ -218,7 +221,7 @@ ISW File::Seek(ISW offset, ISN whence) {
 }
 
 ISW File::Size() {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     errno = EBADF;
     return 0;
   }
@@ -237,32 +240,31 @@ ISW File::Size() {
 }
 
 BOL File::CompareNames(const File* other) {
-  return TSEquals<CHR>(name, other->name) != NILP;
+  return TSEquals<CHR>(name, other->name) != _NilP;
 }
 
 inline void File::Close() {
-  if (fp_ != NILP) {
+  if (fp_ != _NilP) {
     fclose(fp_);
-    fp_ = NILP;
+    fp_ = _NilP;
   }
   is_open_ = 0;
 }
 
 inline File& File::Write(CHA item) {
-  if (fp_ != NILP) {
+  if (fp_ != _NilP) {
     fputc(item, fp_);
   }
   return *this;
 }
 
 inline File& File::Write(const CHA* item) {
-  if (fp_ != NILP) {
+  if (fp_ != _NilP) {
     fwrite(item, 1, TSCodeCount<CHA, CHC, ISW>(item), fp_);
   }
   return *this;
 }
 
-#if USING_STB == YES_0
 inline File& File::Write(CHB item) {
   return Write(CHA(item));
 }
@@ -274,8 +276,6 @@ inline File& File::Write(const CHB* item) {
   return *this;
 }
 
-#endif
-#if USING_STC == YES_0
 inline File& File::Write(CHC item) {
   return Write(CHA(item));
 }
@@ -286,8 +286,6 @@ inline File& File::Write(const CHC* item) {
   }
   return *this;
 }
-
-#endif
 
 inline File& File::Write(ISA item) {
   return Write(ISD(item));
@@ -302,7 +300,7 @@ inline File& File::Write(ISC item) {
 }
 
 inline File& File::Write(ISD item) {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return *this;
   }
   enum { Size = 24 };
@@ -325,7 +323,7 @@ inline File& File::Write(IUC item) {
 }
 
 inline File& File::Write(IUD item) {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return *this;
   }
   enum { Size = 24 };
@@ -336,7 +334,7 @@ inline File& File::Write(IUD item) {
 }
 
 inline File& File::Write(FPC item) {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return *this;
   }
   enum { Size = 32 };
@@ -347,7 +345,7 @@ inline File& File::Write(FPC item) {
 }
 
 inline File& File::Write(FPD item) {
-  if (fp_ == NILP) {
+  if (fp_ == _NilP) {
     return *this;
   }
   enum { Size = 32 };
@@ -390,7 +388,6 @@ TextFile& TextFile::Print(const CHA* item) {
   return TPrint<TextFile, CHA>(*this, item);
 }
 
-#if USING_STB == YES_0
 TextFile& TextFile::Print(CHB item) {
   file_.Write(item);
   return *this;
@@ -399,9 +396,7 @@ TextFile& TextFile::Print(CHB item) {
 TextFile& TextFile::Print(const CHB* item) {
   return TPrint<TextFile, CHB>(*this, item);
 }
-#endif
 
-#if USING_STC == YES_0
 TextFile& TextFile::Print(CHC item) {
   file_.Write(item);
   return *this;
@@ -409,13 +404,12 @@ TextFile& TextFile::Print(CHC item) {
 TextFile& TextFile::Print(const CHC* item) {
   return TPrint<TextFile, CHC>(*this, item);
 }
-#endif
 
 TextFile& TextFile::Print(ISC item) {
-#if SEAM <= CRABS_ITOS
-  STD_COUT << item;
+#if _Seam <= _CrabsIToS
+  _ROut << item;
 #else
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
   Print(ISD(item));
 #else
   enum { Size = 24 };
@@ -428,65 +422,65 @@ TextFile& TextFile::Print(ISC item) {
 }
 
 TextFile& TextFile::Print(IUC item) {
-#if SEAM <= CRABS_ITOS
-  STD_COUT << item;
+#if _Seam <= _CrabsIToS
+  _ROut << item;
 #else
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
   Print((item));
 #else
   enum { Size = 24 };
-  CHA boofer[Size];
-  TSPrintUnsigned<IUC, CHA>(boofer, Size, item);
-  Print(boofer);
+  CHA buffer[Size];
+  TSPrintUnsigned<IUC, CHA>(buffer, Size, item);
+  Print(buffer);
 #endif
 #endif
   return *this;
 }
 
 TextFile& TextFile::Print(ISD item) {
-#if SEAM <= CRABS_ITOS
-  STD_COUT << item;
+#if _Seam <= _CrabsIToS
+  _ROut << item;
 #else
   enum { Size = 24 };
-  CHA boofer[Size];
-  auto result = TSPrint<CHA>(boofer, Size, item);
-  Print(boofer);
+  CHA buffer[Size];
+  auto result = TSPrint<CHA>(buffer, Size, item);
+  Print(buffer);
 #endif
   return *this;
 }
 
 TextFile& TextFile::Print(IUD item) {
-#if SEAM <= CRABS_ITOS
-  STD_COUT << item;
+#if _Seam <= _CrabsIToS
+  _ROut << item;
 #else
   enum { Size = 24 };
-  CHA boofer[Size];
-  TSPrint<CHA>(boofer, Size, item);
-  Print(boofer);
+  CHA buffer[Size];
+  TSPrint<CHA>(buffer, Size, item);
+  Print(buffer);
 #endif
   return *this;
 }
 
 TextFile& TextFile::Print(FPC item) {
-#if SEAM <= CRABS_FTOS
-  STD_COUT << item;
+#if _Seam <= _CrabsFToS
+  _ROut << item;
 #else
   enum { Size = 16 };
-  CHA boofer[Size];
-  TSPrint<CHA>(boofer, Size, item);
-  Print(boofer);
+  CHA buffer[Size];
+  TSPrint<CHA>(buffer, Size, item);
+  Print(buffer);
 #endif
   return *this;
 }
 
 TextFile& TextFile::Print(FPD item) {
-#if SEAM <= CRABS_FTOS
-  STD_COUT << item;
+#if _Seam <= _CrabsFToS
+  _ROut << item;
 #else
   enum { Size = 32 };
-  CHA boofer[Size];
-  TSPrint<CHA>(boofer, Size, item);
-  Print(boofer);
+  CHA buffer[Size];
+  TSPrint<CHA>(buffer, Size, item);
+  Print(buffer);
 #endif
   return *this;
 }
@@ -530,7 +524,6 @@ TextFile& TextFile::NL(const CHA* item) {
   NL();
   return Print(item);
 }
-#if USING_STB == YES_0
 TextFile& TextFile::NL(CHB item) {
   NL();
   return Print(item);
@@ -539,8 +532,6 @@ TextFile& TextFile::NL(const CHB* item) {
   NL();
   return Print(item);
 }
-#endif
-#if USING_STC == YES_0
 TextFile& TextFile::NL(CHC item) {
   NL();
   return Print(item);
@@ -549,7 +540,6 @@ TextFile& TextFile::NL(const CHC* item) {
   NL();
   return Print(item);
 }
-#endif
 
 TextFile& TextFile::NL(ISC item) {
   NL();
@@ -567,19 +557,14 @@ TextFile& TextFile::NL(IUD item) {
   NL();
   return Print(item);
 }
-#if USING_FPC == YES_0
 TextFile& TextFile::NL(FPC item) {
   NL();
   return Print(item);
 }
-#endif
-#if USING_FPD == YES_0
 TextFile& TextFile::NL(FPD item) {
   NL();
   return Print(item);
 }
-#endif
-
 TextFile& TextFile::Hex(const void* item) { return TPrintHex<TextFile>(*this, item); }
 TextFile& TextFile::Hex(const void* item, ISW size) {
   return TPrintHex<TextFile>(*this, item, size);
@@ -595,45 +580,51 @@ TextFile& TextFile::Hex(ISC item) { return TPrintHex<TextFile, ISC, IUC>(*this, 
 TextFile& TextFile::Hex(IUC item) { return TPrintHex<TextFile, IUC>(*this, item); }
 TextFile& TextFile::Hex(ISD item) { return TPrintHex<TextFile, ISD, IUD>(*this, item); }
 TextFile& TextFile::Hex(IUD item) { return TPrintHex<TextFile, IUD>(*this, item); }
-#if USING_FPC == YES_0
 TextFile& TextFile::Hex(FPC item) { return TPrintHex<TextFile>(*this, item); }
-#endif
-#if USING_FPD == YES_0
 TextFile& TextFile::Hex(FPD item) { return TPrintHex<TextFile>(*this, item); }
-#endif
 
-/* Stores the given item to the boofer and store the size. */
-TextFile& TextFile::Binary(const void* item) { return TPrintBinary<TextFile>(*this, item); }
+/* Stores the given item to the buffer and store the size. */
+TextFile& TextFile::Binary(const void* item) {
+  return TPrintBinary<TextFile>(*this, item);
+}
 TextFile& TextFile::Binary(const void* item, ISW size) {
   return TPrintBinary<TextFile>(*this, item, size);
 }
 TextFile& TextFile::Binary(const void* start, const void* stop) {
   return TPrintBinary<TextFile>(
     *this, start,
-    TPtr<const CHA>(stop) - TPtr<const CHA>(start));
+    TRef<const CHA>(stop) - TRef<const CHA>(start));
 }
 TextFile& TextFile::Binary(ISA item) {
   return TPrintBinary<TextFile, ISA, IUA>(*this, item);
 }
-TextFile& TextFile::Binary(IUA item) { return TPrintBinary<TextFile, IUA>(*this, item); }
+TextFile& TextFile::Binary(IUA item) {
+  return TPrintBinary<TextFile, IUA>(*this, item);
+}
 TextFile& TextFile::Binary(ISB item) {
   return TPrintBinary<TextFile, ISB, IUB>(*this, item);
 }
-TextFile& TextFile::Binary(IUB item) { return TPrintBinary<TextFile, IUB>(*this, item); }
+TextFile& TextFile::Binary(IUB item) {
+  return TPrintBinary<TextFile, IUB>(*this, item);
+}
 TextFile& TextFile::Binary(ISC item) {
   return TPrintBinary<TextFile, ISC, IUC>(*this, item);
 }
-TextFile& TextFile::Binary(IUC item) { return TPrintBinary<TextFile, IUC>(*this, item); }
+TextFile& TextFile::Binary(IUC item) {
+  return TPrintBinary<TextFile, IUC>(*this, item);
+}
 TextFile& TextFile::Binary(ISD item) {
   return TPrintBinary<TextFile, ISD, IUD>(*this, item);
 }
-TextFile& TextFile::Binary(IUD item) { return TPrintBinary<TextFile, IUD>(*this, item); }
-#if USING_FPC == YES_0
-TextFile& TextFile::Binary(FPC item) { return TPrintBinary<TextFile>(*this, item); }
-#endif
-#if USING_FPD == YES_0
-TextFile& TextFile::Binary(FPD item) { return TPrintBinary<TextFile>(*this, item); }
-#endif
+TextFile& TextFile::Binary(IUD item) { 
+  return TPrintBinary<TextFile, IUD>(*this, item);
+}
+TextFile& TextFile::Binary(FPC item) {
+   return TPrintBinary<TextFile>(*this, item); 
+}
+TextFile& TextFile::Binary(FPD item) {
+   return TPrintBinary<TextFile>(*this, item);
+}
 
 Folder::Folder(const CHR* uri) : path_() {
   SPrint(path_, URIPathLengthMax, uri);
@@ -660,12 +651,12 @@ ISN Folder::Open(const CHR* path) {
   }
 
   // initialize dir.
-  files_ = NILP;
+  files_ = _NilP;
 #ifdef _MSC_VER
   _h = INVALID_HANDLE_VALUE;
 #else
-  _d = NILP;
-  _e = NILP;
+  _d = _NilP;
+  _e = _NilP;
 #endif
   Close();
 
@@ -681,7 +672,7 @@ ISN Folder::Open(const CHR* path) {
   TSConcat<CHR, CHC>(path_buf, URIPathLengthMax, "\\*");
 #if (defined WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
   _h = FindFirstFileEx(path_buf, FindExInfoStandard, &_f,
-    FindExSearchNameMatch, NILP, 0);
+    FindExSearchNameMatch, _NilP, 0);
 #else
   _h = FindFirstFile(path_buf, &_f);
 #endif
@@ -689,7 +680,7 @@ ISN Folder::Open(const CHR* path) {
     errno = ENOENT;
 #else
   _d = _og_opendir(path);
-  if (_d == NILP) {
+  if (_d == _NilP) {
 #endif
     goto bail;
   }
@@ -698,7 +689,7 @@ ISN Folder::Open(const CHR* path) {
   has_next_ = 1;
 #ifndef _MSC_VER
   _e = _og_readdir(_d);
-  if (_e == NILP) {
+  if (_e == _NilP) {
     has_next_ = 0;
   }
 #endif
@@ -759,7 +750,7 @@ ISN Folder::OpenSorted(const CHR* path) {
 
   if (file_count == 0 || Open(path) == -1) return -1;
 
-  files_ = TPtr<File>(ObjectFactoryHeap(NILP, ISW(sizeof(File)) * file_count));
+  files_ = TRef<File>(ObjectFactoryHeap(_NilP, ISW(sizeof(File)) * file_count));
   if (IsError(files_)) goto bail;
   file_count = 0;
   while (has_next_) {
@@ -783,8 +774,8 @@ inline void Folder::Close() {
   ArrayFill(path_, sizeof(path_), 0);
   has_next_ = 0;
   file_count_ = 0;
-  if (files_) ObjectFactoryHeap(TPtr<IUW>(files_), RAMFactoryDelete);
-  files_ = NILP;
+  if (files_) ObjectFactoryHeap(TRef<IUW>(files_), RAMFactoryDelete);
+  files_ = _NilP;
 #ifdef _MSC_VER
   if (_h != INVALID_HANDLE_VALUE) {
     FindClose(_h);
@@ -794,8 +785,8 @@ inline void Folder::Close() {
   if (_d) {
     _og_closedir(_d);
   }
-  _d = NILP;
-  _e = NILP;
+  _d = _NilP;
+  _e = _NilP;
 #endif
 }
 
@@ -810,7 +801,7 @@ inline ISN Folder::Next(Folder* dir) {
   if (FindNextFile(_h, &_f) == 0)
 #else
   _e = _og_readdir(_d);
-  if (_e == NILP)
+  if (_e == _NilP)
 #endif
   {
     has_next_ = 0;
@@ -834,7 +825,7 @@ ISN Folder::Read(File* file) {
     errno = EINVAL;
     return AErrorNil;
   }
-  const CHR* filename = NILP;
+  const CHR* filename = _NilP;
 #ifdef _MSC_VER
   if (_h == INVALID_HANDLE_VALUE)
 #else
@@ -932,14 +923,10 @@ inline ISN Folder::OpenSubfolder(ISW i) {
 
 inline ::_::File& operator<<(::_::File& o, CHA item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, const CHA* item) { return o.Write(item); }
-#if USING_STB == YES_0
 inline ::_::File& operator<<(::_::File& o, CHB item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, const CHB* item) { return o.Write(item); }
-#endif
-#if USING_STC == YES_0
 inline ::_::File& operator<<(::_::File& o, CHC item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, const CHC* item) { return o.Write(item); }
-#endif
 inline ::_::File& operator<<(::_::File& o, ISA item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, IUA item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, ISB item) { return o.Write(item); }
@@ -948,12 +935,8 @@ inline ::_::File& operator<<(::_::File& o, ISC item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, IUC item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, ISD item) { return o.Write(item); }
 inline ::_::File& operator<<(::_::File& o, IUD item) { return o.Write(item); }
-#if USING_FPC == YES_0
 inline ::_::File& operator<<(::_::File& o, FPC item) { return o.Write(item); }
-#endif
-#if USING_FPD == YES_0
 inline ::_::File& operator<<(::_::File& o, FPD item) { return o.Write(item); }
-#endif
 
 
 inline ::_::TextFile& operator<<(::_::TextFile& o, CHA item) { 
@@ -962,22 +945,18 @@ inline ::_::TextFile& operator<<(::_::TextFile& o, CHA item) {
 inline ::_::TextFile& operator<<(::_::TextFile& o, const CHA* item) { 
   return o.Print(item);
 }
-#if USING_STB == YES_0
 inline ::_::TextFile& operator<<(::_::TextFile& o, CHB item) {
   return o.Print(item);
 }
 inline ::_::TextFile& operator<<(::_::TextFile& o, const CHB* item) {
   return o.Print(item);
 }
-#endif
-#if USING_STC == YES_0
 inline ::_::TextFile& operator<<(::_::TextFile& o, CHC item) {
   return o.Print(item);
 }
 inline ::_::TextFile& operator<<(::_::TextFile& o, const CHC* item) {
   return o.Print(item);
 }
-#endif
 inline ::_::TextFile& operator<<(::_::TextFile& o, ISA item) {
   return o.Print(item);
 }
@@ -1002,16 +981,12 @@ inline ::_::TextFile& operator<<(::_::TextFile& o, ISD item) {
 inline ::_::TextFile& operator<<(::_::TextFile& o, IUD item) {
   return o.Print(item);
 }
-#if USING_FPC == YES_0
 inline ::_::TextFile& operator<<(::_::TextFile& o, FPC item) {
   return o.Print(item);
 }
-#endif
-#if USING_FPD == YES_0
 inline ::_::TextFile& operator<<(::_::TextFile& o, FPD item) {
   return o.Print(item);
 }
-#endif
 inline ::_::TextFile& operator<<(::_::TextFile& o, ::_::Hexf item) {
   return o.Print(item);
 }
@@ -1044,3 +1019,5 @@ inline ::_::TextFile& operator<<(::_::TextFile& o, ::_::Charsf item) {
 
 
 #endif
+
+#endif  //< _CrabsFileHXX
