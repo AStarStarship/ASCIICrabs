@@ -1,8 +1,8 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
 #include <_Config.h>
-#ifndef CRABS_STRINGF_DECL
-#define CRABS_STRINGF_DECL
+#ifndef _CrabsStringfH
+#define _CrabsStringfH
 #include "AType.h"
 namespace _ {
 
@@ -37,14 +37,7 @@ Array module's ArrayCopy/ArrayFill/ArrayShiftUp/ArrayShiftDown, not this file.)
 @see ./Stringf.hxx
 */
 
-/* C-string (NUL-terminated, CHA-typed). */
-ISC    StrLen(const CHA* s);
-ISC    StrCmp(const CHA* a, const CHA* b);
-ISC    StrToInt(const CHA* s);   /* like atoi, ISC-typed */
-ISD    StrToISD(const CHA* s, CHA** end);  /* like strtoll, ISD (signed 64-bit) */
-IUD    StrToIUD(const CHA* s, CHA** end);  /* like strtoul, IUD (unsigned 64-bit) */
-
-/* C-string search (pointer-returning; returns NILP if not found). */
+/* C-string search (pointer-returning; returns _NilP if not found). */
 const CHA* StrStr(const CHA* haystack, const CHA* needle);  /* like strstr */
 const CHA* StrChr(const CHA* s, CHA value);                /* like strchr */
 
@@ -131,7 +124,7 @@ const CHC* SScan(const CHC* start, IUD& item);
 CHC* SScan(CHC* start, IUD& item);
 
 /* Attempts to scan the previous character from the given ASCII string.
-@return NILP upon invalid Unicode character or invalid start. */
+@return _NilP upon invalid Unicode character or invalid start. */
 const CHA* SScanBack(const CHA* start, CHA& item);
 const CHA* SScanBack(const CHA* start, CHC& item);
 const CHB* SScanBack(const CHB* start, CHC& item);
@@ -140,7 +133,7 @@ const CHC* SScanBack(const CHC* start, CHC& item);
 /* Prints a item to the string.
 @return  Nil upon failure or a pointer to the nil-term CHS upon success.
 @param start The beginning of the string socket.
-@param stop  The last character in the string boofer.
+@param stop  The last character in the string buffer.
 @param item  The character to print. */
 CHA* SPrint(CHA* start, CHA* stop, IUA item);
 CHA* SPrint(CHA* start, ISW bytes, IUA item);
@@ -173,7 +166,6 @@ CHA* SPrint(CHA* start, ISW bytes, const CHB* item);
 CHA* SPrint(CHA* start, CHA* stop, const CHC* item);
 CHA* SPrint(CHA* start, ISW bytes, const CHC* item);
 
-#if USING_STB == YES_0
 /* Prints a character to the string.
 @return  Nil upon failure or a pointer to the nil-term CHS upon success. */
 CHB* SPrint(CHB* start, CHB* stop, IUA item);
@@ -208,9 +200,7 @@ CHB* SPrint(CHB* start, CHB* stop, const CHB* item);
 CHB* SPrint(CHB* start, ISW bytes, const CHB* item);
 CHB* SPrint(CHB* start, CHB* stop, const CHC* item);
 CHB* SPrint(CHB* start, ISW bytes, const CHC* item);
-#endif
 
-#if USING_STC == YES_0
 /* Prints a character or string to the string.
 @return  Nil upon failure or a pointer to the nil-term CHS upon success. */
 CHC* SPrint(CHC* start, CHC* stop, IUA item);
@@ -243,7 +233,6 @@ CHC* SPrint(CHC* start, CHC* stop, const CHB* item);
 CHC* SPrint(CHC* start, ISW bytes, const CHB* item);
 CHC* SPrint(CHC* start, CHC* stop, const CHC* item);
 CHC* SPrint(CHC* start, ISW bytes, const CHC* item);
-#endif
 
 /* Utility class for printing numbers. */
 struct Valuef {
@@ -256,18 +245,12 @@ struct Valuef {
   /* Constructs a Valuef from the given item. */
   Valuef(const void* item, ISW count = 0);
   Valuef(void* item, ISW count = 0);
-#if USING_STA == YES_0
   Valuef(CHA item, ISW count = 0);
   Valuef(const CHA* item, ISW count = 0);
-#endif
-#if USING_STB == YES_0
   Valuef(CHB item, ISW count = 0);
   Valuef(const CHB* item, ISW count = 0);
-#endif
-#if USING_STC == YES_0
   Valuef(CHC item, ISW count = 0);
   Valuef(const CHC* item, ISW count = 0);
-#endif
   Valuef(ISA item, ISW count = 0);
   Valuef(IUA item, ISW count = 0);
   Valuef(ISB item, ISW count = 0);
@@ -276,12 +259,8 @@ struct Valuef {
   Valuef(IUC item, ISW count = 0);
   Valuef(ISD item, ISW count = 0);
   Valuef(IUD item, ISW count = 0);
-#if USING_FPC == YES_0
   Valuef(FPC item, ISW count = 0);
-#endif
-#if USING_FPD == YES_0
   Valuef(FPD item, ISW count = 0);
-#endif
 
   /* Gets the value.Type(). */
   ISW Type();
@@ -289,7 +268,7 @@ struct Valuef {
   /* Gets the count. */
   ISW Count();
 
-  /* Gets the pointer to either the item.Ptr () or the pointer item stores. */
+  /* Gets the pointer to either the item.Pointer () or the pointer item stores. */
   void* Value();
 
   /* Gets the value::word_ as the specified type. */
@@ -307,7 +286,7 @@ struct Hexf {
   Valuef element;  //< Stores the ASCII Type, it's value, and the byte count.
 
   Hexf(const void* item, ISW size);
-  /* Stores the given item to the boofer and stores the size. */
+  /* Stores the given item to the buffer and stores the size. */
   Hexf(const void* item);
   Hexf(ISA item);
   Hexf(IUA item);
@@ -320,19 +299,15 @@ struct Hexf {
   Hexf(CHC item);
   Hexf(ISD item);
   Hexf(IUD item);
-#if USING_FPC == YES_0
   Hexf(FPC item);
-#endif
-#if USING_FPD == YES_0
   Hexf(FPD item);
-#endif
 };
 
 /* Utility class for printing a POD type in binary. */
 struct Binaryf {
   Valuef element;  //< Stores the ASCII Type, it's value, and the byte count.
 
-  /* Stores the given item to the boofer and store the size. */
+  /* Stores the given item to the buffer and store the size. */
   Binaryf(const void* item);
   Binaryf(const void* item, ISW size);
   Binaryf(ISA item);
@@ -343,12 +318,8 @@ struct Binaryf {
   Binaryf(IUC item);
   Binaryf(ISD item);
   Binaryf(IUD item);
-#if USING_FPC == YES_0
   Binaryf(FPC item);
-#endif
-#if USING_FPD == YES_0
   Binaryf(FPD item);
-#endif
 };
 
 /* Utility class for printing blocks of characters to the console with
@@ -359,14 +330,10 @@ struct Charsf {
   /* Constructs the value from the delta between start and stop. */
   Charsf(const void* start, const void* stop);
   Charsf(const void* start, ISW count);
-#if USING_STB == YES_0
   Charsf(const CHB* start, const CHB* stop);
   Charsf(const CHB* start, ISW count);
-#endif
-#if USING_STC == YES_0
   Charsf(const CHC* start, const CHC* stop);
   Charsf(const CHC* start, ISW count);
-#endif
 
   // Returns the element.Type();
   DTW Type();
@@ -379,36 +346,32 @@ frame in chained operator overloads. */
 class Stringf {
  public:
   enum {
-    // Max length of the boofer in ALU words.
-    BooferWordCount = (sizeof(void*) == 2) ? 5
+    // Max length of the buffer in ALU words.
+    BufferWordCount = (sizeof(void*) == 2) ? 5
                     : (sizeof(void*) == 4) ? 6 
                     : (sizeof(void*) == 8) ? 5 : 1,
     // Max length of a string in characters.
-    LengthMax = BooferWordCount * sizeof(void*) - 1,
+    LengthMax = BufferWordCount * sizeof(void*) - 1,
   };
 
  private:
-  const void* string_;  //< Pointer to a string or the boofer_.
+  const void* string_;  //< Pointer to a string or the buffer_.
   ISW count_;           //< The character count.
   DTW type_;            //< The ASCII string Type, STA, STB, or STC.
-  IUW boofer_[BooferWordCount];  //< String boofer for the token.
+  IUW buffer_[BufferWordCount];  //< String buffer for the token.
 
  public:
   /* Default constructor sets the count but doesn't write a nil-term char
-  to the boofer. */
+  to the buffer. */
   Stringf();
 
   /* Sets the String_ to the given pointer and stores the count. */
   Stringf(const CHA* item);
-#if USING_STB == YES_0
   Stringf(const CHB* item);
-#endif
-#if USING_STC == YES_0
   Stringf(const CHC* item);
-#endif
 
-  /* Prints the item to the boofer_, stores the count, and sets the String_ to
-  the boofer_. */
+  /* Prints the item to the buffer_, stores the count, and sets the String_ to
+  the buffer_. */
   Stringf(CHA item);
   Stringf(CHB item);
   Stringf(CHC item);
@@ -416,24 +379,16 @@ class Stringf {
   Stringf(IUC item);
   Stringf(ISD item);
   Stringf(IUD item);
-#if USING_FPC == YES_0
   Stringf(FPC item);
-#endif
-#if USING_FPD == YES_0
   Stringf(FPD item);
-#endif
 
   /* Sets the String_ to the given pointer and stores the count. */
   Stringf(const CHA* item, ISW count);
-#if USING_STB == YES_0
   Stringf(const CHB* item, ISW count);
-#endif
-#if USING_STC == YES_0
   Stringf(const CHC* item, ISW count);
-#endif
 
-  /* Prints the item to the boofer_, stores the count, and sets the String_ to
-  the boofer_. */
+  /* Prints the item to the buffer_, stores the count, and sets the String_ to
+  the buffer_. */
   Stringf(CHA item, ISW count);
   Stringf(CHB item, ISW count);
   Stringf(CHC item, ISW count);
@@ -441,12 +396,8 @@ class Stringf {
   Stringf(IUC item, ISW count);
   Stringf(ISD item, ISW count);
   Stringf(IUD item, ISW count);
-#if USING_FPC == YES_0
   Stringf(FPC item, ISW count);
-#endif
-#if USING_FPD == YES_0
   Stringf(FPD item, ISW count);
-#endif
   //Stringf(ATypef item, ISW count = AConsoleWidth);
   //Stringf(TypeValue item, ISW count = AConsoleWidth);
 
@@ -456,7 +407,7 @@ class Stringf {
   void* Value();
 
   /* Gets the pointer contained in value_[0]. */
-  void* Ptr();
+  void* Ref();
 
   /* Gets the String_. */
   const CHA* STA();
@@ -471,48 +422,32 @@ class Stringf {
 
   /* Saves the pointer to the String_. */
   void Print(const CHA* item);
-#if USING_STB == YES_0
   void Print(const CHB* item);
-#endif
-#if USING_STC == YES_0
   void Print(const CHC* item);
-#endif
 
-  /* Prints the given item to the boofer_. */
+  /* Prints the given item to the buffer_. */
   void Print(CHA item);
-//#if USING_STB == YES_0
 //  void Print(CHB item);
-//#endif
-#if USING_STC == YES_0
   void Print(CHC item);
-#endif
   void Print(ISC item);
   void Print(IUC item);
   void Print(ISD item);
   void Print(IUD item);
-#if USING_FPC == YES_0
   void Print(FPC item);
-#endif
-#if USING_FPD == YES_0
   void Print(FPD item);
-#endif
 
-  /* Prints a timestamp to the boofer_. */
+  /* Prints a timestamp to the buffer_. */
   //void PrintTMC(TMC item);
   //void PrintTME(TMC item, IUC subsecond_tick);
   //void PrintTMD(TMD item);
 
   //void Print(TypeValue item);
 
-  /* Stores the item to the first word of the boofer and the negative of the
+  /* Stores the item to the first word of the buffer and the negative of the
   count. */
   void Hex(CHA item, ISW count = 80);
-#if USING_STB == YES_0
   void Hex(CHB item, ISW count = 80);
-#endif
-#if USING_STC == YES_0
   void Hex(CHC item, ISW count = 80);
-#endif
   void Hex(ISA item, ISW count = 80);
   void Hex(IUA item, ISW count = 80);
   void Hex(ISB item, ISW count = 80);
@@ -521,12 +456,8 @@ class Stringf {
   void Hex(IUC item, ISW count = 80);
   void Hex(ISD item, ISW count = 80);
   void Hex(IUD item, ISW count = 80);
-#if USING_FPC == YES_0
   void Hex(FPC item, ISW count = 80);
-#endif
-#if USING_FPD == YES_0
   void Hex(FPD item, ISW count = 80);
-#endif
 };
 
 /* Utility class for printing hex with operator<<. */
@@ -539,36 +470,23 @@ struct Centerf {
   /* Prints the item to the value. */
   Centerf(CHA item, ISW count = AConsoleWidth);
   Centerf(const CHA* start, ISW count = AConsoleWidth);
-#if USING_STB == YES_0
   Centerf(CHB item, ISW count = AConsoleWidth);
   Centerf(const CHB* item, ISW count = AConsoleWidth);
-#endif
-#if USING_STC == YES_0
   Centerf(CHC item, ISW count = AConsoleWidth);
   Centerf(const CHC* item, ISW count = AConsoleWidth);
-#endif
   Centerf(ISC item, ISW count = AConsoleWidth);
 
   Centerf(IUC item, ISW count = AConsoleWidth);
   Centerf(ISD item, ISW count = AConsoleWidth);
   Centerf(IUD item, ISW count = AConsoleWidth);
-
-#if USING_FPC == YES_0
   Centerf(FPC item, ISW count = AConsoleWidth);
-#endif
-#if USING_FPD == YES_0
   Centerf(FPD item, ISW count = AConsoleWidth);
-#endif
 
-  /* Stores the item to the first word of the boofer and the negative of the
+  /* Stores the item to the first word of the buffer and the negative of the
   count. */
   Centerf& Hex(CHA item, ISW count = 80);
-#if USING_STB == YES_0
   Centerf& Hex(CHB item, ISW count = 80);
-#endif
-#if USING_STC == YES_0
   Centerf& Hex(CHC item, ISW count = 80);
-#endif
   Centerf& Hex(ISA item, ISW count = 80);
   Centerf& Hex(IUA item, ISW count = 80);
   Centerf& Hex(ISB item, ISW count = 80);
@@ -577,12 +495,8 @@ struct Centerf {
   Centerf& Hex(IUC item, ISW count = 80);
   Centerf& Hex(ISD item, ISW count = 80);
   Centerf& Hex(IUD item, ISW count = 80);
-#if USING_FPC == YES_0
   Centerf& Hex(FPC item, ISW count = 80);
-#endif
-#if USING_FPD == YES_0
   Centerf& Hex(FPD item, ISW count = 80);
-#endif
 
   // Returns the element.Type();
   DTW Type();
@@ -598,35 +512,22 @@ struct Rightf {
   /* Prints the item to the value. */
   Rightf(CHA item, ISW count = AConsoleWidth);
   Rightf(const CHA* item, ISW count = AConsoleWidth);
-#if USING_STB == YES_0
   Rightf(CHB item, ISW count = AConsoleWidth);
   Rightf(const CHB* item, ISW count = AConsoleWidth);
-#endif
-#if USING_STC == YES_0
   Rightf(CHC item, ISW count = AConsoleWidth);
   Rightf(const CHC* item, ISW count = AConsoleWidth);
-#endif
   Rightf(ISC item, ISW count = AConsoleWidth);
   Rightf(IUC item, ISW count = AConsoleWidth);
   Rightf(ISD item, ISW count = AConsoleWidth);
   Rightf(IUD item, ISW count = AConsoleWidth);
-
-#if USING_FPC == YES_0
   Rightf(FPC item, ISW count = AConsoleWidth);
-#endif
-#if USING_FPD == YES_0
   Rightf(FPD item, ISW count = AConsoleWidth);
-#endif
 
-  /* Stores the item to the first word of the boofer and the negative of the
+  /* Stores the item to the first word of the buffer and the negative of the
   count. */
   Rightf& Hex(CHA item, ISW count = 80);
-#if USING_STB == YES_0
   Rightf& Hex(CHB item, ISW count = 80);
-#endif
-#if USING_STC == YES_0
   Rightf& Hex(CHC item, ISW count = 80);
-#endif
   Rightf& Hex(ISA item, ISW count = 80);
   Rightf& Hex(IUA item, ISW count = 80);
   Rightf& Hex(ISB item, ISW count = 80);
@@ -635,12 +536,8 @@ struct Rightf {
   Rightf& Hex(IUC item, ISW count = 80);
   Rightf& Hex(ISD item, ISW count = 80);
   Rightf& Hex(IUD item, ISW count = 80);
-#if USING_FPC == YES_0
   Rightf& Hex(FPC item, ISW count = 80);
-#endif
-#if USING_FPD == YES_0
   Rightf& Hex(FPD item, ISW count = 80);
-#endif
 
   // Returns the element.Type();
   DTW Type();
@@ -655,13 +552,13 @@ struct Linef {
   Linef(CHA item, ISW count = AConsoleWidth);
 
   /* Constructors a horizontal line of the given string. */
-  Linef(const CHA* start = NILP, ISW count = AConsoleWidth);
+  Linef(const CHA* start = _NilP, ISW count = AConsoleWidth);
 
   /* Constructors a horizontal line of the given string. */
-  Linef(const CHB* start = NILP, ISW count = AConsoleWidth);
+  Linef(const CHB* start = _NilP, ISW count = AConsoleWidth);
 
   /* Constructors a horizontal line of the given string. */
-  Linef(const CHC* start = NILP, ISW count = AConsoleWidth);
+  Linef(const CHC* start = _NilP, ISW count = AConsoleWidth);
 
   // Returns the element.Type();
   DTW Type();
@@ -692,7 +589,7 @@ struct Headingf {
 
   /* Saves the parameters to the corresponding data members. */
   Headingf(const CHA* caption, const CHA* caption2,
-           const CHA* caption3 = NILP, const CHA* style = NILP,
+           const CHA* caption3 = _NilP, const CHA* style = _NilP,
            ISW count = AConsoleWidth);
 
   // Returns the element.Type()
@@ -748,8 +645,8 @@ struct AErrorf {
   ISW error;            //< Error code.
   const CHA* message;   //< Error message.
 
-  AErrorf(ISW error, const CHA* message = NILP);
+  AErrorf(ISW error, const CHA* message = _NilP);
 };
 }  //< namespace _
-#endif
+#endif  //< _CrabsStringfH
 // @} Stringf

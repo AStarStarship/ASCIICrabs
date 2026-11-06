@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BUFFER_DECL
-#define CRABS_BUFFER_DECL
+#ifndef _CrabsBufferH
+#define _CrabsBufferH
 #include <_Config.h>
-#if SEAM >= CRABS_ROOM
+#if _Seam >= _CrabsRoom
 namespace _ {
 
 /* Creates/Gets a static socket of the specified size. */
@@ -14,9 +14,9 @@ inline CHA* Buffer() {
         (BufferSize / sizeof(IUW)) + BufferSize % sizeof(IUW) ? 1 : 0
   };
   static IUW socket[BufferSizeWords];
-  return TPtr<CHA>(socket);
+  return TRef<CHA>(socket);
 }
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsBufferH

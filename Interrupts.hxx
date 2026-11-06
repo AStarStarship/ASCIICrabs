@@ -1,12 +1,17 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsInterruptsHXX
+#define _CrabsInterruptsHXX
 #include "Interrupts.h"
-#if SEAM >= CRABS_OP && USING_CRABS_INTERRUPTS
+#if _Seam >= _CrabsOp && USING_CRABS_INTERRUPTS
 #include <cassert>
 namespace _ {
 
-#if USING_CRABS_TEXT
+#if _CrabsUsingText
 const CHA* RoomCrashException::what() const throw() { return "External crash"; }
 #endif
 
 }  //< namespace _
-#endif  ///< #if SEAM >= CRABS_OP
+#endif  ///< #if _Seam >= _CrabsOp
+
+#endif  //< _CrabsInterruptsHXX

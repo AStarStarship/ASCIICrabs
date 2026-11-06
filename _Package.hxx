@@ -1,12 +1,15 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsPackageHXX
+#define _CrabsPackageHXX
 
 #include "Array.hxx"
 #include "BIn.hxx"
 #include "BOut.hxx"
 #include "BSeq.hxx"
-#include "CIn.hxx"
+#include "RIn.hxx"
 #include "Clock.hxx"
-#include "COut.hxx"
+#include "ROut.hxx"
 #include "Crabs.hxx"
 #include "Error.hxx"
 #include "File.hxx"
@@ -30,3 +33,5 @@
 #include "BigInt.hxx"
 #include "Address.hxx"
 #include "Math.hxx"
+
+#endif  //< _CrabsPackageHXX

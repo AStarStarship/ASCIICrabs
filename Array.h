@@ -1,6 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ARRAY_DECL
+#ifndef _CrabsArrayH
+#define _CrabsArrayH
 #define CRABS_ARRAY_DECL
 #include <_Config.h>
 namespace _ {
@@ -54,4 +55,4 @@ CHA* ArrayFill(void* origin, ISW bytes, CHA fill_char = 0);
 
 //< @endingroup Array
 }  //< namespace _
-#endif  //< #ifndef CRABS_ARRAY_DECL
+#endif  //< #ifndef _CrabsArrayH

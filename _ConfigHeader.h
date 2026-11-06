@@ -1,42 +1,41 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef _CONFIG_HEADER_H
-#define _CONFIG_HEADER_H
-
-#include <_Seams.h>
+#ifndef _ConfigHeaderH
+#define _ConfigHeaderH
 
 #pragma warning(disable: 26440) // Nag message that Function can be declared 'const'
 
 // Windows compatibility macros for Linux/POSIX
 // NOTE: MSVC's secure CRT functions take a size arg (buf, size, fmt, ...).
 // The POSIX equivalents do not, so map them explicitly.
-#ifdef _WIN32
-#define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
-#define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
-#define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
-#else
-#ifndef snprintf_s
-#define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
-#endif
-#ifndef sscanf_s
-#define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
-#endif
-#ifndef sprintf_s
-#define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
-#endif
+// #ifdef _WIN32
+// #define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
+// #define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
+// #define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
+// #else
+// #ifndef snprintf_s
+// #define snprintf_s(buf, sz, fmt, ...) snprintf(buf, sz, fmt, ##__VA_ARGS__)
+// #endif
+// #ifndef sscanf_s
+// #define sscanf_s(buf, fmt, ...) sscanf(buf, fmt, ##__VA_ARGS__)
+// #endif
+// #ifndef sprintf_s
+// #define sprintf_s(buf, sz, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
+// #endif
+// #endif
+
+#ifdef _Seam
+#undef _Seam
 #endif
 
-#define YES_0 0
-#define NO_0 1
-
-#define STRING_TYPE_A 1  //< UTF-8.
-#define STRING_TYPE_B 2  //< UTF-16.
-#define STRING_TYPE_C 3  //< UTF-32.
+#define _StringTypeA 1  //< UTF-8.
+#define _StringTypeB 2  //< UTF-16.
+#define _StringTypeC 3  //< UTF-32.
 #define STRING_TYPE_D 4  //< ASCII.
 
-#define ATYPE_8BIT    0  //< Code 0-3 maps to A-D for 8-bit ASCII size-width.
-#define ATYPE_16BIT   1  //< Code 0-3 maps to A-D for 16-bit ASCII size-width.
-#define ATYPE_32BIT   2  //< Code 0-3 maps to A-D for 32-bit ASCII size-width.
+#define _AType1Byte    0  //< Code 0-3 maps to A-D for 8-bit ASCII size-width.
+#define _AType2Byte   1  //< Code 0-3 maps to A-D for 16-bit ASCII size-width.
+#define _AType4Byte   2  //< Code 0-3 maps to A-D for 32-bit ASCII size-width.
 #define ATYPE_64BIT   3  //< Code 0-3 maps to A-D for 64-bit ASCII size-width.
 
 #define PLATFORM_BARE_METAL 1
@@ -75,19 +74,19 @@
 #define ASSEMBLE_LIB_DYNAMIC 1
 
 #define CPU_1_BYTE 1
-#define CPU_2_BYTE 1
-#define CPU_4_BYTE 2
-#define CPU_8_BYTE 3
+#define _CPU16Bit 1
+#define _CPU32Bit 2
+#define _CPU8Byte 3
 
-#define CPU_ENDIAN_LITTLE 0
+#define _CPUEndianLittle 0
 
-#define NILP nullptr
+#define _NilP nullptr
 
 typedef char CHA;
 typedef char16_t CHB;
 typedef char32_t CHC;
 typedef wchar_t CHN;
-// CHR and CHL are defined conditionally in _ConfigFooter.h based on USING_STR/LARGEST_CHAR.
+// CHR and CHL are defined conditionally in _ConfigFooter.h based on _LargestSTR/_LargestChar.
 typedef char CHS;  //< Character type of the string.
 
 typedef int8_t ISA;
@@ -99,24 +98,14 @@ typedef int32_t ISC;
 typedef uint32_t IUC;
 typedef int64_t ISD;
 typedef uint64_t IUD;
-// ISR/IUR/FPR/TMS are defined in _ConfigFooter.h based on DEFAULT_INT_SIZE.
-#ifndef CRABS_IUE_DEFINED
-typedef uint64_t IUE;
-#else
-typedef unsigned __int128 IUE;
-#endif
-typedef int64_t ISE;
-#ifndef CRABS_ISE_DEFINED
-#define CRABS_ISE_DEFINED
-#endif
 typedef int ISN;
 typedef intptr_t ISW;
 typedef unsigned int IUN;
 typedef uintptr_t IUW;
 typedef short ISM;
 typedef unsigned short IUM;
-typedef int16_t ISG;  //< Half-word sized signed integer (W/2).
-typedef uint16_t IUG;  //< Half-word sized unsigned integer (W/2).
+typedef int16_t ISG;
+typedef uint16_t IUG;
 
 typedef ISW ERC; //< An error code.
 
@@ -529,17 +518,10 @@ enum {
   _ARD_CHB  = ARDMask | _CHB,         //< 64-bit Loom of UTF-16 strings.
   _ARD_CHC  = ARDMask | _CHC,         //< 64-bit Loom of UTF-32 strings.
 };
-// Default Loom type.
-#if USING_LOM
+
 enum {
-  _LOM = USING_LOM,
+  _PMS = 420,  //< Placeholder for the PMS type when not using LOM.
 };
-#else
-enum {
-  _LOM = _ARC_CHA,
-	_PMS = 420,  //< Placeholder for the PMS type when not using LOM.
-};
-#endif
 
 enum {
   ACPUBytes     = sizeof(void*),
@@ -576,7 +558,7 @@ typedef ISW AError;
 enum ASCIIError {
   AErrorNil = 0,                 //< Error 00: Nil error.
   AErrorInvalid = 1,             //< Error 01: Invalid error.
-  AErrorInvalidBoofer,           //< Error 02: Invalid boofer.
+  AErrorInvalidBuffer,           //< Error 02: Invalid buffer.
   AErrorInvalidBounds,           //< Error 03: Invalid bounds.
   AErrorInvalidDoor,             //< Error 04: Invalid door.
   AErrorInvalidenquiry,          //< Error 05: Invalid enquiry.
@@ -592,8 +574,8 @@ enum ASCIIError {
   AErrorInvalidUTF8,             //< Error 14: Invalid UTF-8.
   AErrorInvalidUTF16,            //< Error 15: Invalid UTF-16.
   AErrorArrayUnderflow,          //< Error 16: Array underflow.
-  AErrorBooferUnderflow,         //< Error 17: Boofer underflow.
-  AErrorKeysBooferUnderflow,     //< Error 18: Keys boofer underflow.
+  AErrorBufferUnderflow,         //< Error 17: Buffer underflow.
+  AErrorKeysBufferUnderflow,     //< Error 18: Keys buffer underflow.
   AErrorParamUnderflow,          //< Error 19: Parameter underflow.
   AErrorStackUnderflow,          //< Error 20: Stack underflow.
   AErrorTextUnderflow,           //< Error 21: Text underflow.
@@ -601,8 +583,8 @@ enum ASCIIError {
   AErrorYourMomUnderflow,        //< Error 23: Your mom underflow.
 
   AErrorArrayOverflow,           //< Error 24: Array overflow.
-  AErrorBooferOverflow,          //< Error 25: Boofer overflow.
-  AErrorKeysBooferOverflow,      //< Error 26: Keys boofer overflow.
+  AErrorBufferOverflow,          //< Error 25: Buffer overflow.
+  AErrorKeysBufferOverflow,      //< Error 26: Keys buffer overflow.
   AErrorParamOverflow,           //< Error 27: Parameter overflow.
   AErrorStackOverflow,           //< Error 28: Stack overflow.
   AErrorTextOverflow,            //< Error 29: Text overflow.
@@ -632,4 +614,4 @@ enum {
 
 }  //< namespace _
 
-#endif  // _CONFIG_HEADER_H
+#endif  //< _CONFIG_HEADER_H

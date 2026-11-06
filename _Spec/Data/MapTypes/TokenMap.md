@@ -10,6 +10,6 @@ The TKM uses the Table memory layout with some extra variables.
 template<typename CHT = CHR, typename ISZ = ISR, typename ISY = ISQ, typename HSH = IUN>
 struct TTable {
   ISZ bytes,          //< Size of this object in bytes.
-      stop;           //< Keys boofer stop offset or start if count == total.
+      stop;           //< Keys buffer stop offset or start if count == total.
   TStack<SCK_P> map;  //< A Stack of offset mappings to strings.
 ```

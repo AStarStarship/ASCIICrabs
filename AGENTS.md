@@ -8,8 +8,25 @@
 - **Compile:** `g++ -g -o Crabs _Seams/_Main.hxx`
 - **Output Binary:** `Crabs` (Windows: `Crabs.exe`)
 
-### Test
-The project uses a custom seam tree testing framework located in `_Seams/`. You change the SEAM macro to one of the seams in the `_Seams.h` file, then all the debug information changes and a different unit test is runs.
+### Test (canonical: `_Seams/CMakeLists.txt`)
+The project uses a custom seam tree testing framework located in `_Seams/`.
+The canonical build entry point is **`_Seams/CMakeLists.txt`** — configure a
+separate build tree from it and build the `Crabs` target; do not hand-roll the
+`g++` line for the test binary, the CMake target wires up the single-TU rule
+correctly (one generated `.cpp` wrapper = one `.exe`).
+
+To run a specific seam, select it with the seam macro on the command line
+(default seam is `_CrabsRelease` for a full release-tree run):
+`-DCMAKE_CXX_FLAGS="-D_SEAM=<n>"` (the seam table is defined in
+`_Seams.cpp`, before `_Config.h` is included).
+
+Example (out-of-source build tree, reusable across runs):
+```
+cmake -S _Seams -B build/crabs
+cmake --build build/crabs
+./build/crabs/Crabs            # run the full seam tree
+./build/crabs/Crabs 06         # run seam 06 (Array)
+```
 
 - **Run All Tests:** `./Crabs` (Runs the compiled executable)
 - **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_Main.hxx` or set breakpoints in `Test.hpp` as described in `README.md`.
@@ -47,7 +64,7 @@ This naming convention is called Chimera case due to the mix of snake_case and C
 - **Functions:** CamelCase (`StartRpc()`, `OpenFileOrDie()`).
   - Accessors/Mutators: snake_case allowed (`count()`, `set_count()`).
 - **Namespaces:** snake_case, top-level matches project/team. No nested `std`.
-- **Macros:** UPPER_SNAKE_CASE (Macros are mostly used for changing seams/unit tests).
+- **Macros:** _UpperCamelCase, i.e. leading underscore + CamelCase (Macros are mostly used for changing seams/unit tests). LLM tokenizers have lowercase and capitalized tokens but no UPPERCASE words, so all-caps names are avoided.
 
 ### Formatting
 - **Indentation:** 2 spaces (inferred from `AType.h`).
@@ -66,7 +83,7 @@ This naming convention is called Chimera case due to the mix of snake_case and C
 
 ### Error Handling
 - **No Exceptions:** The project likely relies on error codes or assertions (`IsError`).
-- **Debugging:** Use `TBRK()` for breakpoints. Use `StdOut()` (wrapped) for logging if strictly necessary, but prefer the "Seam" test structure.
+- **Debugging:** Use `TBRK()` for breakpoints. Use `RefOut()` (wrapped) for logging if strictly necessary, but prefer the "Seam" test structure.
 
 ### Specific Types (from `AType.h` and `_Spec/Data`)
 - 'CHA', 'CHB', 'CHC', 'CHR` are char, char16_t, char32_t, and the default/OS character type. Prefer CHR unless otherwise specified.
@@ -117,7 +134,7 @@ identifiers and filenames fleet-wide.
 | Free functions / methods | CamelCase, type-prefixed | `CrabsInit`, `TArrayBytes`, `TMapFind` |
 | Function suffixes | `_NC` (no-check), `C` (const/count), `T` (POD), `A` (autoject) | `TArrayInsert_NC`, `CSizeMin` |
 | Local variables | lower_snake_case (always) | `bytes_data`, `read_cursor` |
-| Macros / #define | UPPER_SNAKE_CASE | `CRABS_RUN_TESTS`, `CPU_X64` |
+| Macros / #define | _UpperCamelCase (leading `_` + CamelCase) | `_CrabsRunTests`, `_NilP` |
 | Private/protected members | trailing underscore | `aobj_`, `array_` |
 | Namespaces | `namespace _ { ... }` | single shared underscore namespace |
 | DB names / tables / columns | lower_snake_case (mutable) | `user_sessions`, `order_items` |
@@ -145,16 +162,32 @@ identifiers and filenames fleet-wide.
 ### Formatting
 - 2-space indent
 - Opening brace same line (functions/control), next line (structs/classes)
-- `D_ASSERT()`, `D_COUT()`, `D_RETURNT(type, val)` for debug/assert/return
-- `NILP` = nullptr
+- `_DAssert()`, `_DROut()`, `_DReturnT(type, val)` for debug/assert/return
+- `_NilP` = nullptr
 - `alignas(ACPUCacheLineSize)` for hot structs
 - Doxygen `/** @param @return @pre @link @see @code */` comments
 
 ### The One-Sentence Version
-**Immutable → CamelCase, mutable → lower_snake_case; macros UPPER_SNAKE; private/protected
+**Immutable → CamelCase, mutable → lower_snake_case; macros _UpperCamelCase (LLM
+tokenizers lack UPPERCASE tokens); private/protected
 get a trailing `_`; types are short CAPS width-codes (CHA/ISC/IUD/BOL); structs are
 CamelCase with T(POD)/A(utoject) prefix; functions are CamelCase with T/A kind prefixes
 and _NC/C markers; locals are snake_case; everything lives in `namespace _`; every file
 starts with AStarship copyright, `#pragma once`, a `CRABS_*` guard, and `#if SEAM >= CRABS_*`
 gating.** The name tells you the kind, width, access level, and mutability — before you
 read the body.
+
+## Git Protocol
+
+- **Do NOT undelete files from git.** A deleted or renamed file was done so on
+  purpose — it wasn't supposed to be there, it got merged into another file, or
+  it wasn't named correctly. Fix the current files in place; do not try to
+  rescue or restore stale files from git history (no `git checkout -- <path>`,
+  `git restore <path>`, `git show <ref>:<path>` written back to disk, or
+  `git revert` to bring a deleted path back).
+- **Only `master-agent` and the Captain may modify git.** No other agent or
+  profile may run git write operations on a tracked repo — no `git commit`,
+  `git add`, `git push`, `git reset`, `git rebase`, `git merge`, `git rm`,
+  branch creation, force-push, or PR changes. Read-only inspection
+  (`git status`, `git log`, `git diff`, `git show`, `git ls-files`) is allowed
+  for anyone.

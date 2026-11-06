@@ -1,11 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_LIBRARY_HPP
-#define CRABS_LIBRARY_HPP
+#ifndef _CrabsLibraryHPP
+#define _CrabsLibraryHPP
 #include <_Config.h>
-#if SEAM >= CRABS_ROOM
+#if _Seam >= _CrabsRoom
 namespace _ {
-#if USING_CRABS_TEXT
+#if _CrabsUsingText
 template<typename TIndex, typename TKey, typename TData, ISC MaxStackHeight>
 class Library : public Operand {
  public:
@@ -84,17 +84,17 @@ class Library : public Operand {
   @return Returns a pointer to one of the ChineseRoom error Strings upon
   failure. */
   void* GetDataAddress(TIndex index) {
-#if CRABS_MEMORY_PROFILE >= 64
-    Index64* UI8_ptr = (Index64*)address;
-#elif CRABS_MEMORY_PROFILE >= 32
-    Index32* UI4_ptr = (Index32*)address;
-#elif CRABS_MEMORY_PROFILE >= 16
-    Index16* UI2_ptr = (Index16*)address;
-#elif CRABS_MEMORY_PROFILE != 8
+#if _CrabsMemoryProfile >= 64
+    IUD* IUD_ref = (IUD*)address;
+#elif _CrabsMemoryProfile >= 32
+    IUC* IUC_ref = (IUC*)address;
+#elif _CrabsMemoryProfile >= 16
+    IUB* IUB_ref = (IUB*)address;
+#elif _CrabsMemoryProfile != 8
 #error Index_t invalid size!
 #endif
 
-    Index_t size = 0;
+    IUA size = 0;
 
     IUA type = (*address) & 0x1f;
 
@@ -102,26 +102,26 @@ class Library : public Operand {
 
     switch (array_type) {
       case 0:
-#if CRABS_MEMORY_PROFILE >= 16
+#if _CrabsMemoryProfile >= 16
         /// Library format: { _IUA, _IUA, _IUB, _IUB }
         return size + sizeof(Library) + *(address + 1) * sizeof(IUA) +
-               *(UI2_ptr + 2) + *(UI8_ptr + 4);
+               *(IUB_ref + 2) + *(IUD_ref + 4);
 #else
         return 0;
 #endif
       case 1:
-#if CRABS_MEMORY_PROFILE >= 32
+#if _CrabsMemoryProfile >= 32
         /// Library format: { _IUA, _IUA, _IUB, _IUC }
-        return size + sizeof(Bag32) + *(UI2_ptr + 2) * sizeof(IUA) +
-               *(UI4_ptr + 4) + *(UI8_ptr + 8);
+        return size + sizeof(Bag32) + *(IUB_ref + 2) * sizeof(IUA) +
+               *(IUC_ref + 4) + *(IUD_ref + 8);
 #else
         return 0;
 #endif
       case 2:
-#if CRABS_MEMORY_PROFILE >= 64
+#if _CrabsMemoryProfile >= 64
         /// Library format: { _IUB, _IUB, _IUC, _IUD }
-        return size + sizeof(Library) + *(UI2_ptr + 2) * sizeof(IUA) +
-               *(UI4_ptr + 4) + *(UI8_ptr + 8);
+        return size + sizeof(Library) + *(IUB_ref + 2) * sizeof(IUA) +
+               *(IUC_ref + 4) + *(IUD_ref + 8);
 #else
         return 0;
 #endif
@@ -142,14 +142,14 @@ class Library : public Operand {
   @param crabs  The Crabs to read and write from. */
   virtual const Op* Star(CHC index, Crabs* crabs) {
     static const Op This = {"Library", OpFirst('A'), OpLast('A'),
-                             "",        kOpOperand,   0};
+                             "",        OpOperand,   0};
 
     switch (index) {
       case '?':
         return ExprEnquiry(crabs, This);
       case 'A': {
         static const Op This = {"Foo", Params<0>(), Params<0>(), "Foo.",
-                                '(',   ')',         NILP};
+                                '(',   ')',         _NilP};
         return 0;
       }
       default:
@@ -169,7 +169,7 @@ class Library : public Operand {
       num_libraries_;  //< Number of libraries.
   IUA type_;           //< Current type of bag.
   TIndex num_keys_,    //< Current number_ of Star members.
-      boofer_size_;    //< Current size of the header and names socket in bytes.
+      buffer_size_;    //< Current size of the header and names socket in bytes.
   TKey header_size_,   //< Current size of the header and names in bytes.
       collisions_size_;  //< Current size of the header and names socket in
                          // bytes.
@@ -180,11 +180,11 @@ class Library : public Operand {
 /* Destructs the given bag. */
 template<typename TIndex, typename TKey, typename TData, IUN MaxStaccSize>
 void Delete(Library<TIndex, TKey, TData, TData, MaxStaccSize>* r) {
-  if (r == NILP) return;
-  delete TPtr<CHA>(r);
+  if (r == _NilP) return;
+  delete TRef<CHA>(r);
 }
-#endif  //< CRABS_MEMORY_PROFILE > 2
+#endif  //< _CrabsMemoryProfile > 2
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsLibraryHPP

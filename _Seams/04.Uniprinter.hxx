@@ -1,20 +1,21 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_UNIPRINTER
+#if _Seam >= _CrabsUniprinter
 #include "../Uniprinter.hpp"
 #include "../Array.hpp"
-#if SEAM == CRABS_UNIPRINTER
+#if _Seam == _CrabsUniprinter
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
+namespace CRTest { 
 
 using namespace ::_;
-namespace CRTest { 
-#if SEAM >= CRABS_UNIPRINTER
+
+#if _Seam >= _CrabsUniprinter
 template<typename CHS = CHR, typename CHT = CHD, typename IS = ISR>
 static const CHA* TestSPrinterCH() {
-  D_COUT(Linef('-') << "\n\n\nTesting UTF<CH" << CSizeCodef<CHS>() << ",IS"
+  _DROut(Linef('-') << "\n\n\nTesting UTF<CH" << CSizeCodef<CHS>() << ",IS"
                     << sizeof(IS) << ">\n\n"
                     << Linef('-'));
   enum {
@@ -25,9 +26,9 @@ static const CHA* TestSPrinterCH() {
                                      'g', ' ', '1', ',', ' ', '2',
                                      ',', ' ', '3', '.', NIL };
 
-  D_RAM_WIPE(str_a, Count * sizeof(CHS));
+  _DArrayFill(str_a, Count * sizeof(CHS));
   TSPrint<CHS, CHT>(str_a, Count, Testing123);
-  D_COUT(Charsf(str_a, 64));
+  _DROut(Charsf(str_a, 64));
 
   TSPrinter<CHS, CHT, IS> utf(str_a, Count);
 
@@ -45,21 +46,21 @@ static const CHA* TestSPrinterCH() {
                                      {'A', 'p', 'p', 'l', 'e', 's', NIL}}};
   const CHS* cursor;
   for (ISC i = 0; i < TestStringsCount; ++i) {
-    D_RAM_WIPE(str_a, Count * sizeof(CHS));
+    _DArrayFill(str_a, Count * sizeof(CHS));
     cursor = TSPrint<CHS, CHT>(str_a, str_a + Count, TestStrings[i][0]);
-    D_COUT(Charsf(str_a, 64));
+    _DROut(Charsf(str_a, 64));
     Test(cursor);
     cursor = TSEquals<CHS>(str_a, TestStrings[i][0]);
     Test(cursor);
   }
 
-  D_COUT(Headingf("Testing TSPrinter<CHS, CHT, ISZ>") <<
+  _DROut(Headingf("Testing TSPrinter<CHS, CHT, ISZ>") <<
          "\n\nExpecting \"" << Testing123 << '\"');
   static const CHS CommaSpace[] = {',', ' ', NIL};
 
   const CHS TestingSpace[] = {'T', 'e', 's', 't', 'i', 'n', 'g', ' ', NIL};
 
-  D_RAM_WIPE(str_a, Count * sizeof(CHS));
+  _DArrayFill(str_a, Count * sizeof(CHS));
 
   utf.Set(str_a).Print(TestingSpace);
   utf.Print(1);
@@ -70,10 +71,10 @@ static const CHA* TestSPrinterCH() {
   utf.Print('.');
 
   utf.Set(str_a) << TestingSpace << 1 << CommaSpace << 2 << ", " << 3 << '.';
-  D_COUT(Charsf(str_a, 64));
-  A_AVOW(Testing123, str_a);
+  _DROut(Charsf(str_a, 64));
+  _AAvow(Testing123, str_a);
 
-  D_COUT("\n\nTesting TStringEquals<CHS>");
+  _DROut("\n\nTesting TStringEquals<CHS>");
 
   const CHS CompareStrings[4][9] = {
       {'T', 'e', 's', 't', 'i', 'n', 'g', NIL, NIL},
@@ -82,23 +83,23 @@ static const CHA* TestSPrinterCH() {
       {'T', 'e', 'x', 't', 'i', 'n', 'g', '@', NIL},
   };
 
-  A_ASSERT(!TSEquals<CHS>(CompareStrings[0], CompareStrings[1]));
-  A_ASSERT(!TSEquals<CHS>(CompareStrings[0], CompareStrings[3]));
-  A_ASSERT( TSEquals<CHS>(CompareStrings[0], CompareStrings[0]));
-  A_ASSERT(!TSEquals<CHS>(CompareStrings[2], CompareStrings[3]));
-  A_ASSERT( TSEquals<CHS>(CompareStrings[2], CompareStrings[2]));
+  _AAssert(!TSEquals<CHS>(CompareStrings[0], CompareStrings[1]));
+  _AAssert(!TSEquals<CHS>(CompareStrings[0], CompareStrings[3]));
+  _AAssert( TSEquals<CHS>(CompareStrings[0], CompareStrings[0]));
+  _AAssert(!TSEquals<CHS>(CompareStrings[2], CompareStrings[3]));
+  _AAssert( TSEquals<CHS>(CompareStrings[2], CompareStrings[2]));
 
   const CHS Chars1to9[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', NIL};
-  //A_AVOW(IS(9), TSCodeCount<CHS, CHT, IS>(Chars1to9));
+  //_AAvow(IS(9), TSCodeCount<CHS, CHT, IS>(Chars1to9));
 
-  D_COUT("\n\nTesting TStringFind<CHS>");
+  _DROut("\n\nTesting TStringFind<CHS>");
 
   const CHS One[] = {'1', ',', NIL};
   const CHS ThreePeriod[] = {'3', '.', NIL};
-  A_ASSERT(TSFind<CHS>(Testing123, One));
-  A_ASSERT(TSFind<CHS>(Testing123, ThreePeriod));
+  _AAssert(TSFind<CHS>(Testing123, One));
+  _AAssert(TSFind<CHS>(Testing123, ThreePeriod));
 
-  D_COUT(Headingf("Testing TPrintRight<CHS>"));
+  _DROut(Headingf("Testing TPrintRight<CHS>"));
 
   const CHS RightAligned[12][13] = {
       {'.', NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL},
@@ -116,14 +117,14 @@ static const CHA* TestSPrinterCH() {
 
   //< Removed unused variable: `ISC shift_right = 6;`
   for (ISC i = 0; i < 12; ++i) {
-    D_RAM_WIPE(str_a, (ISW)(Count * sizeof(CHS)));
+    _DArrayFill(str_a, (ISW)(Count * sizeof(CHS)));
     cursor = TPrintRight<CHS>(str_a, str_a + Count - 1, TestingSpace, i + 1);
-    D_ASSERT_INDEX(cursor, i);
-    D_COUT(Charsf(str_a, 64)
+    _DAssertIndex(cursor, i);
+    _DROut(Charsf(str_a, 64)
       << "\n    Wrote:\"" << str_a << "\":");// << TSCodeCount<CHS, CHT, IS>(str_a));
-    A_AVOW_INDEX(&RightAligned[i][0], str_a, i);
+    _AAvowIndex(&RightAligned[i][0], str_a, i);
   }
-  D_COUT(Headingf("Testing TPrintCenter<CHS>"));
+  _DROut(Headingf("Testing TPrintCenter<CHS>"));
 
   const CHS CenterAligned[13][14] = {
       {'.', NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL},
@@ -144,44 +145,42 @@ static const CHA* TestSPrinterCH() {
                                     '6', '7', '8', '9', NIL};
 
   for (ISC i = 12; i >= 0; --i) {
-    D_RAM_WIPE(str_a, Count * sizeof(CHS));
+    _DArrayFill(str_a, Count * sizeof(CHS));
     cursor = TPrintCenter<CHS>(str_a, str_a + Count - 1, Numbers1To9, i + 1);
-    D_ASSERT_INDEX(cursor, i);
-    D_COUT(Charsf(str_a, 64)
+    _DAssertIndex(cursor, i);
+    _DROut(Charsf(str_a, 64)
       << "\n    Wrote:\"" << str_a << "\":");// << TSCodeCount<CHS, CHT, IS>(str_a));
-    A_AVOW_INDEX(&CenterAligned[i][0], str_a, i);
+    _AAvowIndex(&CenterAligned[i][0], str_a, i);
   }
 
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestSPrinter() {
-#if USING_STA == YES_0
+
   { const CHA* result = TestSPrinterCH<CHA, CHC, ISC>(); if (result) return result; }
-#endif
-#if USING_STB == YES_0
+
   { const CHA* result = TestSPrinterCH<CHB, CHC, ISC>(); if (result) return result; }
-#endif
-#if USING_STC == YES_0
+
   { const CHA* result = TestSPrinterCH<CHC, CHC, ISC>(); if (result) return result; }
-#endif
-  return NILP;
+
+  return _NilP;
 }
 
 static const CHA* TestATypefARY() {
-  D_COUT("\nPrinting ARY types...");
+  _DROut("\nPrinting ARY types...");
   const ISW CTotal = 1024;
-  CHA boofer[CTotal] = {};
-  TSPrinter<CHA, ISW> p(boofer, CTotal);
+  CHA buffer[CTotal] = {};
+  TSPrinter<CHA, ISW> p(buffer, CTotal);
 
   for (DTB i = 1; i < 32; ++i) {
     DTB vt_bits = 1 << ATypeVTBit0;
-    D_COUT('\n' << i << ':');
+    _DROut('\n' << i << ':');
     DTB t_0 = i | vt_bits,
         t_1 = (1 << ATypeSWBit0) | t_0,
         t_2 = (2 << ATypeSWBit0) | t_0,
         t_3 = (3 << ATypeSWBit0) | t_0;
-    D_COUT('\n' << i << ':' <<
+    _DROut('\n' << i << ':' <<
            "\n    0x" << Hexf(t_0) << ' ' <<
            ATypef(t_0) <<
            "\n    0x" << Hexf(t_1) << ' ' <<
@@ -191,20 +190,20 @@ static const CHA* TestATypefARY() {
            "\n    0x" << Hexf(t_3) << ' ' <<
            ATypef(t_3));
   }
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestATypefVHT() {
-  D_COUT("\n\nPrinting VHT types...");
+  _DROut("\n\nPrinting VHT types...");
   const ISW CTotal = 1024;
-  CHA boofer[CTotal] = {};
-  TSPrinter<CHA, ISW> p(boofer, CTotal);
+  CHA buffer[CTotal] = {};
+  TSPrinter<CHA, ISW> p(buffer, CTotal);
 
   for (DTB i = 1; i < 32; ++i) {
     DTB t_1 = (1 << ATypeSWBit0) | i,
         t_2 = (2 << ATypeSWBit0) | i,
         t_3 = (3 << ATypeSWBit0) | i;
-    D_COUT('\n' << i << ':' <<
+    _DROut('\n' << i << ':' <<
            "\n    0x" << Hexf(i) << ' ' <<
            ATypef(i) <<
            "\n    0x" << Hexf(t_1) << ' ' <<
@@ -214,14 +213,14 @@ static const CHA* TestATypefVHT() {
            "\n    0x" << Hexf(t_3) << ' ' <<
            ATypef(t_3));
   }
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestATypefSCK() {
-  D_COUT("\n\nPrinting SCK types...");
+  _DROut("\n\nPrinting SCK types...");
   const ISW CTotal = 1024;
-  CHA boofer[CTotal] = {};
-  TSPrinter<CHA, ISW> p(boofer, CTotal);
+  CHA buffer[CTotal] = {};
+  TSPrinter<CHA, ISW> p(buffer, CTotal);
 
   for (DTB i = 1; i < ATypePODTotal; ++i) {
     DTB vt_bits = _SCK << ATypeVTBit0,
@@ -229,7 +228,7 @@ static const CHA* TestATypefSCK() {
         t_1 = (1 << ATypeSWBit0) | t_0,
         t_2 = (2 << ATypeSWBit0) | t_0,
         t_3 = (3 << ATypeSWBit0) | t_0;
-    D_COUT('\n' << i << ':' <<
+    _DROut('\n' << i << ':' <<
            "\n    0x" << Hexf(t_0) << ' ' <<
            ATypef(t_0) <<
            "\n    0x" << Hexf(t_1) << ' ' <<
@@ -239,21 +238,21 @@ static const CHA* TestATypefSCK() {
            "\n    0x" << Hexf(t_3) << ' ' <<
            ATypef(t_3));
   }
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestATypefMTX() {
-  D_COUT("\n\nPrinting MTX types...");
+  _DROut("\n\nPrinting MTX types...");
   const ISW CTotal = 1024;
-  CHA boofer[CTotal] = {};
-  TSPrinter<CHA, ISW> p(boofer, CTotal);
+  CHA buffer[CTotal] = {};
+  TSPrinter<CHA, ISW> p(buffer, CTotal);
 
   for (DTB i = 1; i < ATypePODTotal; ++i) {
     DTB t_0 = (_MTX << ATypeVTBit0) | i,
         t_1 = (1 << ATypeSWBit0) | t_0,
         t_2 = (2 << ATypeSWBit0) | t_0,
         t_3 = (3 << ATypeSWBit0) | t_0;
-    D_COUT('\n' << i << ':' <<
+    _DROut('\n' << i << ':' <<
            "\n    0x" << Hexf(t_0) << ' ' <<
            ATypef(t_0) <<
            "\n    0x" << Hexf(t_1) << ' ' <<
@@ -263,23 +262,23 @@ static const CHA* TestATypefMTX() {
            "\n    0x" << Hexf(t_3) << ' ' <<
            ATypef(t_3));
   }
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestATypeMaps() {
-  D_COUT("\n\nTesting MAP types...");
+  _DROut("\n\nTesting MAP types...");
   const ISW CTotal = 1024;
-  CHA boofer[CTotal] = {};
-  TSPrinter<CHA, ISW> p(boofer, CTotal);
+  CHA buffer[CTotal] = {};
+  TSPrinter<CHA, ISW> p(buffer, CTotal);
   const DTB Step = 8;
   for (DTB map_type = 1; map_type < ATypePODTotal; map_type += Step) {
-    D_COUT("\nMap of " << TATypePODs<>(map_type) << " to:");
+    _DROut("\nMap of " << TATypePODs<>(map_type) << " to:");
     for (DTB pod_type = 1; pod_type < ATypePODTotal; ++pod_type) {
       DTB type = (pod_type << ATypeMTBit0) | _IUA;
-      D_COUT("\n  " << ATypef(type));
+      _DROut("\n  " << ATypef(type));
     }
   }
-  return NILP;
+  return _NilP;
 }
 
 static const DTB TestATypeEXTContains(DTB* ext_start, DTB* ext_stop, DTB type) {
@@ -291,77 +290,77 @@ static const DTB TestATypeEXTContains(DTB* ext_start, DTB* ext_stop, DTB type) {
 }
 
 static const CHA* TestATypeEXT() {
-  D_COUT("\n\nTesting Extended Types...");
+  _DROut("\n\nTesting Extended Types...");
   const ISW CTotal = 1024;
   DTB t = 0;
-  D_COUT("\n\nTesting Plain Context types...");
+  _DROut("\n\nTesting Plain Context types...");
 
-  D_COUT("\nTesting Block A.Bottom...");
+  _DROut("\nTesting Block A.Bottom...");
   for (DTB sw_vt = 1; sw_vt <= 3; ++sw_vt) {
     for (DTB pod = _PCe; pod <= _PCl; ++pod) {
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
     }
   }
-  D_COUT("\nTesting Block C...");
+  _DROut("\nTesting Block C...");
   for (DTB sw_vt = 10; sw_vt <= 11; ++sw_vt) {
     for (DTB pod = _PCa; pod <= _PCd; ++pod)
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block A.Middle...");
+  _DROut("\nTesting Block A.Middle...");
   for (DTB sw_vt = 5; sw_vt <= 7; ++sw_vt) {
     for (DTB pod = _PCe; pod <= _PCl; ++pod)
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block D...");
+  _DROut("\nTesting Block D...");
   for (DTB sw_vt = 6; sw_vt <= 7; ++sw_vt) {
     for (DTB pod = _PCa; pod <= _PCd; ++pod)
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block A.Top...");
+  _DROut("\nTesting Block A.Top...");
   for (DTB sw_vt = 9; sw_vt <= 1; ++sw_vt) {
     for (DTB pod = _PCe; pod <= _PCl; ++pod)
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block B.Bottom...");
+  _DROut("\nTesting Block B.Bottom...");
   for (DTB sw_vt = 1; sw_vt <= 3; ++sw_vt) {
     for (DTB pod = _PCa; pod <= _PCd; ++pod)
-      A_AVOW(t++, ATypeToEXT(sw_vt, pod));
+      _AAvow(t++, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block E...");
+  _DROut("\nTesting Block E...");
   for (DTB pod = _PCa; pod <= _PCd; ++pod) {
-    A_AVOW(t++, ATypeToEXT(9, pod));
+    _AAvow(t++, ATypeToEXT(9, pod));
   }
-  D_COUT("\nTesting Block B.Top...");
+  _DROut("\nTesting Block B.Top...");
   for (DTB pod = _PCa; pod <= _PCd; ++pod) {
-    A_AVOW(t++, ATypeToEXT(5, pod));
+    _AAvow(t++, ATypeToEXT(5, pod));
   }
 
-  D_COUT("\n\nTesting Extended Standard types...");
+  _DROut("\n\nTesting Extended Standard types...");
   t = 0;
 
-  D_COUT("\nTesting Block F.Bottom...");
+  _DROut("\nTesting Block F.Bottom...");
   for (DTB sw_vt = 1; sw_vt <= 3; ++sw_vt) {
     for (DTB pod = _FPD; pod <= _SSE; ++pod)
-      A_AVOW(t--, ATypeToEXT(sw_vt, pod));
+      _AAvow(t--, ATypeToEXT(sw_vt, pod));
   }
-  D_COUT("\nTesting Block H...");
+  _DROut("\nTesting Block H...");
   for (DTB pod = _FPB; pod <= _CHB; ++pod)
-    A_AVOW(t--, ATypeToEXT(1, pod));
+    _AAvow(t--, ATypeToEXT(1, pod));
   for (DTB pod = _FPC; pod <= _CHC; ++pod)
-    A_AVOW(t--, ATypeToEXT(5, pod));
+    _AAvow(t--, ATypeToEXT(5, pod));
 
-  D_COUT("\nTesting Block F.Top...");
+  _DROut("\nTesting Block F.Top...");
   for (DTB pod = _FPD; pod <= _SSE; ++pod)
-    A_AVOW(t--, ATypeToEXT(5, pod));
+    _AAvow(t--, ATypeToEXT(5, pod));
 
-  D_COUT("\nTesting Block G...");
+  _DROut("\nTesting Block G...");
   for (DTB sw_vt = 1; sw_vt <= 3; ++sw_vt) {
     for (DTB pod = _FPC; pod <= _CHC; ++pod) {
-      A_AVOW(t--, ATypeToEXT(sw_vt, pod));
+      _AAvow(t--, ATypeToEXT(sw_vt, pod));
     }
   }
 
-  D_COUT("\n\nTesting Standard Types...");
+  _DROut("\n\nTesting Standard Types...");
   DTB nonextended_bounds[16] = {
     _PCl,
     _CHA,
@@ -384,40 +383,40 @@ static const CHA* TestATypeEXT() {
     DTB last_nonextended = nonextended_bounds[sw_vt];
     DTB pod = 0;
     for (; pod <= last_nonextended; ++pod) {
-      A_AVOW(DTB(0), ATypeToEXT(sw_vt, pod));
+      _AAvow(DTB(0), ATypeToEXT(sw_vt, pod));
     }
     if(sw_vt < 12 && sw_vt & 3) {
       for (; pod <= _SSE; ++pod) {
         if (!(sw_vt == 1 && pod == _FPD)) {
           DTB result = ATypeToEXT(sw_vt, pod);
-          A_ASSERT(result < 0);
+          _AAssert(result < 0);
         }
       }
       for (; pod <= _PCl; ++pod) {
         if(!(sw_vt == 1 && pod == _PCe)) {
           DTB result = ATypeToEXT(sw_vt, pod);
-          A_ASSERT(result > 0);
+          _AAssert(result > 0);
         }
       }
     }
   }
 
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestPrintAType() {
-  D_COUT("\n\nTesting ATypef...");
-  //A_RUN_TEST(TestATypefVHT);
-  //A_RUN_TEST(TestATypefARY);
-  //A_RUN_TEST(TestATypefSCK);
-  //A_RUN_TEST(TestATypefMTX);
-  //A_RUN_TEST(TestATypeMaps);
-  A_RUN_TEST(TestATypeEXT);
-  return NILP;
+  _DROut("\n\nTesting ATypef...");
+  //_ARunTest(TestATypefVHT);
+  //_ARunTest(TestATypefARY);
+  //_ARunTest(TestATypefSCK);
+  //_ARunTest(TestATypefMTX);
+  //_ARunTest(TestATypeMaps);
+  _ARunTest(TestATypeEXT);
+  return _NilP;
 }
 
 static const CHA* TestStringStartsWithEndsWithStrip() {
-  D_COUT(Headingf("Testing TSStartsWith, TSEndsWith, TSStripStart, TSStripEnd, TSStrip"));
+  _DROut(Headingf("Testing TSStartsWith, TSEndsWith, TSStripStart, TSStripEnd, TSStrip"));
 
   static const CHA Apple[]      = {'A', 'p', 'p', 'l', 'e', NIL};
   static const CHA Appl[]       = {'A', 'p', 'p', 'l', NIL};
@@ -426,61 +425,61 @@ static const CHA* TestStringStartsWithEndsWithStrip() {
   static const CHA Empty[]      = {NIL};
   static const CHA Longer[]     = {'A', 'p', 'p', 'l', 'e', 'S', 'a', 'u', 'c', 'e', NIL};
 
-  D_COUT("\n\nTesting TSStartsWith");
+  _DROut("\n\nTesting TSStartsWith");
   // Positive: exact match and prefix
-  A_ASSERT( TSStartsWith<CHA>(Apple, Apple));
-  A_ASSERT( TSStartsWith<CHA>(Apple, Appl));
-  A_ASSERT( TSStartsWith<CHA>(Apple, Empty));  //< Any string starts with ""
+  _AAssert( TSStartsWith<CHA>(Apple, Apple));
+  _AAssert( TSStartsWith<CHA>(Apple, Appl));
+  _AAssert( TSStartsWith<CHA>(Apple, Empty));  //< Any string starts with ""
   // Negative: not a prefix, and substring longer than source
-  A_ASSERT(!TSStartsWith<CHA>(Apple, pple));
-  A_ASSERT(!TSStartsWith<CHA>(Apple, Longer));
+  _AAssert(!TSStartsWith<CHA>(Apple, pple));
+  _AAssert(!TSStartsWith<CHA>(Apple, Longer));
 
-  D_COUT("\n\nTesting TSEndsWith");
+  _DROut("\n\nTesting TSEndsWith");
   // Positive: exact match and suffix
-  A_ASSERT( TSEndsWith<CHA>(Apple, Apple));
-  A_ASSERT( TSEndsWith<CHA>(Apple, le));
+  _AAssert( TSEndsWith<CHA>(Apple, Apple));
+  _AAssert( TSEndsWith<CHA>(Apple, le));
   // Negative: not a suffix, and substring longer than source
-  A_ASSERT(!TSEndsWith<CHA>(Apple, Appl));
-  A_ASSERT(!TSEndsWith<CHA>(Apple, Longer));
+  _AAssert(!TSEndsWith<CHA>(Apple, Appl));
+  _AAssert(!TSEndsWith<CHA>(Apple, Longer));
 
-  D_COUT("\n\nTesting TSStripStart");
+  _DROut("\n\nTesting TSStripStart");
   static const CHA SpaceHello[]  = {' ', '\t', 'H', 'e', 'l', 'l', 'o', NIL};
   static const CHA Hello[]       = {'H', 'e', 'l', 'l', 'o', NIL};
   static const CHA OnlySpaces[]  = {' ', ' ', ' ', NIL};
   const CHA* cursor;
   // Leading whitespace stripped: should point to 'H'
   cursor = TSStripStart<CHA>(SpaceHello);
-  A_ASSERT(TSEquals<CHA>(cursor, Hello));
+  _AAssert(TSEquals<CHA>(cursor, Hello));
   // No leading whitespace: pointer unchanged
   cursor = TSStripStart<CHA>(Hello);
-  A_ASSERT(TSEquals<CHA>(cursor, Hello));
+  _AAssert(TSEquals<CHA>(cursor, Hello));
   // All whitespace: should reach nil-terminator
   cursor = TSStripStart<CHA>(OnlySpaces);
-  A_ASSERT(*cursor == NIL);
+  _AAssert(*cursor == NIL);
 
-  D_COUT("\n\nTesting TSStripEnd");
+  _DROut("\n\nTesting TSStripEnd");
   static const CHA HelloSpace[]  = {'H', 'e', 'l', 'l', 'o', ' ', '\t', NIL};
   // Trailing whitespace: should return pointer to last printable char 'o'
   cursor = TSStripEnd<CHA>(HelloSpace);
-  A_ASSERT(*cursor == 'o');
+  _AAssert(*cursor == 'o');
   // No trailing whitespace: last char is already 'o'
   cursor = TSStripEnd<CHA>(Hello);
-  A_ASSERT(*cursor == 'o');
+  _AAssert(*cursor == 'o');
 
-  D_COUT("\n\nTesting TSStrip");
+  _DROut("\n\nTesting TSStrip");
   static const CHA SpaceHelloSpace[] = {' ', '\t', 'H', 'e', 'l', 'l', 'o', ' ', ' ', NIL};
   // TSStrip = TSStripEnd(TSStripStart(str)): result points to last printable char
   cursor = TSStrip<CHA>(SpaceHelloSpace);
-  A_ASSERT(*cursor == 'o');
+  _AAssert(*cursor == 'o');
   // Verify the start of the stripped range separately
   const CHA* stripped_start = TSStripStart<CHA>(SpaceHelloSpace);
-  A_ASSERT(*stripped_start == 'H');
+  _AAssert(*stripped_start == 'H');
   // All-whitespace input: stripped range is empty (start == stop == nil-term)
   static const CHA AllSpaces[] = {' ', ' ', ' ', NIL};
   cursor = TSStrip<CHA>(AllSpaces);
-  A_ASSERT(*cursor == NIL);
+  _AAssert(*cursor == NIL);
 
-  return NILP;
+  return _NilP;
 }
 
 static const CHA* TestProblemChildren() {
@@ -492,30 +491,30 @@ static const CHA* TestProblemChildren() {
     70000000, 80000000, 90000000, 99999999, 100000000, 1000000000
   };
   // length 8 range: 10000000 to 16777216
-  CHA boofer[1024] = { 0 };
-  TSPrinter<CHA> p(boofer, 1024);
-  D_COUT(boofer);
+  CHA buffer[1024] = { 0 };
+  TSPrinter<CHA> p(buffer, 1024);
+  _DROut(buffer);
   for (ISN dddddez = 11; dddddez < 27; ++dddddez) {
     auto nutz_in_yo_mouth = problem_children[dddddez];
-    D_COUT("\n\ndddddez ");
-    D_COUT(nutz_in_yo_mouth);
+    _DROut("\n\ndddddez ");
+    _DROut(nutz_in_yo_mouth);
     p << "\nnutz in your face: " << nutz_in_yo_mouth << '\n';
-    D_COUT(boofer);
+    _DROut(buffer);
     p.Reset();
   }
-  return NILP;
+  return _NilP;
 }
 
-#endif  //< #if SEAM >= CRABS_UNIPRINTER
+#endif  //< #if _Seam >= _CrabsUniprinter
 
 static const CHA* Uniprinter(const CHA* args) {
-  A_TEST_BEGIN;
-#if SEAM >= CRABS_UNIPRINTER
-  A_RUN_TEST(TestPrintAType);
-	A_RUN_TEST(TestStringStartsWithEndsWithStrip);
-  //A_RUN_TEST(TestSPrinter);
-  //A_RUN_TEST(TestProblemChildren);
+  _ATestBegin;
+#if _Seam >= _CrabsUniprinter
+  _ARunTest(TestPrintAType);
+	_ARunTest(TestStringStartsWithEndsWithStrip);
+  //_ARunTest(TestSPrinter);
+  //_ARunTest(TestProblemChildren);
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

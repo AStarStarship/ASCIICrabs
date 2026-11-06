@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_OPERAND_DECL
-#define CRABS_OPERAND_DECL
+#ifndef _CrabsOperandH
+#define _CrabsOperandH
 #include "Slot.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 struct Crabs;
@@ -56,7 +56,7 @@ IUW OperandCount(Operand* op);
 Contain the given key. */
 CHC OperandIndex(Operand* operand, CHA* key_begin, CHA* key_end);
 
-#if USING_CRABS_TEXT
+#if _CrabsUsingText
 /* Queries the given Operand Op Header.
 @param crabs The expression to write the query to. Set to nil to return
               op.
@@ -69,6 +69,5 @@ Slot& OperandQuery(Operand* root, const CHA* address, Slot& key);
 #endif
 
 }  //< namespace _
-
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsOperandH

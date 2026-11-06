@@ -1,11 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_REGEX_HPP
-#define CRABS_REGEX_HPP
+#ifndef _CrabsRegexHPP
+#define _CrabsRegexHPP
 #include "String.hpp"
-#if SEAM >= CRABS_REGEX
+#if _Seam >= _CrabsRegEx
 #include "AType.h"
-#if SEAM == CRABS_REGEX
+#if _Seam == _CrabsRegEx
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -106,14 +106,14 @@ inline ISN RegexParseAtom(RegexParser* parser);
 inline ISN RegexParseClass(RegexParser* parser);
 
 /* Zeros out the given bytes. */
-inline void RegexZero(void* ptr, ISN bytes) {
-  IUA* p = TPtr<IUA>(ptr);
+inline void RegexZero(void* pointer, ISN bytes) {
+  IUA* p = TRef<IUA>(pointer);
   for (ISN i = 0; i < bytes; ++i) p[i] = 0;
 }
 
 /* Initializes the parser. */
 inline void RegexParserInit(RegexParser* parser) {
-  parser->pattern     = NILP;
+  parser->pattern     = _NilP;
   parser->pattern_len = 0;
   parser->pos         = 0;
   parser->error_pos   = 0;
@@ -124,7 +124,7 @@ inline void RegexParserInit(RegexParser* parser) {
 /* Initializes the Regex wrapper. */
 inline void RegexInit(TRegex* regex) {
   regex->options  = 0;
-  regex->compiled = NILP;
+  regex->compiled = _NilP;
   RegexZero(regex->pattern, sizeof(regex->pattern));
   RegexParserInit(&regex->parser);
 }
@@ -366,7 +366,7 @@ inline RegexCompiled* RegexParserParse(RegexParser* parser,
   if (IsError(pattern_str)) {
     parser->error     = true;
     parser->error_pos = 0;
-    return NILP;
+    return _NilP;
   }
 
   parser->pattern     = pattern_str;
@@ -380,13 +380,13 @@ inline RegexCompiled* RegexParserParse(RegexParser* parser,
   parser->compiled.options     = opts;
 
   ISN root = RegexParseExpression(parser);
-  if (parser->error) return NILP;
+  if (parser->error) return _NilP;
   parser->compiled.root_index = root;
 
   if (parser->pos < parser->pattern_len) {
     parser->error     = true;
     parser->error_pos = parser->pos;
-    return NILP;
+    return _NilP;
   }
 
   return &parser->compiled;
@@ -395,7 +395,7 @@ inline RegexCompiled* RegexParserParse(RegexParser* parser,
 /* Parses the pattern string into the Regex wrapper. */
 inline RegexCompiled* RegexParse(TRegex* regex, const CHA* pattern_str,
                                  DTB opts = 0) {
-  if (IsError(pattern_str)) return NILP;
+  if (IsError(pattern_str)) return _NilP;
 
   ISN len = 0;
   while (pattern_str[len] && len < RegexPatternLengthMax - 1) {
@@ -411,7 +411,7 @@ inline RegexCompiled* RegexParse(TRegex* regex, const CHA* pattern_str,
 
 /* Matches the pattern against the text. */
 inline BOL RegexMatch(TRegex* regex, const CHA* text,
-                      const CHA** match_end = NILP) {
+                      const CHA** match_end = _NilP) {
   if (IsError(regex->compiled)) return false;
   return false;
 }
@@ -419,5 +419,5 @@ inline BOL RegexMatch(TRegex* regex, const CHA* text,
 }  //< namespace _
 
 /* @} */  // End of Regex group.
-#endif
-#endif
+#endif  //< _Seam >= _CrabsRegEx
+#endif  //< _CrabsRegexHPP

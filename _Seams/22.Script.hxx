@@ -1,21 +1,21 @@
 // Copyright AStarship <https://astarship.net>.
 #include "../Door.hpp"
-#if SEAM >= CRABS_SCRIPT
-#if SEAM == CRABS_SCRIPT
+#if _Seam >= _CrabsScript
+#if _Seam == _CrabsScript
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 static const CHA* CrabsScript(const CHA* args) {
-#if SEAM == CRABS_SCRIPT
-  A_TEST_BEGIN;
-  ADoor door;
+#if _Seam == _CrabsScript
+  _ATestBegin;
+  TDoor<> door;
   Slot slot;
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

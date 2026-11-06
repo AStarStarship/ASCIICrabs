@@ -1,5 +1,5 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "../Crabs.h"
 #include "../BIn.hpp"
 #include "../BOut.hpp"
@@ -7,14 +7,14 @@
 #include "../Args.h"
 #include "../Address.hpp"
 #include "../Operand.h"
-#if SEAM == CRABS_OP
+#if _Seam == _CrabsOp
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #include "../AType.h"
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 class StarTest : public Operand {
 public:
@@ -23,20 +23,20 @@ public:
       TBSeq<>().CParams() /*in*/,
       TBSeq<>().CParams() /*out*/,
       "description",
-      'a',    //< First function index
+      'a',    //< First function indexThere
       'b',    //< Last function index.
       'a',    //< Default function index.
-      NILP    //< Evaluated expression Slot.
+      _NilP    //< Evaluated expression Slot.
     };
     if (!crabs) return &foo;
-    return NILP;
+    return _NilP;
   }
 };
 }
 #endif
 
 namespace CRTest {
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 /* Return failures to the runner; do not rely on a printed assertion. */
 static const CHA* RingRegressions(const CHA*) {
   const DTB* params = TTSQ<_IUC, _CHC, STR_, 32>();
@@ -62,7 +62,7 @@ static const CHA* RingRegressions(const CHA*) {
   params = TTSQ<_IUC>();
   if (BOutWrite(&output.head, params, write_args, 0))
     return "writing a 32-bit scalar to an empty ring must succeed";
-  if (BOutBooferLength(&output.head) != 6)
+  if (BOutBufferLength(&output.head) != 6)
     return "32-bit frame must have four payload bytes and two hash bytes";
   if (output.data[0] != 0x78 || output.data[1] != 0x56 ||
       output.data[2] != 0x34 || output.data[3] != 0x12)
@@ -94,7 +94,7 @@ static const CHA* RingRegressions(const CHA*) {
   params = TTSQ<_IUA, _IUB, _IUC, _CHC, _IUD, STR_, 32>();
   if (BOutWrite(&output.head, params, mixed_args, 0))
     return "writing a mixed scalar/string frame must succeed";
-  if (BOutBooferLength(&output.head) !=
+  if (BOutBufferLength(&output.head) !=
       ISN(sizeof(small) + sizeof(medium) + sizeof(value) +
           sizeof(character) + sizeof(large) + sizeof(text) + sizeof(IUB)))
     return "mixed frame must include every argument and its string terminator";
@@ -127,29 +127,29 @@ static const CHA* RingRegressions(const CHA*) {
     return "non-template ring length must agree with the template helper";
   if (BInEnd(&input.head) != input.data + sizeof(input.data))
     return "input end must point past the payload, not past the header";
-  return NILP;
+  return _NilP;
 }
 #endif
 
 static const CHA* CrabsOp(const CHA* args) {
-  #if SEAM == CRABS_OP
-  A_TEST_BEGIN;
+  #if _Seam == _CrabsOp
+  _ATestBegin;
 
   enum {
-    BooferBytes = 2048,
-    BooferWords = BooferBytes / sizeof(IUW),
+    BufferBytes = 2048,
+    BufferWords = BufferBytes / sizeof(IUW),
     StackTotal = 8,
   };
-  D_COUT("\nInitializing Crabs Machine");
-  IUW boofer[BooferWords],
-      unpacked_expr[BooferWords];
+  _DROut("\nInitializing Crabs Machine");
+  IUW buffer[BufferWords],
+      unpacked_expr[BufferWords];
   StarTest star_test;
   IUD pc_ctx = 0;
-  Crabs* crabs = CrabsInit(boofer, BooferBytes, StackTotal, &star_test,
-                           unpacked_expr, BooferBytes, pc_ctx);
-  TCrabsPrint<::_::COut>(StdOut(), crabs);
+  Crabs* crabs = CrabsInit(buffer, BufferBytes, StackTotal, &star_test,
+                           unpacked_expr, BufferBytes, pc_ctx);
+  TCrabsPrint<::_::ROut>(RefOut(), crabs);
 
-  D_COUT("\n|    Testing Root (@see \"a.h\")...\n");
+  _DROut("\n|    Testing Root (@see \"a.h\")...\n");
 
   void* dez_args[4];
   uint8_t io_number_ = 98;  //< ASCII:'b'
@@ -160,23 +160,23 @@ static const CHA* CrabsOp(const CHA* args) {
   CrabsRingBell(crabs);
   CrabsAckBack(crabs);
   auto params = TTSQ<_IUA, _CHA, _FPD, _CHC>();
-  D_COUT("\nBefore:");
-  TBOutPrintVars<::_::COut>(StdOut(), bout);
+  _DROut("\nBefore:");
+  TBOutPrintVars<::_::ROut>(RefOut(), bout);
   result = BOutWrite(bout, params, Args(dez_args, TAddress<'A', 'A', 'A'>(),
     &io_number_, "Test", TAddress<_BS, _CR>()), pc_ctx);
-  D_COUT("\nAfter:");
-  TBOutPrintVars<::_::COut>(StdOut(), bout);
-  A_ASSERT(!result);
+  _DROut("\nAfter:");
+  TBOutPrintVars<::_::ROut>(RefOut(), bout);
+  _AAssert(!result);
 
-  TCrabsPrint<::_::COut>(StdOut(), crabs);
+  TCrabsPrint<::_::ROut>(RefOut(), crabs);
   
   //Mirror mirror (bin, bout);
   //CrabsScan(crabs);  //, &mirror);
   //Bypass handshake for testing purposes.
   CrabsScanBIn(crabs);
-  TCrabsPrint<::_::COut>(StdOut(), crabs);
-  D_COUT("\n| Done with Crabs tests.");
+  TCrabsPrint<::_::ROut>(RefOut(), crabs);
+  _DROut("\n| Done with Crabs tests.");
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

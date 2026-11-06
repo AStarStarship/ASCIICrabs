@@ -1,17 +1,19 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsCrabsHPP
+#define _CrabsCrabsHPP
 #include "Crabs.h"
-#if SEAM >= CRABS_OP
-#if SEAM == CRABS_OP
+#if _Seam >= _CrabsOp
+#if _Seam == _CrabsOp
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
 namespace _ {
 
-#if USING_CRABS_TEXT == YES_0
 template<typename Printer>
 Printer& TCrabsPrintStack(Printer & o, Crabs* crabs) {
-  A_ASSERT(crabs);
+  _AAssert(crabs);
 
   ISC i, stack_count;
   const Op* op;
@@ -27,10 +29,10 @@ Printer& TCrabsPrintStack(Printer & o, Crabs* crabs) {
   for (i = 0; i < stack_count - 1; ++i) {
     o << "\nStack Item " << i + 1 << ":\"";
     operand = stack[i];
-    op = operand->Star('?', NILP);
+    op = operand->Star('?', _NilP);
     o << op->name << '\"';
   }
-  op = crabs->operand->Star('?', NILP);
+  op = crabs->operand->Star('?', _NilP);
   return o << "\nStack Item " << i + 1 << ":\"" << op->name << "\"";
 }
 
@@ -56,7 +58,7 @@ Printer& TCrabsPrint(Printer& o, Crabs* crabs) {
   TBOutPrintVars<Printer>(o, CrabsBOut(crabs));
   return o << Linef('-', 80) << '\n';
 }
-#endif
 
 }  // namespace _
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsCrabsHPP

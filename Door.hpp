@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_DOOR_DECL
-#define CRABS_DOOR_DECL
+#ifndef _CrabsDoorHPP
+#define _CrabsDoorHPP
 #include <_Config.h>
-#if SEAM >= CRABS_ROOM
+#if _Seam >= _CrabsRoom
 #include "Crabs.h"
 #include "BIn.h"
 #include "Slot.h"
@@ -26,7 +26,7 @@ enum {
 
 /* A door in a Chinese room. */
 template<DOR_P>
-TDoor<DOR_A>* TDoorInit(TDoor<DOR_A>* door, const CHA* roomName = NILP, IUW* socket = NILP,
+TDoor<DOR_A>* TDoorInit(TDoor<DOR_A>* door, const CHA* roomName = _NilP, IUW* socket = _NilP,
       IUW bytes = DoorBytesMin) {
   if (IsError(socket)) {
     if (bytes < DoorBytesMin) {
@@ -35,11 +35,11 @@ TDoor<DOR_A>* TDoorInit(TDoor<DOR_A>* door, const CHA* roomName = NILP, IUW* soc
   } else {
     if (bytes < DoorBytesMin) {
       // @todo insert error code here
-      D_COUT("\nError: Door bytes < DoorBytesMin!");
-      return NILP;
+      _DROut("\nError: Door bytes < DoorBytesMin!");
+      return _NilP;
     }
   }
-  // tx.SetBoofer (adjacentDoor->Rx ()->EndAddress () + 1), aSlotSize);
+  // tx.SetBuffer (adjacentDoor->Rx ()->EndAddress () + 1), aSlotSize);
   // rx = new SerialSlot (tx.EndAddress (), aSlot, aSlotSize,
   //  aTalkbackSize);
   return door;
@@ -68,7 +68,7 @@ template<DOR_P>
 ISZ TDoorFindSlot(TDoor<DOR_A>* door, void* address) {
   ISZ count = door->slots_->count;
   for (ISZ i = 0; i < count; ++i) {
-    // Slot* slot = NILP; //< @todo fix me!
+    // Slot* slot = _NilP; //< @todo fix me!
 
     if (TStackContains<ISZ, ISZ, ISZ>(door->slots_, address)) return i;
   }
@@ -77,8 +77,8 @@ ISZ TDoorFindSlot(TDoor<DOR_A>* door, void* address) {
 
 template<DOR_P>
 TBIn<ISC>* TDoorSlotNumber(TDoor<DOR_A>* door, ISZ index) {
-  if (!door->slots_->InBounds(index)) return NILP;
-  return TPtr<TBIn<ISC>>(&door->slots_->Element(index));
+  if (!door->slots_->InBounds(index)) return _NilP;
+  return TRef<TBIn<ISC>>(&door->slots_->Element(index));
 }
 
 /* Executes all of the queued escape sequences.
@@ -89,14 +89,14 @@ const Op* TDoorExec(TDoor<DOR_A>* door, Crabs* crabs) {
   ISZ scan_total = door->scan_total_;
   for (ISZ i = 0; i < slots->count; ++i) {
     Slot* slot = slots->Element(i);
-    TBIn<ISC>* bin = TPtr<TBIn<ISC>>(slot);
+    TBIn<ISC>* bin = TRef<TBIn<ISC>>(slot);
     for (ISZ count = scan_total; count > 0; --count) {
       ISN value = BInStreamByte(bin);
       if (value < 0) break;
       //const Op* result = crabs->SScan(value);
     }
   }
-  return NILP;
+  return _NilP;
 }
 
 /* Crabs operations.
@@ -112,8 +112,8 @@ const Op* TDoorStar(CHC index, Crabs* crabs) {
     ';',
     ' ',
     false,
-    NILP,
-    NILP
+    _NilP,
+    _NilP
   };
   if (index == '?') {
     return CrabsQuery(crabs, This, 0);
@@ -121,18 +121,18 @@ const Op* TDoorStar(CHC index, Crabs* crabs) {
   index -= ' ';
   if (ISZ(index) >= slots_->count) {
     //return DoorResult(this, Door::ErrorInvalidOp);
-    return NILP;
+    return _NilP;
   }
-  return NILP;
+  return _NilP;
 } */
 
 template<DOR_P>
 TBIn<ISC>* TDoorOffsetToBIn(TDoor<DOR_A>* door, ISZ offset) {
-  return TPtr<TBIn<ISC>>(IUW(door) + offset);
+  return TRef<TBIn<ISC>>(IUW(door) + offset);
 }
 
 }  //< namespace _
 
 /* @} */  // End of Door group.
-#endif
-#endif
+#endif  //< #if _Seam >= _CrabsRoom
+#endif  //< _CrabsDoorHPP

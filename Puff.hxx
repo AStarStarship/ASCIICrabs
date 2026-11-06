@@ -1,13 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsPuffHXX
+#define _CrabsPuffHXX
 #include "Puff.hpp"
-//
-#include <cmath>
-//
-// Because some of y'all will try to make this a single file header, just
-// keep in mind that the static data will get duplicated in each library
-// you build.
+#include "Math.h"
+#if _Seam >= _CrabsIToS
 namespace _ {
-#if SEAM >= CRABS_ITOS
 
 const IUD* Pow10_UI8() {
   static const IUD TenToThe[20] = {
@@ -68,7 +66,7 @@ const IUB* Pow10_UI2() {
 
 IUB Pow10(IUB index) { return (index > 4) ? 0 : Pow10_UI2()[index]; }
 
-#if CPU_ENDIAN == CPU_ENDIAN_LITTLE
+#if _CPUEndian == _CPUEndianLittle
 static const IUB Digits00To99[100] = {
     0x3030, 0x3130, 0x3230, 0x3330, 0x3430, 0x3530, 0x3630, 0x3730, 0x3830,
     0x3930, 0x3031, 0x3131, 0x3231, 0x3331, 0x3431, 0x3531, 0x3631, 0x3731,
@@ -148,15 +146,14 @@ ISN STRLength(ISD value) {
   return STRLength((IUD)value);
 }
 
-#endif
 
-#if SEAM >= CRABS_FTOS
+#if _Seam >= _CrabsFToS
 
 IUD TComputePow10(ISC e, ISC alpha, ISC gamma) {
   FPD pow_10 = 0.30102999566398114,  //< 1/lg(10)
       alpha_minus_e_plus_63 = static_cast<FPD>(ISD(alpha) - e + 63),
       ceiling = Ceiling(alpha_minus_e_plus_63 * pow_10);
-  return *TPtr<IUD>(&pow_10);
+  return *TRef<IUD>(&pow_10);
 }
 
 constexpr ISW CIEEE754LutElementCount() { return 87; }
@@ -224,16 +221,16 @@ const void* Binary32Pow10IntegralPortions() { return IEEE754Pow10F4; }
 const void* Binary64Pow10IntegralPortions() { return IEEE754Pow10F8; }
 
 BOL IsFinite(FPC value) {
-  return static_cast<FPC>(std::isfinite(static_cast<FPD>(value)));
+  return static_cast<BOL>(FPDIsFinite(static_cast<FPD>(value)));
 }
 
-BOL IsFinite(FPD value) { return std::isfinite(value); }
+BOL IsFinite(FPD value) { return FPDIsFinite(value); }
 
 BOL IsInfinite(FPC value) {
-  return static_cast<FPC>(std::isinf(static_cast<FPD>(value)));
+  return static_cast<BOL>(FPDIsInfinite(static_cast<FPD>(value)));
 }
 
-BOL IsInfinite(FPD value) { return std::isinf(value); }
+BOL IsInfinite(FPD value) { return FPDIsInfinite(value); }
 
 FPD Ceiling(FPD value) { return ceil(value); }
 
@@ -243,3 +240,7 @@ FPC Ceiling(FPC value) {
 
 #endif
 }  //< namespace _
+
+#endif  //< _Seam >= _CrabsIToS
+#undef _DROut
+#endif  //< _CrabsPuffHXX

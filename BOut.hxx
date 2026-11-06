@@ -1,6 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsBOutHXX
+#define _CrabsBOutHXX
 #include "BOut.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "BSeq.hpp"
 #include "Hash.hpp"
 #include "Varint.hpp"
@@ -11,33 +14,33 @@
 namespace _ {
 
 inline const CHA* BOutBegin(const TBOut<ISC>* bout) {
-  return TPtr<CHA>(bout) + sizeof(TBOut<ISC>);
+  return TRef<CHA>(bout) + sizeof(TBOut<ISC>);
 }
 
 inline CHA* BOutBegin(TBOut<ISC>* bout) {
-  return CPtr<CHA>(BOutBegin(CPtr<TBOut<ISC>>(bout)));
+  return CRef<CHA>(BOutBegin(CRef<TBOut<ISC>>(bout)));
 }
 
 inline const Op* BOutError(TBOut<ISC>* bout, ERC error) {
-  //D_COUT("\nBOut " << TAErrors<>(error) << " Error!");
-  return TPtr<const Op>(1);
+  //_DROut("\nBOut " << TAErrors<>(error) << " Error!");
+  return TRef<const Op>(1);
 }
 
 inline const Op* BOutError(TBOut<ISC>* bout, ERC error, const DTB* header) {
-  //D_COUT("\nBOut " << TAErrors<>(error) << " Error!");
-  return TPtr<const Op>(1);
+  //_DROut("\nBOut " << TAErrors<>(error) << " Error!");
+  return TRef<const Op>(1);
 }
 
 inline const Op* BOutError(TBOut<ISC>* bout, ERC error, const DTB* header,
                            ISN offset) {
-  //D_COUT("\nBOut " << TAErrors<>(error) << " Error!");
-  return TPtr<const Op>(1);
+  //_DROut("\nBOut " << TAErrors<>(error) << " Error!");
+  return TRef<const Op>(1);
 }
 
 inline const Op* BOutError(TBOut<ISC>* bout, ERC error, const DTB* header,
                            ISN bsq_error, IUA* error_byte) {
-  //D_COUT("\nBOut " << TAErrors<>(error) << " Error!");
-  return TPtr<const Op>(1);
+  //_DROut("\nBOut " << TAErrors<>(error) << " Error!");
+  return TRef<const Op>(1);
 }
 
 const CHA** BOutStateStrings() {
@@ -45,15 +48,15 @@ const CHA** BOutStateStrings() {
   return Strings;
 }
 
-IUA* BOutBoofer(TBOut<ISC>* bout) {
-  return TPtr<IUA>(bout) + sizeof(TBOut<ISC>);
+IUA* BOutBuffer(TBOut<ISC>* bout) {
+  return TRef<IUA>(bout) + sizeof(TBOut<ISC>);
 }
 
-TBOut<ISC>* BOutInit(TBOut<ISC>* bout, ISN boofer_bytes) {
-  D_ASSERT_PTR(bout);
-  D_ASSERT(boofer_bytes >= SlotBytesMin);
-  //if (IsError(bout) || boofer_bytes < SlotBytesMin) return NILP;
-  bout->bytes = boofer_bytes - sizeof(TBOut<ISC>);
+TBOut<ISC>* BOutInit(TBOut<ISC>* bout, ISN buffer_bytes) {
+  _DAssertPointer(bout);
+  _DAssert(buffer_bytes >= SlotBytesMin);
+  //if (IsError(bout) || buffer_bytes < SlotBytesMin) return _NilP;
+  bout->bytes = buffer_bytes - sizeof(TBOut<ISC>);
   bout->origin = 0;
   bout->stop = 0;
   bout->read = 0;
@@ -64,26 +67,26 @@ ISN BOutSpace(TBOut<ISC>* bout) {
   if (IsError(bout)) {
     return 0;
   }
-  IUA* txb_ptr = TPtr<IUA>(bout);
-  return TSlotSpace<IUN>(txb_ptr + bout->origin, txb_ptr + bout->stop,
+  IUA* txb_ref = TRef<IUA>(bout);
+  return TSlotSpace<IUN>(txb_ref + bout->origin, txb_ref + bout->stop,
                          bout->bytes);
 }
 
-ISN BOutBooferLength(TBOut<ISC>* bout) {
+ISN BOutBufferLength(TBOut<ISC>* bout) {
   if (IsError(bout)) {
     return 0;
   }
-  IUA* origin = BOutBoofer(bout);
+  IUA* origin = BOutBuffer(bout);
   return TSlotLength<IUN>(origin + bout->origin, origin + bout->stop,
                           bout->bytes);
 }
 
 IUA* BOutEndAddress(TBOut<ISC>* bout) {
-  return TPtr<IUA>(bout) + (4 * sizeof(ISN)) + bout->bytes;
+  return TRef<IUA>(bout) + (4 * sizeof(ISN)) + bout->bytes;
 }
 
 ISN BOutStreamByte(TBOut<ISC>* bout) {
-  IUA* begin    = BOutBoofer(bout),
+  IUA* begin    = BOutBuffer(bout),
      * end      = begin + bout->bytes,
      * open     = (IUA*)begin + bout->read,
      * origin   = begin + bout->origin,
@@ -93,7 +96,7 @@ ISN BOutStreamByte(TBOut<ISC>* bout) {
                                     : (end - origin) + (open - origin) + 2;
 
   if (length < 1) {
-    BOutError(bout, AErrorBooferOverflow, TTSQ<STR_>(), 2, origin);
+    BOutError(bout, AErrorBufferOverflow, TTSQ<STR_>(), 2, origin);
     return -1;
   }
   //IUA b = *cursor;
@@ -104,27 +107,27 @@ ISN BOutStreamByte(TBOut<ISC>* bout) {
 
 const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
   IUD pc_ctx) {
-  //D_COUT("\n\nWriting ");
-  //D_COUT_BSQ(params);
+  //_DROut("\n\nWriting ");
+  //_DROutBSQ(params);
   enum {
-    BOutBooferSize = 1024,
-    BOutBooferSizeWords = BOutBooferSize >> ACPUBytesLog2
+    BOutBufferSize = 1024,
+    BOutBufferSizeWords = BOutBufferSize >> ACPUBytesLog2
   };
-  //D_COUT(" to B-Output:");
-  //D_COUT_BOUT(bout);
-  A_ASSERT(!IsError(bout));
-  A_ASSERT(!IsError(params));
-  A_ASSERT(!IsError(args));
+  //_DROut(" to B-Output:");
+  //_DROutBOut(bout);
+  _AAssert(!IsError(bout));
+  _AAssert(!IsError(params));
+  _AAssert(!IsError(args));
   // Temp variables packed into groups of 8 bytes for memory alignment.
   IUA  // type,
       iua;
-#ifdef USING_CRABS_2_BYTE_TYPES
+#ifdef _CrabsUsing2ByteTypes
   IUB iub;
 #endif
-#ifdef USING_CRABS_4_BYTE_TYPES
+#ifdef _CrabsUsing4ByteTypes
   IUC iuc;
 #endif
-#ifdef USING_CRABS_8_BYTE_TYPES
+#ifdef _CrabsUsing8ByteTypes
   IUD iud;
 #endif
   ISN num_params = params[0];
@@ -141,19 +144,19 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
   const DTB* param = params;
          //* bsc_param;
   // Convert the socket offsets to pointers.
-  IUA* begin = BOutBoofer(bout),
+  IUA* begin = BOutBuffer(bout),
      * end   = begin + bytes,
      * start = begin + bout->origin,
      * stop  = begin + bout->stop;
-  const IUA* iua_ptr;
-  const IUB* iub_ptr;
-#ifdef USING_CRABS_4_BYTE_TYPES
-  const IUC* iuc_ptr;  //< Pointer to a 4-IUA type.
+  const IUA* iua_ref;
+  const IUB* iub_ref;
+#ifdef _CrabsUsing4ByteTypes
+  const IUC* iuc_ref;  //< Pointer to a 4-IUA type.
 #endif
-#ifdef USING_CRABS_8_BYTE_TYPES
-  const IUD* iud_ptr;  //< Pointer to an 8-IUA type.
+#ifdef _CrabsUsing8ByteTypes
+  const IUD* iud_ref;  //< Pointer to an 8-IUA type.
 #endif
-  IUB hash = PRIME_LARGEST_IUB;
+  IUB hash = _PrimeLargestIUB;
 
   // Free space = space between the read head (start) and the write head
   // (stop), NOT to the ring end. (Passing `end` here always yields 0 for an
@@ -162,7 +165,7 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 
   // Check if the socket has enough room.
   if (space == 0) {
-    return BOutError(bout, AErrorBooferOverflow);
+    return BOutError(bout, AErrorBufferOverflow);
   }
   --space;
   length = params[0];  //< Load the max IUA length.
@@ -171,17 +174,17 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
   // Write data.
   for (index = 1; index <= num_params; ++index, ++arg_index) {
     type = params[index];
-    //D_COUT("\nparam: " << (arg_index + 1) << " type:" << ATypef(type)
+    //_DROut("\nparam: " << (arg_index + 1) << " type:" << ATypef(type)
     //                   << " start:" << TDelta<>(begin, start) << " stop:"
     //                   << TDelta<>(begin, stop) << " space:" << space);
     if (type <= _CHA) {
-     #ifdef USING_CRABS_1_BYTE_TYPES
+     #ifdef _CrabsUsing1ByteTypes
       if (space-- <= 0)
-        return BOutError(bout, AErrorBooferOverflow, params, index, nullptr);
+        return BOutError(bout, AErrorBufferOverflow, params, index, _NilP);
 
       // Load pointer and read data to write.
-      iua_ptr = TPtr<const IUA>(args[arg_index]);
-      iua = *iua_ptr;
+      iua_ref = TRef<const IUA>(args[arg_index]);
+      iua = *iua_ref;
 
       // Write data.
       *stop = iua;
@@ -192,14 +195,14 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
       return BOutError(bout, AErrorInvalidType);
      #endif
     } else if (type <= _CHB) {
-     #ifdef USING_CRABS_2_BYTE_TYPES
+     #ifdef _CrabsUsing2ByteTypes
       if (space < sizeof(IUB))
-        return BOutError(bout, AErrorBooferOverflow, params, index, nullptr);
+        return BOutError(bout, AErrorBufferOverflow, params, index, _NilP);
       space -= sizeof(IUB);
 
       // Load pointer and value to write.
-      iub_ptr = TPtr<IUB>(args[arg_index]);
-      iub = *iub_ptr;
+      iub_ref = TRef<IUB>(args[arg_index]);
+      iub = *iub_ref;
 
       // Write data.
 
@@ -217,14 +220,14 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
       continue;
      #else
       return BOutError(bout, AErrorInvalidType);
-     #endif  // USING_CRABS_4_BYTE_TYPES
+     #endif  //< _CrabsUsing4ByteTypes
     } else if (type <= _CHC) {
-     #ifdef USING_CRABS_4_BYTE_TYPES
+     #ifdef _CrabsUsing4ByteTypes
       if (space < sizeof(IUC))
-        return BOutError(bout, AErrorBooferOverflow, params, index, nullptr);
+        return BOutError(bout, AErrorBufferOverflow, params, index, _NilP);
       space -= sizeof(IUC);
-      iuc_ptr = TPtr<IUC>(args[arg_index]);
-      iuc = *iuc_ptr;
+      iuc_ref = TRef<IUC>(args[arg_index]);
+      iuc = *iuc_ref;
       for (value = sizeof(IUC); value > 0; --value) {
         iua = IUA(iuc);
         iuc >>= 8;
@@ -235,14 +238,14 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
       continue;
      #else
       return BOutError(bout, AErrorInvalidType);
-     #endif            //< USING_CRABS_4_BYTE_TYPES
+     #endif            //< _CrabsUsing4ByteTypes
     } else if (type <= _SSD) {
-     #ifdef USING_CRABS_8_BYTE_TYPES
+     #ifdef _CrabsUsing8ByteTypes
       if (space < sizeof(IUD))
-        return BOutError(bout, AErrorBooferOverflow, params, index, nullptr);
+        return BOutError(bout, AErrorBufferOverflow, params, index, _NilP);
       space -= sizeof(IUD);
-      iud_ptr = TPtr<IUD>(args[arg_index]);
-      iud = *iud_ptr;
+      iud_ref = TRef<IUD>(args[arg_index]);
+      iud = *iud_ref;
       for (value = sizeof(IUD); value > 0; --value) {
         iua = IUA(iud);
         iud >>= 8;
@@ -253,21 +256,21 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
       continue;
 #else
       return BOutError(bout, AErrorInvalidType);
-#endif            //< USING_CRABS_8_BYTE_TYPES
+#endif            //< _CrabsUsing8ByteTypes
     } else if (type == STR_) {
       // The next descriptor is the capacity, including the nil code unit.
       if (index == num_params || params[index + 1] <= 0)
         return BOutError(bout, AErrorInvalidType);
       ISN capacity = params[++index];
-      iua_ptr = TPtr<const IUA>(args[arg_index]);
+      iua_ref = TRef<const IUA>(args[arg_index]);
       ISN count = 0;
-      while (count < capacity && iua_ptr[count]) ++count;
+      while (count < capacity && iua_ref[count]) ++count;
       if (count == capacity || space < count + 1 + ISN(sizeof(IUB)))
-        return BOutError(bout, AErrorBooferOverflow);
+        return BOutError(bout, AErrorBufferOverflow);
       ++count;  //< Include the nil code unit in the payload and hash.
       space -= count;
       for (ISN i = 0; i < count; ++i) {
-        iua = iua_ptr[i];
+        iua = iua_ref[i];
         *stop = iua;
         hash = HashIUB(iua, hash);
         ++stop; if (stop >= end) stop = begin;
@@ -275,11 +278,11 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
     } else {
       return BOutError(bout, AErrorInvalidType);
     }
-//#if CPU_SIZE <= 16
+//#if _CPUSize <= 16
 //      case _VSB:  //< _W_r_i_t_e__2_-_b_y_t_e__S_i_g_n_e_d__V_a_r_i_n_t____
 //        // Load number_ to write and increment args.
-//        iub_ptr = TPtr<const IUB>(args[arg_index]);
-//        iub = *iub_ptr;
+//        iub_ref = TRef<const IUB>(args[arg_index]);
+//        iub = *iub_ref;
 //        // We are using the same code to utf both signed and unsigned
 //        // varints. In order to convert from a negative 2's complement
 //        // signed integer to a transmittable format, we need to invert
@@ -289,15 +292,15 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //        goto WriteVarint2;
 //      case _VUB:  //< _W_r_i_t_e__2_-_b_y_t_e__U_n_s_i_g_n_e_d__V_a_r_i_n_t_
 //        // Load next pointer value to write.
-//        iub_ptr = TPtr<const IUB>(args[arg_index]);
-//        if (iub_ptr == NILP)
+//        iub_ref = TRef<const IUB>(args[arg_index]);
+//        if (iub_ref == _NilP)
 //          return BOutError(bout, AErrorImplementation, params, index, start);
-//        iub = *iub_ptr;
+//        iub = *iub_ref;
 //
 //      WriteVarint2 : {
 //        // Byte 1
 //        if (space-- == 0)
-//          return BOutError(bout, AErrorBooferOverflow, params, index, start);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, start);
 //        iua = iub & 0x7f;
 //        iub = iub >> 7;
 //        if (iub == 0) {
@@ -313,7 +316,7 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //
 //        // Byte 2
 //        if (--space == 0)
-//          return BOutError(bout, AErrorBooferOverflow, params, index, start);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, start);
 //        iua = iub & 0x7f;
 //        iub = iub >> 7;
 //        if (iub == 0) {
@@ -329,7 +332,7 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //
 //        // Byte 3
 //        if (--space == 0)
-//          return BOutError(bout, AErrorBooferOverflow, params, index, start);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, start);
 //        iua = iub & 0x7f;
 //        iua |= 0x80;
 //        *end = iua;
@@ -339,18 +342,18 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //#else
 //      case _ISV:  //< _W_r_i_t_e__4_-_b_y_t_e__S_i_g_n_e_d__V_a_r_i_n_t____
 //        // Load number_ to write and increment args.
-//        iuc_ptr = TPtr<const IUC>(args[arg_index]);
-//        iuc = *iuc_ptr;
+//        iuc_ref = TRef<const IUC>(args[arg_index]);
+//        iuc = *iuc_ref;
 //        iuc = TypePackVarint<IUC>(iuc);
 //        goto WriteVarint4;
 //      case _IUV:  //< _W_r_i_t_e__4_-_b_y_t_e__U_n_s_i_g_n_e_d__V_a_r_i_n_t_
 //        // Load the 4-IUA type to write to the socket.
-//        iuc_ptr = TPtr<const IUC>(args[arg_index]);
-//        iuc = *iuc_ptr;
+//        iuc_ref = TRef<const IUC>(args[arg_index]);
+//        iuc = *iuc_ref;
 //      WriteVarint4 : {  //< Optimized manual do while loop.
 //        iub = 5;
 //        if (space == 0)  //< @todo Benchmark to space--
-//          return BOutError(bout, AErrorBooferOverflow, params, index, origin);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, origin);
 //        --space;  //< @todo Benchmark to space--
 //        iua = iuc & 0x7f;
 //        iuc = iuc >> 7;
@@ -372,16 +375,16 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //        goto WriteVarint4;
 //      } break;
 //#endif
-//#if USING_CRABS_8_BYTE_TYPES
+//#if _CrabsUsing8ByteTypes
 //        // Align the socket to a word boundary and check if the socket
 //        // has enough room.
 //        if (space < sizeof(IUD))
-//          return BOutError(bout, AErrorBooferOverflow, params, index, origin);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, origin);
 //        space -= sizeof(IUD);
 //
 //        // Load pointer and value to write.
-//        iud_ptr = TPtr<IUD>(args[arg_index]);
-//        iud = *iud_ptr;
+//        iud_ref = TRef<IUD>(args[arg_index]);
+//        iud = *iud_ref;
 //
 //        // Write data.
 //
@@ -395,18 +398,18 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //        break;
 //      case VSD:  //< _W_r_i_t_e__8_-_b_y_t_e__S_i_g_n_e_d__V_a_r_i_n_t____
 //        // Load number_ to write and increment args.
-//        iud_ptr = TPtr<const IUD>(args[arg_index]);
-//        iud = *iud_ptr;
+//        iud_ref = TRef<const IUD>(args[arg_index]);
+//        iud = *iud_ref;
 //        iud = TypePackVarint<IUD>(iud);
 //        goto WriteVarint8;
 //      case VUD:  //< _W_r_i_t_e__8_-_b_y_t_e__U_n_s_i_g_n_e_d__V_a_r_i_n_t_
 //        // Load the 4-IUA type to write to the socket.
-//        iud_ptr = TPtr<const IUD>(args[arg_index]);
-//        iud = *iud_ptr;
+//        iud_ref = TRef<const IUD>(args[arg_index]);
+//        iud = *iud_ref;
 //      WriteVarint8 : {     //< Optimized manual do while loop.
 //        iub = 8;           //< The max number_ of varint bytes - 1.
 //        if (space <= 9) {  //< @todo Benchmark to space--
-//          return BOutError(bout, AErrorBooferOverflow, params, index, origin);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, origin);
 //        }
 //        --space;           //< @todo Benchmark to space--
 //        if (--iub == 0) {  //< It's the last IUA not term bit.
@@ -444,9 +447,9 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //        value = type >> 5;
 //        auto block_type = value & 0x3;
 //        if (block_type == _ARY) {
-//          //D_COUT("\nPrinting string.");
+//          //_DROut("\nPrinting string.");
 //          if (space == 0)
-//            return BOutError(bout, AErrorBooferOverflow, params, index,
+//            return BOutError(bout, AErrorBufferOverflow, params, index,
 //                              begin);
 //          if (type != _ADR) {
 //            // We might not need to write anything if it's an _ADR with
@@ -457,21 +460,21 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //            length = CRAddressLengthMax;
 //          }
 //          // Load the source data pointer and increment args.fs
-//          iua_ptr = TPtr<const IUA>(args[arg_index]);
-//          //D_COUT('\"' << Hexf(iua_ptr));
+//          iua_ref = TRef<const IUA>(args[arg_index]);
+//          //_DROut('\"' << Hexf(iua_ref));
 //
 //          // We know we will always have at least one nil-term IUA.
-//          iua = *iua_ptr;
+//          iua = *iua_ref;
 //          while (iua != 0) {
 //            if (space-- == 0)
-//              return BOutError(bout, AErrorBooferOverflow, params, index,
+//              return BOutError(bout, AErrorBufferOverflow, params, index,
 //                                begin);
 //            hash = HashIUB(iua, hash);
 //
 //            *end = iua;  // Write IUA
 //            if (++end >= end) end -= bytes;
-//            ++iua_ptr;
-//            iua = *iua_ptr;  // Read IUA.
+//            ++iua_ref;
+//            iua = *iua_ref;  // Read IUA.
 //          }
 //          if (type != _ADR) {  //< 1 is faster to compare than 2
 //                                // More likely to have _ADR than STR_
@@ -493,44 +496,44 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //        type = type & 0x1f;  //< Mask off lower 5 bits.
 //        switch (value) {
 //          case 0: {
-//            iua_ptr = TPtr<const IUA>(args[arg_index]);
-//            if (iua_ptr == NILP)
+//            iua_ref = TRef<const IUA>(args[arg_index]);
+//            if (iua_ref == _NilP)
 //              return BOutError(bout, AErrorImplementation, params, index,
 //                               begin);
 //          }
-//#if USING_CRABS_2_BYTE_TYPES
+//#if _CrabsUsing2ByteTypes
 //          case 1: {
-//            iub_ptr = TPtr<const IUB>(args[arg_index]);
-//            if (iub_ptr == NILP)
+//            iub_ref = TRef<const IUB>(args[arg_index]);
+//            if (iub_ref == _NilP)
 //              return BOutError(bout, AErrorImplementation, params, index,
 //                               origin);
-//            iub = *iub_ptr;
+//            iub = *iub_ref;
 //            length = static_cast<ISN>(iub);
-//            iua_ptr = TPtr<const IUA>(iub_ptr);
+//            iua_ref = TRef<const IUA>(iub_ref);
 //          }
 //#endif
-//#if USING_CRABS_4_BYTE_TYPES
+//#if _CrabsUsing4ByteTypes
 //          case 2: {
-//            iuc_ptr = TPtr<const IUC>(args[arg_index]);
-//            if (iuc_ptr == NILP)
+//            iuc_ref = TRef<const IUC>(args[arg_index]);
+//            if (iuc_ref == _NilP)
 //              return BOutError(bout, AErrorImplementation, params, index,
 //                               origin);
-//            iuc = *iuc_ptr;
+//            iuc = *iuc_ref;
 //            length = static_cast<ISN>(iuc);
-//            iua_ptr = TPtr<const IUA>(iuc_ptr);
+//            iua_ref = TRef<const IUA>(iuc_ref);
 //          }
 //#endif
-//#if USING_CRABS_8_BYTE_TYPES
+//#if _CrabsUsing8ByteTypes
 //          case 3: {
-//            iud_ptr = TPtr<const IUD>(args[arg_index]);
-//            if (iud_ptr == NILP)
+//            iud_ref = TRef<const IUD>(args[arg_index]);
+//            if (iud_ref == _NilP)
 //              return BOutError(bout, AErrorImplementation, params, index,
 //                               origin);
-//            iud = *iud_ptr;
+//            iud = *iud_ref;
 //            length = static_cast<ISN>(iud);
-//            iua_ptr = TPtr<const IUA>(iud_ptr);
+//            iua_ref = TRef<const IUA>(iud_ref);
 //          }
-//#endif  //< USING_CRABS_8_BYTE_TYPES
+//#endif  //< _CrabsUsing8ByteTypes
 //          default: {
 //            // This wont happen due to the & 0x3 bit mask
 //            // but it stops the compiler from barking.
@@ -538,21 +541,21 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //          }
 //        }
 //        if (space < length) {
-//          return BOutError(bout, AErrorBooferOverflow, params, index, begin);
+//          return BOutError(bout, AErrorBufferOverflow, params, index, begin);
 //        }
 //        if (length == 0) {
 //          break;  //< Not sure if this is an error.
 //        }
 //        if (begin + length >= end) {
 //          for (; bytes - length > 0; --length) {
-//            iua = *(iua_ptr++);
+//            iua = *(iua_ref++);
 //            hash = HashIUB(iua, hash);
 //            *end = iua;
 //            ++end;
 //          }
 //          end = begin - 1;
 //          for (; length > 0; --length) {
-//            iua = *(iua_ptr++);
+//            iua = *(iua_ref++);
 //            hash = HashIUB(iua, hash);
 //            *end = iua;
 //            ++end;
@@ -560,7 +563,7 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //          break;
 //        }
 //        for (; length > 0; --length) {
-//          iua = *(iua_ptr++);
+//          iua = *(iua_ref++);
 //          hash = HashIUB(iua, hash);
 //          *end = iua;
 //          ++end;
@@ -571,14 +574,14 @@ const Op* BOutWrite(TBOut<ISC>* bout, const DTB* params, void** args,
 //    ++arg_index;
   }
   if (space < 3)
-    return BOutError(bout, AErrorBooferOverflow, params, index, begin);
+    return BOutError(bout, AErrorBufferOverflow, params, index, begin);
   // space -= 2;   //< We don't need to save this variable.
   *stop = IUA(hash);
   ++stop; if (stop >= end) stop = begin;
   *stop = IUA(hash >> 8);
   ++stop; if (stop >= end) stop = begin;
   bout->stop = TDelta<ISN>(begin, stop);
-  //D_COUT("\nDone writing to B-Output with the hash 0x" << Hexf(hash));
+  //_DROut("\nDone writing to B-Output with the hash 0x" << Hexf(hash));
   return 0;
 }
 
@@ -586,23 +589,23 @@ void BOutRingBell(TBOut<ISC>* bout, const CHA* address) {
   if (IsError(bout)) {
     return;
   }
-  if (address == NILP) {
+  if (address == _NilP) {
     address = "";
   }
-  //D_COUT("\nRinging BEL to address:0x" << Hexf(address));
+  //_DROut("\nRinging BEL to address:0x" << Hexf(address));
 
   // Temp variables packed into groups of 8 bytes for memory alignment.
   IUA c;
   ISN size = bout->bytes, //< Size of the socket.
       space;              //< Space in the socket.
   // Convert the Slot offsets to pointers.
-  IUA* begin = BOutBoofer(bout),     //< Beginning of the socket.
+  IUA* begin = BOutBuffer(bout),     //< Beginning of the socket.
      * end   = begin + size,         //< End of the socket.
      * start = begin + bout->origin, //< Start of the data.
      * stop  = begin + bout->stop;   //< Stop of the data.
   space = TSlotSpace<ISN>(start, stop, size);
   if (space == 0) {
-    //D_COUT("\nBoofer overflow!");
+    //_DROut("\nBuffer overflow!");
     return;
   }
   *stop = 0;
@@ -611,7 +614,7 @@ void BOutRingBell(TBOut<ISC>* bout, const CHA* address) {
   c = *address;
   while (c) {
     if (space == 0) {
-      //D_COUT("\nBoofer overflow!");
+      //_DROut("\nBuffer overflow!");
       return;
     }
     *stop = c;
@@ -626,10 +629,10 @@ void BOutAckBack(TBOut<ISC>* bout, const CHA* address) {
   if (IsError(bout)) {
     return;
   }
-  if (address == NILP) {
+  if (address == _NilP) {
     address = "";
   }
-  //D_COUT("\n\nRinging BEL to address:0x" << Hexf(address));
+  //_DROut("\n\nRinging BEL to address:0x" << Hexf(address));
 
   // Temp variables packed into groups of 8 bytes for memory alignment.
   IUA c;
@@ -637,13 +640,13 @@ void BOutAckBack(TBOut<ISC>* bout, const CHA* address) {
   ISN size = bout->bytes,  //< Size of the socket.
       space;              //< Space in the socket.
   // Convert the Slot offsets to pointers.
-  IUA *begin = BOutBoofer(bout),           //< Beginning of the socket.
+  IUA *begin = BOutBuffer(bout),           //< Beginning of the socket.
       *end   = begin + size,                //< End of the socket.
       *start = begin + bout->origin,  //< Start of the data.
       *stop  = begin + bout->stop;  //< Stop of the data.
   space = TSlotSpace<ISN>(start, stop, size);
   if (space == 0) {
-    //D_COUT("\nBoofer overflow!");
+    //_DROut("\nBuffer overflow!");
     return;
   }
   *stop = 0;
@@ -652,7 +655,7 @@ void BOutAckBack(TBOut<ISC>* bout, const CHA* address) {
   c = *address;
   while (c) {
     if (space == 0) {
-      //D_COUT("\nBoofer overflow!");
+      //_DROut("\nBuffer overflow!");
       return;
     }
     *stop = c;
@@ -679,22 +682,22 @@ ring. See the declaration in TBOut.h for the contract.
 Design: the producer and consumer alias the SAME 16-byte header, so the two
 SPSC head counters (write head, read head) are shared memory — exactly how a
 kernel pipe works (one buffer, two heads, two descriptors onto it). Place
-`bout` and `bin` at the same address (e.g. bout = TPtr<TBOut<ISC>>(block),
-bin = TPtr<TBIn<ISC>>(block)); then bout->stop and bin->stop are the same field
+`bout` and `bin` at the same address (e.g. bout = TRef<TBOut<ISC>>(block),
+bin = TRef<TBIn<ISC>>(block)); then bout->stop and bin->stop are the same field
 (producer write head / consumer's view of it) and bout->origin and bin->origin
 are the same field (producer's view of the read head / consumer read head).
 The data region (struct + sizeof(struct)) is the shared ring. Each head is
 written by exactly one side and read by the other, as a single volatile word —
 the SPSC lock-free discipline. */
 TBIn<ISC>* BInAttach(TBIn<ISC>* bin, TBOut<ISC>* bout, IUA* buffer, ISN buffer_bytes) {
-  D_ASSERT_PTR(bin);
-  D_ASSERT_PTR(bout);
-  D_ASSERT_PTR(buffer);
-  D_ASSERT(buffer_bytes >= SlotBytesMin);
+  _DAssertPointer(bin);
+  _DAssertPointer(bout);
+  _DAssertPointer(buffer);
+  _DAssert(buffer_bytes >= SlotBytesMin);
   // bin and bout must alias the same header (same address) for the shared
   // SPSC heads to work; the data region is buffer = header + 16.
-  D_ASSERT(IUW(bin) == IUW(bout));
-  D_ASSERT(IUW(buffer) == IUW(bout) + sizeof(TBOut<ISC>));
+  _DAssert(IUW(bin) == IUW(bout));
+  _DAssert(IUW(buffer) == IUW(bout) + sizeof(TBOut<ISC>));
   ISN ring_bytes = buffer_bytes;
   bout->bytes = ring_bytes;
   bin->bytes  = ring_bytes;
@@ -709,3 +712,5 @@ TBIn<ISC>* BInAttach(TBIn<ISC>* bin, TBOut<ISC>* bout, IUA* buffer, ISN buffer_b
 
 }  //< namespace _
 #endif
+
+#endif  //< _CrabsBOutHXX

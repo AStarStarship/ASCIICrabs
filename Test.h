@@ -1,8 +1,8 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
 #include <_Config.h>
-#ifndef CRABS_TEST_DECL
-#define CRABS_TEST_DECL
+#ifndef _CrabsTestH
+#define _CrabsTestH
 
 /* Function pointer prototype for a test case with command line argument.
 @return Pointer to a  to utf to the stdout.
@@ -14,69 +14,69 @@ typedef const CHA* (*TestCase)(const CHA* args);
 namespace _ {
 
 // Triggers a software-define break point that outputs an optional message.
-BOL BRK(BOL value, const CHR* message = nullptr);
-BOL* BRK(BOL* value, const CHR* message = nullptr);
-const BOL* BRK(const BOL* value, const CHR* message = nullptr);
+BOL BRK(BOL value, const CHR* message = _NilP);
+BOL* BRK(BOL* value, const CHR* message = _NilP);
+const BOL* BRK(const BOL* value, const CHR* message = _NilP);
 
-IUA BRK(IUA value, const CHR* message = nullptr);
-IUA* BRK(IUA* value, const CHR* message = nullptr);
-const IUA* BRK(const IUA* value, const CHR* message = nullptr);
+IUA BRK(IUA value, const CHR* message = _NilP);
+IUA* BRK(IUA* value, const CHR* message = _NilP);
+const IUA* BRK(const IUA* value, const CHR* message = _NilP);
 
-ISA BRK(ISA value, const CHR* message = nullptr);
-ISA* BRK(ISA* value, const CHR* message = nullptr);
-const ISA* BRK(const ISA* value, const CHR* message = nullptr);
+ISA BRK(ISA value, const CHR* message = _NilP);
+ISA* BRK(ISA* value, const CHR* message = _NilP);
+const ISA* BRK(const ISA* value, const CHR* message = _NilP);
 
-IUB BRK(IUB value, const CHR* message = nullptr);
-IUB* BRK(IUB* value, const CHR* message = nullptr);
-const IUB* BRK(const IUB* value, const CHR* message = nullptr);
+IUB BRK(IUB value, const CHR* message = _NilP);
+IUB* BRK(IUB* value, const CHR* message = _NilP);
+const IUB* BRK(const IUB* value, const CHR* message = _NilP);
 
-ISB BRK(ISB value, const CHR* message = nullptr);
-ISB* BRK(ISB* value, const CHR* message = nullptr);
-const ISB* BRK(const ISB* value, const CHR* message = nullptr);
+ISB BRK(ISB value, const CHR* message = _NilP);
+ISB* BRK(ISB* value, const CHR* message = _NilP);
+const ISB* BRK(const ISB* value, const CHR* message = _NilP);
 
-IUC BRK(IUC value, const CHR* message = nullptr);
-IUC* BRK(IUC* value, const CHR* message = nullptr);
-const IUC* BRK(const IUC* value, const CHR* message = nullptr);
+IUC BRK(IUC value, const CHR* message = _NilP);
+IUC* BRK(IUC* value, const CHR* message = _NilP);
+const IUC* BRK(const IUC* value, const CHR* message = _NilP);
 
-ISC BRK(ISC value, const CHR* message = nullptr);
-ISC* BRK(ISC* value, const CHR* message = nullptr);
-const ISC* BRK(const ISC* value, const CHR* message = nullptr);
+ISC BRK(ISC value, const CHR* message = _NilP);
+ISC* BRK(ISC* value, const CHR* message = _NilP);
+const ISC* BRK(const ISC* value, const CHR* message = _NilP);
 
-IUD BRK(IUD value, const CHR* message = nullptr);
-IUD* BRK(IUD* value, const CHR* message = nullptr);
-const IUD* BRK(const IUD* value, const CHR* message = nullptr);
+IUD BRK(IUD value, const CHR* message = _NilP);
+IUD* BRK(IUD* value, const CHR* message = _NilP);
+const IUD* BRK(const IUD* value, const CHR* message = _NilP);
 
-ISD BRK(ISD value, const CHR* message = nullptr);
-ISD* BRK(ISD* value, const CHR* message = nullptr);
-const ISD* BRK(const ISD* value, const CHR* message = nullptr);
+ISD BRK(ISD value, const CHR* message = _NilP);
+ISD* BRK(ISD* value, const CHR* message = _NilP);
+const ISD* BRK(const ISD* value, const CHR* message = _NilP);
 
-FPC BRK(FPC value, const CHR* message = nullptr);
-FPC* BRK(FPC* value, const CHR* message = nullptr);
-const FPC* BRK(const FPC* value, const CHR* message = nullptr);
+FPC BRK(FPC value, const CHR* message = _NilP);
+FPC* BRK(FPC* value, const CHR* message = _NilP);
+const FPC* BRK(const FPC* value, const CHR* message = _NilP);
 
-FPD BRK(FPD value, const CHR* message = nullptr);
-FPD* BRK(FPD* value, const CHR* message = nullptr);
-const FPD* BRK(const FPD* value, const CHR* message = nullptr);
+FPD BRK(FPD value, const CHR* message = _NilP);
+FPD* BRK(FPD* value, const CHR* message = _NilP);
+const FPD* BRK(const FPD* value, const CHR* message = _NilP);
 
-//IUE BreakPoint(IUE value, const CHR* message = nullptr);
-//IUE* BRK(IUE* value, const CHR* message = nullptr);
-//const IUE* BRK(const IUE* value, const CHR* message = nullptr);
+//IUE BreakPoint(IUE value, const CHR* message = _NilP);
+//IUE* BRK(IUE* value, const CHR* message = _NilP);
+//const IUE* BRK(const IUE* value, const CHR* message = _NilP);
 // 
-//ISE BreakPoint(ISE value, const CHR* message = nullptr);
-//ISE* BRK(ISE* value, const CHR* message = nullptr);
-//const ISE* BRK(const ISE* value, const CHR* message = nullptr);
+//ISE BreakPoint(ISE value, const CHR* message = _NilP);
+//ISE* BRK(ISE* value, const CHR* message = _NilP);
+//const ISE* BRK(const ISE* value, const CHR* message = _NilP);
 
-CHA BRK(CHA value, const CHR* message = nullptr);
-CHA* BRK(CHA* value, const CHR* message = nullptr);
-const CHA* BRK(const CHA* value, const CHR* message = nullptr);
+CHA BRK(CHA value, const CHR* message = _NilP);
+CHA* BRK(CHA* value, const CHR* message = _NilP);
+const CHA* BRK(const CHA* value, const CHR* message = _NilP);
 
-CHB BRK(CHB value, const CHR* message = nullptr);
-CHB* BRK(CHB* value, const CHR* message = nullptr);
-const CHB* BRK(const CHB* value, const CHR* message = nullptr);
+CHB BRK(CHB value, const CHR* message = _NilP);
+CHB* BRK(CHB* value, const CHR* message = _NilP);
+const CHB* BRK(const CHB* value, const CHR* message = _NilP);
 
-CHC BRK(CHC value, const CHR* message = nullptr);
-CHC* BRK(CHC* value, const CHR* message = nullptr);
-const CHC* BRK(const CHC* value, const CHR* message = nullptr);
+CHC BRK(CHC value, const CHR* message = _NilP);
+CHC* BRK(CHC* value, const CHR* message = _NilP);
+const CHC* BRK(const CHC* value, const CHR* message = _NilP);
 
 /* Called when a test fails.
 @return True upon failure.
@@ -85,14 +85,14 @@ const CHC* BRK(const CHC* value, const CHR* message = nullptr);
 @param message An optional message to utf. */
 BOL TestFail(ISN line, const CHA* funciton, const CHA* file);
 
-/* Handles an D_ASSERT.
+/* Handles an _DAssert.
 @return True upon failure.
 @param line The line the program failed at.
 @param file The file the error occurred at.
 @param message An optional message to utf. */
 void TestFunctionLine(ISN line, const CHA* funciton, const CHA* file);
 
-/* Handles an D_ASSERT.
+/* Handles an _DAssert.
 @return True upon failure.
 @param line The line the program failed at.
 @param file The file the error occurred at.
@@ -251,4 +251,4 @@ BOL TestEq(FPD a, FPD b);
 
 }  //< namespace _
 
-#endif
+#endif  //< _CrabsTestH

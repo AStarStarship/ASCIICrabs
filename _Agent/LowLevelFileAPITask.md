@@ -16,7 +16,7 @@ all. Implement the real I/O.
 
 ## Target API (the operator-overload set)
 `namespace _`, types CHA/ISC/IUC/ISD/IUD/FPC/FPD/ISW/ISN/BOL. SEAM-gated under
-`CRABS_FILE` (=20). Keep the OS stdio (fopen/fread/fwrite/fseek/ftell/fclose) as
+`_CrabsFile` (=20). Keep the OS stdio (fopen/fread/fwrite/fseek/ftell/fclose) as
 an ASCIICrabs-INTERNAL detail (File.hxx only) — the public surface is only the
 `_::` operator/set, matching how File.hxx already uses <dirent.h>/<sys/stat.h>.
 
@@ -79,7 +79,7 @@ this (translate the current C into the new operators):
    // must become something like:
    _::File in(path);  in.OpenRead(path);
    ISW sz = in.Size();
-   CHA* buf = (CHA*)ObjectFactoryHeap(NILP, sz + 1);   // or the in-house alloc
+   CHA* buf = (CHA*)ObjectFactoryHeap(_NilP, sz + 1);   // or the in-house alloc
    ISW got = 0;  in >> (buf, sz);   // or in.Seek(0,SEEK_SET); in >> buf, sz;
    buf[got] = 0;  in.Close();
    ```
@@ -108,7 +108,7 @@ this (translate the current C into the new operators):
 - `g++ -std=gnu++23 -x c++ -g -DSEAM=20 -I _Seams -I . -o /tmp/crabs20 _Seams/
   _Main.hxx` builds clean; the 20.File.hxx seam test exercises a WRITE then a
   READ round-trip (write a known string + an int + a float to a temp file, read
-  it back, A_AVOW the round-trip, then delete the temp file) — and it PASSES
+  it back, _AAvow the round-trip, then delete the temp file) — and it PASSES
   ("Unit tests completed successfully!").
 - Full tree: `g++ -std=gnu++23 -x c++ -g -I _Seams -I . -o Crabs _Seams/_Main.
   hxx && ./Crabs` builds clean and passes (SEAM=23).

@@ -1,6 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsAddressHXX
+#define _CrabsAddressHXX
 #include "Address.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* Returns a pointer to static variable for writing the address { a, \0 } to.
@@ -49,3 +52,5 @@ inline IUD PackAddress(IUD a, IUD b, IUD c, IUD d, IUD e, IUD f, IUD g) {
 
 }  //< namespace _
 #endif
+
+#endif  //< _CrabsAddressHXX

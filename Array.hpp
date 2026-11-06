@@ -1,12 +1,12 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ARRAY_HPP
-#define CRABS_ARRAY_HPP
+#ifndef _CrabsArrayHPP
+#define _CrabsArrayHPP
 #include "Array.h"
-#if SEAM >= CRABS_ARRAY
+#if _Seam >= _CrabsArray
 #include "Autoject.hpp"
 #include "Stringf.hpp"
-#if SEAM == CRABS_ARRAY
+#if _Seam == _CrabsArray
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -51,11 +51,11 @@ inline BOL TArrayCountIsValid(ISZ index, ISZ count_min) {
 /* Gets the begin byte. */
 template<ARY_A>
 inline T* TArrayBegin(void* origin) {
-  return TPtr<T>(ISW(origin) + ISW(sizeof(ISZ)));
+  return TRef<T>(ISW(origin) + ISW(sizeof(ISZ)));
 }
 template<ARY_A>
 inline const T* TArrayBegin(const void* origin) {
-  return CPtr<T>(TArrayBegin<T, ISZ>(CPtr<void>(origin)));
+  return CRef<T>(TArrayBegin<T, ISZ>(CRef<void>(origin)));
 }
 
 /* Gets the start byte of the ASCII Object data section. */
@@ -71,11 +71,11 @@ inline const T* TArrayStart(const void* origin) {
 /* Gets the begin byte. */
 template<ARY_A>
 inline T* TArrayStop(void* origin, ISZ bytes) {
-  return TPtr<T>(origin, bytes);
+  return TRef<T>(origin, bytes);
 }
 template<ARY_A>
 inline const T* TArrayStop(const void* origin, ISZ bytes) {
-  return CPtr<T>(TArrayBegin(CPtr<void>(origin), bytes));
+  return CRef<T>(TArrayBegin(CRef<void>(origin), bytes));
 }
 template<ARY_A>
 inline T* TArrayStop(void* origin) {
@@ -89,7 +89,7 @@ inline const T* TArrayStop(const void* origin) {
 /* Fills the data section with the fill_char. */
 template<ARY_A>
 inline T* TArrayFill(void* origin, CHA fill_char = 0) {
-  ISZ bytes_data = TPtr<ARY>(origin)->total * sizeof(T);
+  ISZ bytes_data = TRef<ARY>(origin)->total * sizeof(T);
   return ArrayFill(TArrayBegin<ARY_P>(origin), bytes_data, fill_char);
 }
 
@@ -126,17 +126,17 @@ Printer& TArrayPrintLines(Printer& o, const ARY* item) {
 // Copies the source to the destination.
 template<ARY_A, ISA AlignMask>
 ARY* TArrayCopy(void* destination, const void* source) {
-  auto dst = TPtr<ISZ>(destination);
-  auto src = TPtr<const ISZ>(source);
+  auto dst = TRef<ISZ>(destination);
+  auto src = TRef<const ISZ>(source);
   auto dst_count = *dst;
   auto src_count = *src;
   auto result = ArrayCopy(TPtrUp<>(dst + 1, AlignMask),
                         dst_count * sizeof(T),
                         TPtrUp<>(src + 1, AlignMask),
                         src_count * sizeof(T));
-  if (result <= 0) return NILP;
+  if (result <= 0) return _NilP;
   *dst = src_count;
-  return TPtr<ARY>(dst);
+  return TRef<ARY>(dst);
 }
 
 /* Calculates the size in bytes of an array with given element_count. */
@@ -162,20 +162,20 @@ constexpr ISZ CSizeMin() {
 template<typename T = IUA, typename ISZ = ISW, typename Class>
 ARY* TArrayWrite(ARY* destination, ARY* source,
                          ISZ size) {
-  D_ASSERT(destination);
-  D_ASSERT(source);
+  _DAssert(destination);
+  _DAssert(source);
 
   ISW bytes = (ISW)TSizeBytes<T, ISZ, Class>(size);
-  if (!ArrayCopy(destination, bytes, source, bytes)) return NILP;
+  if (!ArrayCopy(destination, bytes, source, bytes)) return _NilP;
   return destination;
 }
 
 template<typename T = IUA, typename ISZ = ISW, typename Class>
 Class* TArrayWrite(IUW* destination, IUW* source, ISZ size) {
   ARY* result =
-      TArrayWrite<T, ISZ, Class>(TPtr<ARY>(destination),
-                                TPtr<ARY>(source), size);
-  return TPtr<IUW>(result);
+      TArrayWrite<T, ISZ, Class>(TRef<ARY>(destination),
+                                TRef<ARY>(source), size);
+  return TRef<IUW>(result);
 }
 
 /* Clones the other ASCII Autoject including possibly unused autoject space.
@@ -185,9 +185,9 @@ template<typename T = IUA, typename ISZ = ISW, typename Class>
 IUW* TArrayCloneSlow(Autoject& origin) {
   RAMFactory factory = origin.ram;
   IUW* origin = origin.origin;
-  // if (IsError(factory) || IsError(origin)) return NILP;
+  // if (IsError(factory) || IsError(origin)) return _NilP;
 
-  ARY* o = TPtr<ARY>(origin);
+  ARY* o = TRef<ARY>(origin);
   ISZ size = o->size;
   IUW* clone = TObjectFactoryNew<T, ISZ, ARY>(size);
   return TArrayWrite<T, ISZ, Class>(clone, origin, size);
@@ -200,7 +200,7 @@ inline T* TArrayStop(ARY* ary) {
 }
 template<typename T = CHA, typename ISZ = ISW>
 inline const T* TArrayStop(const ARY* ary) {
-  return CPtr<T>(TArrayStop<T, ISZ>(CPtr<ARY>(ary)));
+  return CRef<T>(TArrayStop<T, ISZ>(CRef<ARY>(ary)));
 }
 
 /* Gets the last IUA in the ASCII Object. */
@@ -271,7 +271,7 @@ inline T* TArrayInsert(T* dest, ISZ dest_total, const T* src, ISZ src_total,
   ISZ src_stop_count = src_total + src_offset;
   if (dest_total < 0 || src_total < 0 || src_offset < 0 || 
     src_stop_count >= dest_total)
-    return NILP;
+    return _NilP;
   T* dest_start = dest + src_offset,
    * dest_stop = dest + src_stop_count,
    * dest_end  = dest + dest_total;
@@ -383,79 +383,79 @@ inline ISW RAMCompare(const void* a_begin, const void* end_a,
 inline ISW RAMCompare(const void* a_begin, void* a_end, const void* b_begin,
                       ISW b_bytes) {
   return RAMCompare(a_begin, a_end, a_begin,
-                    TPtr<CHA>(b_begin) + b_bytes);
+                    TRef<CHA>(b_begin) + b_bytes);
 }
 
 /* Casts RAMCompare to type T. */
 template<typename T>
 inline T* TArrayCompare(void* a_begin, void* a_end, void* b_begin,
                         ISW b_bytes) {
-  return TPtr<T*>(RAMCompare(a_begin, a_end, b_begin, b_bytes));
+  return TRef<T*>(RAMCompare(a_begin, a_end, b_begin, b_bytes));
 }
 
 /* Copies the total elements from the source ASCII Array to the destination. */
 template<typename T, typename Class>
 inline ISW TArrayCopy(void* dest, ISW dest_total,
   const void* src, ISW src_count) {
-  return ArrayCopy(TPtr<void, Class>(dest), dest_total * sizeof(T),
-    TPtr<void, Class>(src), src_count * sizeof(T));
+  return ArrayCopy(TRef<void, Class>(dest), dest_total * sizeof(T),
+    TRef<void, Class>(src), src_count * sizeof(T));
 }
 template<typename T, typename Class>
 inline ISW TArrayCopy(void* dest, void* dest_end,
   const void* src, ISW src_count) {
-  return ArrayCopy(TPtr<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
-    TPtr<void, Class>(src), src_count * sizeof(T));
+  return ArrayCopy(TRef<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
+    TRef<void, Class>(src), src_count * sizeof(T));
 }
 template<typename T, typename Class>
 inline ISW TArrayCopy(void* dest, ISW dest_total,
   const void* src, const void* src_end) {
-  return ArrayCopy(TPtr<void, Class>(dest), dest_total * sizeof(T),
-    TPtr<void, Class>(src), TDelta<ISW, Class>(src, src_end));
+  return ArrayCopy(TRef<void, Class>(dest), dest_total * sizeof(T),
+    TRef<void, Class>(src), TDelta<ISW, Class>(src, src_end));
 }
 template<typename T, typename Class>
 inline ISW TArrayCopy(void* dest, void* dest_end,
   const void* src, const void* src_end) {
-  return ArrayCopy(TPtr<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
-    TPtr<void, Class>(src), TDelta<ISW, Class>(src, src_end));
+  return ArrayCopy(TRef<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
+    TRef<void, Class>(src), TDelta<ISW, Class>(src, src_end));
 }
 
 /* Copies the data from the source ASCII Object to the destination. */
 template<typename Class>
 inline ISW TObjectCopy(void* dest, ISW dest_bytes,
   const void* src, ISW src_bytes) {
-  return ArrayCopy(TPtr<void, Class>(dest), dest_bytes - sizeof(Class),
-    TPtr<void, Class>(src), src_bytes - sizeof(Class));
+  return ArrayCopy(TRef<void, Class>(dest), dest_bytes - sizeof(Class),
+    TRef<void, Class>(src), src_bytes - sizeof(Class));
 }
 template<typename Class>
 inline ISW TObjectCopy(void* dest, void* dest_end,
   const void* src, ISW src_bytes) {
-  return ArrayCopy(TPtr<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
-    TPtr<void, Class>(src), src_bytes - sizeof(Class));
+  return ArrayCopy(TRef<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
+    TRef<void, Class>(src), src_bytes - sizeof(Class));
 }
 template<typename Class>
 inline ISW TObjectCopy(void* dest, ISW dest_bytes,
   const void* src, const void* src_end) {
-  return ArrayCopy(TPtr<void, Class>(dest), dest_bytes - sizeof(Class),
-    TPtr<void, Class>(src), TDelta<ISW, Class>(src, src_end));
+  return ArrayCopy(TRef<void, Class>(dest), dest_bytes - sizeof(Class),
+    TRef<void, Class>(src), TDelta<ISW, Class>(src, src_end));
 }
 template<typename Class>
 inline ISW TObjectCopy(void* dest, void* dest_end, const void* src,
   const void* src_end) {
-  return ArrayCopy(TPtr<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
-    TPtr<void, Class>(src), TDelta<ISW, Class>(src, src_end));
+  return ArrayCopy(TRef<void, Class>(dest), TDelta<ISW, Class>(dest, dest_end),
+    TRef<void, Class>(src), TDelta<ISW, Class>(src, src_end));
 }
 
 /* Casts RAMCompare to type T. */
 template<typename T>
 inline const T* TArrayCompare(const void* a_begin, void* a_end, 
   const void* b_begin, ISW b_bytes) {
-  return TPtr<const T*>(RAMCompare(a_begin, a_end, b_begin, b_bytes));
+  return TRef<const T*>(RAMCompare(a_begin, a_end, b_begin, b_bytes));
 }
 
 template<ARY_A, ISZ TotalInit_ = AStackTotalDefault,
          typename BOF = TBOF<TotalInit_, T, ISZ, ARY>, typename Class = Nil>
 class AArray {
-  Autoboofer<ARY_P, BOF, ARY> aobj_;  //< An Auto-Object.
+  Autobuffer<ARY_P, BOF, ARY> aobj_;  //< An Auto-Object.
 
   constexpr RAMFactory InitRamFactory() {
     return sizeof(BOF) == 0 ? TObjectFactory<ISZ>::StackHeap
@@ -469,27 +469,27 @@ class AArray {
  public:
   /* Initializes a array of n elements to whatever can fit in the BOF. */
   AArray() {
-    D_RAM_WIPE(Begin(), CBytes() - sizeof(ARY));
+    _DArrayFill(Begin(), CBytes() - sizeof(ARY));
   }
 
   /* Attempts to down-size the BOF or creates a dynamically allocated array.
   @param size The number of elements in the Array. */
   AArray(ISZ total) : aobj_(TArrayBytes<ARY_P>(total)) {
-    D_RAM_WIPE(Begin(), CBytes() - sizeof(ARY));
+    _DArrayFill(Begin(), CBytes() - sizeof(ARY));
   }
 
   AArray(ISZ total, RAMFactory ram) : aobj_(TArrayBytes<ARY_P>(total), ram) {
-    D_RAM_WIPE(Begin(), CBytes() - sizeof(ARY));
+    _DArrayFill(Begin(), CBytes() - sizeof(ARY));
   }
 
-  /* Copies the items into the obj_.Boofer () with some additional
+  /* Copies the items into the obj_.Buffer () with some additional
   empty_elements. */
   AArray(ISZ total, const T* items, ISZ items_count, ISZ items_start = 0)
       : aobj_(TArrayBytes<ARY_P>(items_count)) {
     TArrayInsert<ARY_P>(aobj_.AJT(), items, items_count, items_start);
   }
 
-  /* Copies the items into the obj_.Boofer () with some additional
+  /* Copies the items into the obj_.Buffer () with some additional
   empty_elements. */
   AArray(const T* items, ISZ items_count)
       : aobj_(TArrayBytes<ARY_P>(items_count)) {
@@ -509,7 +509,7 @@ class AArray {
   /* Gets this auto-object. */
   inline Autoject& AJT() { return aobj_.AJT(); }
 
-  /* Returns the boofer_. */
+  /* Returns the buffer_. */
   inline IUW* Origin() { return AJT().origin; }
 
   /* Sets the origin to the given pointer.
@@ -518,50 +518,55 @@ class AArray {
     return OriginSet(aobj_, socket);
   }
 
+  /* Returns true if the given origin pointer is a valid (non-nil)
+     allocation. Used after a Clone/growth to check the RAM factory
+     succeeded. A nil origin means the allocation failed. */
+  inline BOL PtrIsValid(IUW* origin) const { return origin != _NilP; }
+
   /* Return the Origin base pointer as type T. */
   template<typename T_ = ARY>
-  inline T_* As() { return TPtr<T_>(Origin()); }
+  inline T_* As() { return TRef<T_>(Origin()); }
 
   /* Creates a clone on the heap.
-  @return NILP if the inputs are invalue */
+  @return _NilP if the inputs are invalue */
   inline static ARY* Clone(Autoject& dest, const ARY* src, ISZ total_new = -1, 
                            ISZ count_start = 0, ISZ count_stop = -1) {
-    D_ASSERT(src);
+    _DAssert(src);
     ISZ total = src->total,
         count = src->count;
-    D_ASSERT(total >= 0);
-    D_ASSERT(count >= 0);
-    D_ASSERT(count <= total);
+    _DAssert(total >= 0);
+    _DAssert(count >= 0);
+    _DAssert(count <= total);
     if (count_stop < 0) count_stop = count;
     if (total_new < 0) total_new = AutojectGrowTotal(total);
     if (total < 0 || count < 0 || count > total || count_start < 0 || 
         count_start >= count || count_stop > count)
-      return NILP;
-#ifdef D_THIS
-    D_COUT("\nAuto-growing Stack...\nBefore:");
-    TArrayPrint<COut, T, ISZ>(StdOut(), src);
+      return _NilP;
+#ifdef _DThis
+    _DROut("\nAuto-growing Stack...\nBefore:");
+    TArrayPrint<ROut, T, ISZ>(RefOut(), src);
 #endif
     ISZ count_new = count_stop - count_start,
         bytes_copy = count_new * sizeof(T),
         bytes      = sizeof(ARY) + total_new * sizeof(T);
-    ARY* dest_ary = TPtr<ARY>(dest.ram(NILP, bytes));
+    ARY* dest_ary = TRef<ARY>(dest.ram(_NilP, bytes));
     if (IsError(dest_ary))
       return dest_ary;
     *dest_ary = { total_new, count_new };
-    D_COUT("\nCopying data..." <<
+    _DROut("\nCopying data..." <<
       "\ncount_start:" << count_start << " count_stop:" << count_stop <<
       "\narray_new.count: " << dest_ary->count <<
       "\narray_new.total: " << dest_ary->total <<
       "\nbytes: " << bytes << "\nbytes_copy: " << bytes_copy <<
       "\nTArrayStart<ARY_P>(array): " << Hexf(TArrayStart<ARY_P>(src)));
-    ArrayCopy(TPtr<void>(dest_ary, sizeof(Class)), bytes_copy,
-              TPtr<void>(src, sizeof(Class)) + count_start, bytes_copy);
-#ifdef D_THIS
-    D_COUT("\nResult:");
-    TArrayPrint<COut, T, ISZ>(StdOut(), dest_ary);
+    ArrayCopy(TRef<void>(dest_ary, sizeof(Class)), bytes_copy,
+              TRef<void>(src, sizeof(Class)) + count_start, bytes_copy);
+#ifdef _DThis
+    _DROut("\nResult:");
+    TArrayPrint<ROut, T, ISZ>(RefOut(), dest_ary);
 #endif
-    dest.origin = TPtr<IUW>(dest_ary);
-    dest.ram = RAMFactory(dest.ram(NILP, 0));
+    dest.origin = TRef<IUW>(dest_ary);
+    dest.ram = RAMFactory(dest.ram(_NilP, 0));
     dest_ary->total = total_new;
     dest_ary->count = count_new;
     return dest_ary;
@@ -570,7 +575,7 @@ class AArray {
   /* Clones the other object including the total, growing if necessary.
   @return true upon success and false upon failure. */
   inline ARY* Clone(ARY* src) {
-    if (IsError(src)) return NILP;
+    if (IsError(src)) return _NilP;
     ARY* ths = This();
     ISZ this_total = ths->total,
         this_count = ths->count,
@@ -579,7 +584,7 @@ class AArray {
     if (this_total <= 0 || src_total <= 0 ||
         this_count <  0 || src_count <  0 ||
         this_count > this_total || src_count > src_total) {
-      return TPtr<ARY>(AErrorInvalidInput);
+      return TRef<ARY>(AErrorInvalidInput);
     }
     ISZ count_new = src_count + this_count;
     if (count_new > this_total) {
@@ -595,7 +600,7 @@ class AArray {
   inline ARY* Resize(ISZ total_new = -1) {
     ARY* ths = This();
     ISZ total = ths->total;
-    D_ASSERT(total >= 0);
+    _DAssert(total >= 0);
     if (total_new < 0) total_new = AutojectGrowTotal(total);
     else if (total_new <= total) {
       ths->total = total;
@@ -603,17 +608,17 @@ class AArray {
     }
 
     Autoject& ajt = AJT();
-    Autoject growth = { NILP, ajt.ram };
+    Autoject growth = { _NilP, ajt.ram };
     Clone(growth, ths, total_new);
     IUW* origin_new = growth.origin;
     if (this->PtrIsValid(origin_new)) {
       Delete(ajt);
       ajt.origin = growth.origin;
       ajt.ram = growth.ram;
-      return TPtr<ARY>(origin_new);
+      return TRef<ARY>(origin_new);
     }
-    D_ASSERT(false);
-    return NILP;
+    _DAssert(false);
+    return _NilP;
   }
 
   /* Checks if the given index is a valid element.
@@ -623,7 +628,7 @@ class AArray {
   }
 
   /* Points to the begin element in the origin. */
-  inline T* Begin() { return TPtr<T>(This(), sizeof(Class)); }
+  inline T* Begin() { return TRef<T>(This(), sizeof(Class)); }
 
   /* Points to the end element after the origin. */
   inline T* End() { return Begin() + Total(); }
@@ -636,7 +641,7 @@ class AArray {
   /* Returns true if the given origin contains the given address.
   @return false upon failure. */
   inline BOL Contains(void* address) {
-    return address < TPtr<void>(This()) || address >= TPtr<void>(End());
+    return address < TRef<void>(This()) || address >= TRef<void>(End());
   }
 
   /* Resizes array to the new_total, potentially shrinking the count or growing 
@@ -650,7 +655,7 @@ class AArray {
       t->count = total_new;
       return t;
     }
-    Autoject growth = { NILP, AJT().ram };
+    Autoject growth = { _NilP, AJT().ram };
     ARY* result = Clone(growth, t, total_new, count_start, count_stop);
     if (result) {
       Autoject& ths = AJT();
@@ -664,7 +669,7 @@ class AArray {
 
   /* Gets this ASCII Object. */
   inline ARY* This() {
-    return TPtr<ARY>(aobj_.Origin());
+    return TRef<ARY>(aobj_.Origin());
   }
 
   /* Prints this object to a Printer. */
@@ -681,5 +686,5 @@ class AArray {
 };
 //< @endingroup Array
 }  //< namespace _
-#endif
-#endif
+#endif //< _Seam >= _CrabsArray
+#endif  //< _CrabsArrayHPP

@@ -1,11 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_CRABS_DECL
-#define CRABS_CRABS_DECL
+#ifndef _CrabsCrabsH
+#define _CrabsCrabsH
 #include "Op.h"
 #include "Operand.h"
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* A full-duplex Crabs EXP (Expression) interpreter.
@@ -17,15 +17,15 @@ App/Driver/User writes to the stop of the Tx socket and the driver reads from
 the beginning. The user writes are synchronous and the driver reads are
 asynchronous.
 
-# Ring Boofer Streaming Diagram
+# Ring Buffer Streaming Diagram
 
 @code
-      |>---------------------- Ring Boofer ------------------------->|
+      |>---------------------- Ring Buffer ------------------------->|
       ________________________________________________________________
-TBOut  |>-Boofer->|>-Sync User SScan->|>-Async Portal Rx-->|>-Boofer->|
+TBOut  |>-Buffer->|>-Sync User SScan->|>-Async Portal Rx-->|>-Buffer->|
       |__________|___________________|____________________|__________|
       ________________________________________________________________
-TBIn   |>-Boofer->|>-Async Portal Tx->|>-Sync User Writes->|>-Boofer->|
+TBIn   |>-Buffer->|>-Async Portal Tx->|>-Sync User Writes->|>-Buffer->|
       |__________|___________________|____________________|__________|
 @endcode
 
@@ -42,7 +42,7 @@ that grows down.
     |-------------------------|
     |          Slot           |
     |-------------------------|
-    |         Boofer          |
+    |         Buffer          |
     |-------------------------|
     |     Evaluated Result    |
 0xN +-------------------------+
@@ -52,7 +52,7 @@ struct alignas(ACPUCacheLineSize) Crabs {
 
   enum {
     StackTotalMin  = 8, //< Size of the crabs stack.
-    BooferTotalMin = 2, //< Min socket size.
+    BufferTotalMin = 2, //< Min socket size.
   };
 
   ISC socket_bytes,     //< Offset to the TBOut slot.
@@ -88,7 +88,7 @@ Crabs* StdCrabs();
 inline ISC CrabsHeaderBytes(ISC stack_total);
 
 /* Gets the crabs's socket. */
-IUA* CrabsBoofer(Crabs* crabs);
+IUA* CrabsBuffer(Crabs* crabs);
 
 /* Gets a pointer to the TBIn slot. */
 TBIn<ISC>* CrabsBIn(Crabs* crabs);
@@ -98,15 +98,15 @@ TBOut<ISC>* CrabsBOut(Crabs* crabs);
 
 /* Creates a Stack with equal sized rx and tx slots.
 @param root The root-scope device.
-@param unpacked_boofer The word-aligned expression socket.
+@param unpacked_buffer The word-aligned expression socket.
 @param unpacked_size   Size of the unpacked socket. */
-Crabs* CrabsInit(IUW* socket, ISC boofer_size, ISC stack_count,
-                            Operand* root, IUW* unpacked_boofer,
+Crabs* CrabsInit(IUW* socket, ISC buffer_size, ISC stack_count,
+                            Operand* root, IUW* unpacked_buffer,
                             IUW unpacked_size, IUD ctxt);
 
 /* Gets the base address of the device stack. */
 inline Operand** CrabsStack(Crabs* crabs) {
-  return TPtr<Operand*>(&crabs->root);
+  return TRef<Operand*>(&crabs->root);
 }
 
 /* Returns true if the Stack uses dynamic memory. */
@@ -257,5 +257,5 @@ const Op* CrabsWritePromiseResult(TBOut<ISC>* bout, Slot* promise_slot);
 
 }  //< namespace _
 
-#endif
-#endif
+#endif  //< #if _Seam >= _CrabsCrabs
+#endif  //< _CrabsCrabsH

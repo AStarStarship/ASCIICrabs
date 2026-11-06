@@ -27,7 +27,7 @@ scratch file) → mutable → **lower_snake_case**.
 
 ## The Full Naming Grammar (as actually used in ASCIICrabs)
 
-### 1. Type aliases — the ASCII Data Type codes (UPPER_SNAKE / short caps)
+### 1. Type aliases — the ASCII Data Type codes (short CAPS)
 Fixed-width primitive types are 3-letter caps codes. The letter encodes *kind*, the suffix
 letter encodes *width* (A=8, B=16, C=32, D=64, E=128):
 - `CHA/CHB/CHC/CHN` — char 8/16/32/wide
@@ -44,7 +44,7 @@ fixed vocabulary, referenced everywhere. Do not invent new width letters outside
 ### 2. Structs / classes — CamelCase, with a kind prefix letter
 - `T`-prefix = the plain **T**emplate POD struct (the raw memory layout): `TArray`, `TMap`, `TMapBuf`.
 - `A`-prefix = the **A**utoject (the owning class with a BOF/heap management layer): `AArray`, `AMap`.
-- Domain structs: `Crabs`, `Slot`, `Boofer`, `Operand`, `Op`, `BIn`, `BOut`, `CIn`, `COut`.
+- Domain structs: `Crabs`, `Slot`, `Buffer`, `Operand`, `Op`, `BIn`, `BOut`, `RIn`, `ROut`.
 - Rule: **type names are CamelCase** (immutable type identity). The `T`/`A` prefix is
   meaningful (POD layout vs owning autoject) — keep it.
 
@@ -55,7 +55,7 @@ From `struct Crabs` and `struct TMap`:
   `last_time`, `domain_value`, `codomain_value`, `total`, `count`.
 - These are all **lower_snake_case** because they change at runtime.
 - Anonymous `enum { ... }` constants inside a struct (immutable) → **CamelCase**:
-  `StackTotalMin`, `BooferTotalMin`, `ColumnWidth`, `DomainColumns`, `BytesInit_`.
+  `StackTotalMin`, `BufferTotalMin`, `ColumnWidth`, `DomainColumns`, `BytesInit_`.
 
 ### 4. Free functions / methods — CamelCase, often with a type prefix
 - Free functions are prefixed by the type they operate on: `CrabsInit`, `CrabsReset`,
@@ -77,18 +77,23 @@ From `struct Crabs` and `struct TMap`:
 `dez_nutz`, `element_count`, `domain_value`, `codomain_mapping`, `a_begin`, `end_a`.
 Rule: **locals are lower_snake_case** (they're mutable by definition).
 
-### 6. Macros / #define constants — UPPER_SNAKE_CASE
-- Config: `CRABS_RUN_TESTS`, `CRABS_ROOM_BYTES`, `CPU_SIZE`, `USING_FPC`, `BOL_SIZE`,
-  `PLATFORM_LINUX`, `CPU_X64`, `NILP`, `YES_0`, `NO_0`.
+### 6. Macros / #define constants — _UpperCamelCase
+- Config: `_CrabsRunTests`, `_CrabsRoomBytes`, `_CPUSize`, `_UsingFPC`, `_BOLSize`,
+  `_PlatformLinux`, `_NilP`.
 - Template-arg shorthand macros: `ARY_A` (the `typename T=CHA, typename ISZ=ISN` arg list),
   `ARY_P` (the `T, ISZ` pack), `ARY` (`TArray<T,ISZ>`), `MAP_A`, `MAP_P`, `MAP`.
   Pattern: `<TYPE>_A` = arg-list, `<TYPE>_P` = param-pack, `<TYPE>` = the instantiated type.
-- Rule: **macros and macro-like constants are UPPER_SNAKE_CASE.** The `_A`/`_P`/bare
-  triad for template args is a load-bearing convention — reuse it for new templates.
+- Rule: **macros and macro-like constants are _UpperCamelCase** (leading underscore +
+  CamelCase). The `_A`/`_P`/bare triad for template args is a load-bearing convention —
+  reuse it for new templates.
+- Why not UPPER_SNAKE: LLM tokenizers have lowercase and capitalized tokens, but not
+  UPPERCASE words — all-caps names fragment into bad token sequences and cost the model.
+  `_UpperCamelCase` tokenizes cleanly while still reading as "config/macro territory".
+- Prefer single tokens when it makes sense.
 
 ### 7. Private / protected members — trailing underscore
 From `class AArray` / `class AMap`:
-- `Autoboofer<...> aobj_;` and `AArray<...> array_;` — private members get a **trailing `_`**.
+- `Autobuffer<...> aobj_;` and `AArray<...> array_;` — private members get a **trailing `_`**.
 - `enum { BytesInit_ = Total_ * 32 };` — private enum constant also trailing-underscored.
 - Rule: **private and protected members use a trailing underscore** (`aobj_`, `array_`).
   Public members (struct fields) do not. This is how you tell access level at a glance.
@@ -102,20 +107,18 @@ From `class AArray` / `class AMap`:
 ```
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_<NAME>_<H|HPP>
-#define CRABS_<NAME>_<H|HPP>
+#ifndef _Crabs<Name><H|HPP>
+#define _Crabs<Name><H|HPP>
 #include "..."
-#if SEAM >= CRABS_<NAME>
+#if _Seam >= _Crabs<Name>
 ... body ...
 #endif
 #endif
 ```
 - `// Copyright AStarship <https://astarship.net>.` is line 1 of every file.
-- `#pragma once` + a `#ifndef/#define` guard named `CRABS_<UPPERNAME>_<EXT>`.
-- **SEAM gating**: every real header wraps its body in `#if SEAM >= CRABS_<NAME>` (and
-  `.hpp` impls often add `#if SEAM == CRABS_<NAME>` to include `_Debug.h` vs `_Release.h`).
-  The `_Seams/*.hxx` files are numbered (`01.COut.hxx` … `23.Release.hxx`) and define the
-  `CRABS_<NAME>` seam ordering. New modules get a seam number.
+- `#pragma once` + a `#ifndef/#define` guard named `_Crabs<Name>_<EXT>`.
+- **_Seam gating**: every real header wraps its body in `#if _Seam >= _Crabs<Name>` (and `.hpp` impls often add `#if _Seam == _Crabs<Name>` to include `_Debug.h` vs `_Release.h`).
+  The `_Seams/*.hxx` files are numbered (`01.ROut.hxx` … `23.Release.hxx`) and define the `_Crabs<Name>` seam ordering. New modules get a seam number.
 - Include the `.h` from the matching `.hpp` (`Array.hpp` includes `Array.h`).
 
 ### 10. Doc comments
@@ -132,19 +135,18 @@ From `class AArray` / `class AMap`:
   `const DTB* header, * header_start;`
 - `inline` on small header-defined functions; `constexpr` for compile-time constants
   (`constexpr ISZ CSizeMin()`, `constexpr ISZ CMapOverheadPerIndex()`).
-- `D_ASSERT(...)`, `D_COUT(...)`, `D_RETURNT(type, val)` are the debug/assert/return macros
-  (from `_Debug.h`/`_Release.h`); `NILP` = nullptr.
+- `_DAssert(...)`, `_DROut(...)`, `_DReturnT(type, val)` are the debug/assert/return macros
+  (from `_Debug.h`/`_Release.h`); `_NilP` = nullptr.
 - Alignment: `struct alignas(ACPUCacheLineSize) Crabs { ... }` — cache-line-align hot structs.
 
 ---
 
 ## The One-Sentence Version
-**Immutable → CamelCase, mutable → lower_snake_case; macros UPPER_SNAKE; private/protected
+**Immutable → CamelCase, mutable → lower_snake; macros _UpperCamelCase; private/protected
 get a trailing `_`; types are short CAPS width-codes (CHA/ISC/IUD/BOL); structs are
 CamelCase with a T(POD)/A(utoject) prefix; functions are CamelCase with T/A kind prefixes and
 _NC (no-check) / C (const-count) markers; locals are snake_case; everything lives in
 `namespace _`; every file starts with the AStarship copyright, `#pragma once`, a
-`CRABS_*` guard, and `#if SEAM >= CRABS_*` gating.**
+`_Crabs*` guard, and `#if _Seam >= _Crabs*` gating.**
 
-The whole system reduces to: *the name tells you the kind, the width, the access level, and
-whether it can change — before you read the body.*
+The whole system reduces to: *the name tells you the kind, the width, the access level, and whether it can change — before you read the body.*

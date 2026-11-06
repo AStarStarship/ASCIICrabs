@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ATYPE_HPP
-#define CRABS_ATYPE_HPP
+#ifndef _CrabsATypeHPP
+#define _CrabsATypeHPP
 #include "AType.h"
-#if SEAM >= CRABS_COUT
+#if _Seam >= _CrabsCore
 namespace _ {
 
 /* An ASCII Array.
@@ -21,8 +21,8 @@ Please see the ASCII Data Specification for DRY documentation.
 */
 #define ARY_A typename T = CHA, typename ISZ = ISN
 #define ARY_P T, ISZ
-#define ARY TArray<T, ISZ>
-#define AARY AArray<T, ISZ>
+#define ARY TArray<ARY_P>
+#define AARY AArray<ARY_P>
 
 template<typename T = CHA, typename ISZ = ISW>
 struct TArray {
@@ -42,7 +42,7 @@ Please see the ASCII Data Specification for DRY documentation.
 
 @code
 +---------------+
-|    Boofer     |
+|    Buffer     |
 |---------------|
 | C-Style Array |
 |---------------|  ^
@@ -81,7 +81,7 @@ Please see the ASCII Data Specification for DRY documentation.
 #define MTX_A typename T = ISW, typename ISZ = ISC, typename ISY = ISB, \
   typename IUY = IUB
 #define MTX_P T, ISZ, ISY, IUY
-#define MTX TMatrix<T, ISZ, ISY, IUY>
+#define MTX TMatrix<MTX_P>
 template<MTX_A>
 struct TMatrix {
   ISZ bytes,      //< Size in bytes.
@@ -95,15 +95,15 @@ struct TMatrix {
 @code
       List Memory Layout
 +============================+
-|_______   Boofer            |<--- top
+|_______   Buffer            |<--- top
 |_______ ^ Value N           |
 |        | Value 0           |
 |----------------------------|
-|_______   Boofer            |
+|_______   Buffer            |
 |_______ ^ Type of Value N   |
 |        | Type of Value 0   |
 |----------------------------|
-|_______   Boofer            |
+|_______   Buffer            |
 |_______ ^ Offset to Value N |
 |        | Offset to Value 0 |
 +============================+  ^  Up in addresses.
@@ -113,7 +113,7 @@ struct TMatrix {
 */
 #define LST_A typename ISZ = ISC, typename ISY = ISB, typename DT = DTB
 #define LST_P ISZ, ISY, DT
-#define LST TList<ISZ, ISY, DT>
+#define LST TList<LST_P>
 
 template<LST_A>
 struct TList {
@@ -130,11 +130,11 @@ Please see the ASCII Data Specification for DRY documentation.
 # Memory Layout
 
 +============================+
-|_______ Boofer              | <-- start
+|_______ Buffer              | <-- start
 |_______ String N            |
 |_______ String 0            |
 +----------------------------+
-|_______ Boofer              |
+|_______ Buffer              |
 |_______ String offset N     |
 |        String offset 0     |
 +============================+  ^ Up in
@@ -156,6 +156,9 @@ struct TLoom {
   TStack<ISZ, ISZ, ISY> map;  //< A Stack of offset mappings to strings.
 };
 
+// The Book/Dic value lists use the plain List macro (LST_P = ISZ, ISY, DT) —
+// do NOT manually re-enter the List template params here; a 5-arg Book-style
+// list was accidentally pasted and broke TList<LST_P> (wrong arg count).
 #undef  BOK_P
 #define BOK_P CHS, CHT, ISZ, ISY, DT
 #undef  BOK_A
@@ -174,17 +177,17 @@ the keys.
 
 @code
 +====================================+
-|_______   Boofer                    |
+|_______   Buffer                    |
 |_______ ^ List Value N              |
 |_______ | List Value 1              |
 |        | Keys Loom (Value 0)       |
 |------------------------------------|
-|_______   Boofer                    |
+|_______   Buffer                    |
 |_______ ^ List Value N Type         |
 |_______ | List Value 1 Type         |
 |        | Loom Type (Type 0)        |
 |------------------------------------|
-|_______   Boofer                    |
+|_______   Buffer                    |
 |_______   Offset to Value N         |
 |_______ ^ Offset to Value 1         |
 |        | Offset to Keys (Offset 0) |
@@ -212,12 +215,13 @@ struct TBook {
 #define DIC_A typename CHS = CHR, typename CHT = CHR, typename ISZ = ISR,\
   typename ISY = ISQ, typename DT = DTB, typename HSH = IUN
 #define DIC_P CHS, CHT, ISZ, ISY, DT, HSH
-#define DIC TDic<CHS, CHT, ISZ, ISY, DT, HSH>
+#define DIC TDic<DIC_P>
 template<DIC_A>
 struct TDic {
   TList<LST_P> values;  //< A list of values with a Table of keys in index 0.
 };
-/* B-Input ring boofer Slot.
+
+/* B-Input ring buffer Slot.
 A B-Input Slot is functionally identical to a input port in TCP. */
 template<typename ISZ = ISC>
 struct TBIn {
@@ -307,7 +311,7 @@ needed a new Wall may be created and destroyed dynamically.
 |  Terminals   |
 |      v       |
 |vvvvvvvvvvvvvv|
-|    Boofer    |
+|    Buffer    |
 |^^^^^^^^^^^^^^|
 |      ^       |
 |  TStack of   |
@@ -404,7 +408,7 @@ inline CHA ASizeCodef(ISD sw) {
 template<typename T>
 T TCTXHandle(ACTXHandler actxh, void* begin, void* end, DTW type, IUW value, 
              IUW vmsb) {
-  if (actxh == NILP) return T(0);
+  if (actxh == _NilP) return T(0);
   return T(actxh(begin, end, type, value, vmsb));
 }
 
@@ -453,14 +457,14 @@ template<typename CH = CHR, typename IS = ISW>
 inline const CH* TATypePODs(IS type, ACTXHandler actxh) {
   type = (type < 0 || type > ATypePODTotal) ? ATypePODTotal : type;
   if (type >= _PCa)
-    return (const CH*)ACTXHandle(actxh, NILP, NILP, type, 0, 0);
+    return (const CH*)ACTXHandle(actxh, _NilP, _NilP, type, 0, 0);
   return &TATypePODs<CH>()[type << 2];
 }
 
 template<typename CH = CHR, typename IS = ISW>
 inline const CH* TATypePODs(IS type) {
   type = (type < 0 || type > ATypePODTotal) ? ATypePODTotal : type;
-  if (type >= _PCa) return (const CH*)ACTXHandle(NILP, NILP, type, 0, 0);
+  if (type >= _PCa) return (const CH*)ACTXHandle(_NilP, _NilP, type, 0, 0);
   return &TATypePODs<CH>()[type << 2];
 }
 
@@ -984,4 +988,4 @@ inline BOL ATypeIsPOD(DTW type) {
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsATypeHPP

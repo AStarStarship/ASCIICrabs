@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_OP_HPP
-#define CRABS_OP_HPP
+#ifndef _CrabsOpHPP
+#define _CrabsOpHPP
 #include "Op.h"
 #include "BSeq.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "String.hpp"
 namespace _ {
 
@@ -23,14 +23,14 @@ Printer& TOpPrint(Printer& o, const Op* op) {
 inline ISW OpCount(const Op& op) { return op.out - op.in; }
 
 /* Converts the given value to a pointer. */
-inline const DTB* OpFirst(CHC index) { return TPtr<const DTB>(index); }
+inline const DTB* OpFirst(CHC index) { return TRef<const DTB>(index); }
 
 /* Converts the given value to a pointer. */
 inline CHC OpFirst(const Op* op) {
   return CHC(IUW(op->in));
 }
 /* Converts the given value to a pointer. */
-inline const DTB* OpLast(CHC index) { return TPtr<const DTB>(index); }
+inline const DTB* OpLast(CHC index) { return TRef<const DTB>(index); }
 
 /* Converts the given value to a pointer. */
 inline CHC OpLast(const Op* op) {
@@ -44,5 +44,5 @@ inline ::_::TSPrinter<CHS, CHT, ISZ>& operator<<(::_::TSPrinter<CHS, CHT, ISZ>& 
                                             const ::_::Op* op) {
   return ::_::TOpPrint<::_::TSPrinter<CHS, CHT, ISZ>>(utf, op);
 }
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsOpHPP

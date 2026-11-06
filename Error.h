@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ERROR_DECL
-#define CRABS_ERROR_DECL
+#ifndef _CrabsErrorH
+#define _CrabsErrorH
 #include <_Config.h>
-#if SEAM >= CRABS_CORE
+#if _Seam >= _CrabsCore
 namespace _ {
 
 // @see _ConfigHeader.hxx for enum of error codes.
@@ -20,4 +20,4 @@ BOL AIsError(const void* result);
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsErrorH

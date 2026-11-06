@@ -1,36 +1,36 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsSlotHXX
+#define _CrabsSlotHXX
 #include "Slot.hpp"
-#if SEAM >= CRABS_OP
-//#include "String.hpp"
-//#include "AType.h"
-#if SEAM == CRABS_OP
+#if _Seam >= _CrabsOp
+#if _Seam == _CrabsOp
 #include "_Debug.h"
 #else
 #include "_Release.h"
-#include "AType.hpp"
 #endif
 namespace _ {
 // @defgroup Slot
 // @{
 
 const Op* ReturnError(Slot* slot, ERC error) {
-  D_COUT('\n' << TSError<CHR>()[error]);
+  _DROut('\n' << TSError<CHR>()[error]);
   return OpError(error);
 }
 
 const Op* ReturnError(Slot* slot, ERC error, const DTB* header) {
-  D_COUT('\n' << TSError<CHR>()[error]);
+  _DROut('\n' << TSError<CHR>()[error]);
   return OpError(error);
 }
 
 const Op* ReturnError(Slot* slot, ERC error, const DTB* header, IUA offset) {
-  D_COUT('\n' << TSError<CHR>()[error]);
+  _DROut('\n' << TSError<CHR>()[error]);
   return OpError(error);
 }
 
 const Op* ReturnError(Slot* slot, ERC error, const DTB* header, ISC offset,
                       IUA* address) {
-  D_COUT('\n' << TSError<CHR>()[error]);
+  _DROut('\n' << TSError<CHR>()[error]);
   return OpError(error);
 }
 
@@ -38,10 +38,10 @@ const Op* ReturnError(Slot* slot, ERC error, const DTB* header, ISC offset,
 @param socket Pointer to the beginning of the ring socket.
 @param size   The size of the ring socket in bytes. */
 Slot* SlotInit(IUW* socket, ISW size) {
-  A_ASSERT(socket);
-  A_ASSERT(size >= SlotBytesMin);
-  Slot* slot = TPtr<Slot>(socket, sizeof(Slot));
-  IUA* begin = TPtr<IUA>(socket, sizeof(Slot));
+  _AAssert(socket);
+  _AAssert(size >= SlotBytesMin);
+  Slot* slot = TRef<Slot>(socket, sizeof(Slot));
+  IUA* begin = TRef<IUA>(socket, sizeof(Slot));
   slot->origin = begin;
   slot->start  = begin;
   slot->stop   = begin;
@@ -51,9 +51,9 @@ Slot* SlotInit(IUW* socket, ISW size) {
 
 /* Initializes the slot from the TBIn. */
 Slot* SlotInit(TBIn<ISC>* bin) {
-  A_ASSERT(bin);
-  Slot* slot = TPtr<Slot>(bin);
-  IUA* begin = TPtr<IUA>(bin, sizeof(TBIn<ISC>));
+  _AAssert(bin);
+  Slot* slot = TRef<Slot>(bin);
+  IUA* begin = TRef<IUA>(bin, sizeof(TBIn<ISC>));
   slot->origin = begin;
   slot->start  = begin + bin->origin;
   slot->stop   = begin + bin->stop;
@@ -63,9 +63,9 @@ Slot* SlotInit(TBIn<ISC>* bin) {
 
 /* Initializes the slot from the TBOut. */
 Slot* SlotInit(TBOut<ISC>* bout) {
-  A_ASSERT(bout);
-  Slot* slot = TPtr<Slot>(bout);
-  IUA* begin = TPtr<IUA>(bout, sizeof(TBOut<ISC>));
+  _AAssert(bout);
+  Slot* slot = TRef<Slot>(bout);
+  IUA* begin = TRef<IUA>(bout, sizeof(TBOut<ISC>));
   slot->origin = begin;
   slot->start  = begin + bout->origin;
   slot->stop   = begin + bout->stop;
@@ -79,7 +79,7 @@ Slot* SlotInit(TBOut<ISC>* bout) {
 @param size   The size of the ring socket in bytes. */
 inline BOL SlotSet(Slot* slot, IUW* socket, IUW size) {
   if (IsError(socket)) return true;
-  IUA* begin = TPtr<IUA>(socket, sizeof(Slot));
+  IUA* begin = TRef<IUA>(socket, sizeof(Slot));
   slot->origin = begin;
   slot->stop   = begin + size;
   slot->start  = begin;
@@ -93,11 +93,11 @@ and nil else wise. */
 void* SlotContains(Slot* slot, void* address) {
   IUA* origin = slot->origin;
   if (address < origin) {
-    return NILP;
+    return _NilP;
   }
   IUA* l_end = slot->stop;
   if (address > l_end) {
-    return NILP;
+    return _NilP;
   }
   return address;
 }
@@ -123,12 +123,12 @@ void SlotWipe(Slot* slot) {
 @param params The param types.
 @param args   The args array of pointers to write to. */
 const Op* SlotWrite(Slot* slot, const DTB* params, void** args) {
-  //D_CHECK_TPTR_RETURN(Op, params);
-  A_ASSERT(args);
+  //_DCheckTPointerReturn(Op, params);
+  _AAssert(args);
 
-  A_ASSERT(false);
+  _AAssert(false);
   // @todo Write me!
-  return NILP;
+  return _NilP;
 }
 
 /* Checks if there is space in the socket.
@@ -152,13 +152,13 @@ BOL SlotIsReadable(Slot* slot) { return slot->origin != slot->stop; }
                     IUA* const origin, IUA* const stop , IUA* const stop,
                     ISW size) {
     if (IsError(slot)) {
-        return NILP;
+        return _NilP;
     }
     if (IsError(write)) {
-        return NILP;
+        return _NilP;
     }
     if (write > write_end) {
-        return NILP;
+        return _NilP;
     }
 
     if ((origin > stop) && (origin + size >= stop)) {
@@ -167,7 +167,7 @@ BOL SlotIsReadable(Slot* slot) { return slot->origin != slot->stop; }
         size -= top_chunk;
 
         ArrayCopy (target, target_end, origin, top_chunk);
-        ArrayCopy (TPtr<IUA>(target) + top_chunk, size,
+        ArrayCopy (TRef<IUA>(target) + top_chunk, size,
                     origin);
         return origin + size;
     }
@@ -176,20 +176,16 @@ BOL SlotIsReadable(Slot* slot) { return slot->origin != slot->stop; }
 }*/
 
 const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
-  A_ASSERT(params);
-  A_ASSERT(args);
+  _AAssert(params);
+  _AAssert(args);
   IUA iua;  //< Temp variable to load most types.
   IUB iub;  //< Temp variable for working with _IUB types.
-#ifdef USING_CRABS_4_BYTE_TYPES
   IUC iuc;
-#endif
-#ifdef USING_CRABS_8_BYTE_TYPES
   IUD iud;  //< Temp _IUD variable.
-#endif
-  IUA* iua_ptr;             //< Pointer to a _IUA.
-  IUB* iub_ptr;             //< Pointer to a _IUB.
-  IUC* iuc_ptr;             //< Pointer to a _IUC.
-  IUD* iud_ptr;             //< Pointer to a _IUD.
+  IUA* iua_ref;             //< Pointer to a _IUA.
+  IUB* iub_ref;             //< Pointer to a _IUB.
+  IUC* iuc_ref;             //< Pointer to a _IUC.
+  IUD* iud_ref;             //< Pointer to a _IUD.
   DTB type;                 //< Current type being read.
   ISC index,                //< Index in the escape sequence.
       num_params = *params; //< Number of params.
@@ -198,9 +194,9 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
       count,                //< Argument length.
       size;                 //< Size of the ring socket.
 
-  A_ASSERT(num_params);
+  _AAssert(num_params);
 
-  D_COUT("\n\nReading TBIn: ");
+  _DROut("\n\nReading TBIn: ");
 
   IUA *l_begin = slot->origin,       //< Beginning of the socket.
       *l_end = slot->stop,           //< stop of the socket.
@@ -212,14 +208,14 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
 
   length = ISC(SlotLength(l_start, l_stop, size));
 
-  D_COUT("\n\nReading " << length << " bytes.");
-  // D_COUT_BSQ (params)
+  _DROut("\n\nReading " << length << " bytes.");
+  // _DROutBSQ (params)
   // When we scan, we are reading from the beginning of the TBIn socket.
 
   for (index = 0; index < num_params; ++index) {
-    type = (IUA)*param;
+    type = IUW(*param);
     ++param;
-    D_COUT("\nindex:" << index << ":\\"" << ATypef(type) << "\\" start:0x"
+    _DROut("\nindex:" << index << ":" << ATypef(type) << " start:0x"
                       << TDelta<>(l_begin, slot->start) << " stop:0x"
                       << TDelta<>(l_begin, slot->stop));
 
@@ -228,48 +224,48 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
         return ReturnError(slot, AErrorInvalidType);
       case _ADR:  //< _R_e_a_d__S_t_r_i_n_g_-_1_______________
       //case STR_:
-        // Load boofered-type argument length and increment the
+        // Load buffered-type argument length and increment the
         // index.
         count = *param;
         ++param;
 
-        // StdOut() << "\nReading IUA with max length " << count;
+        // RefOut() << "\nReading IUA with max length " << count;
 
         // Load next pointer and increment args.
-        iua_ptr = TPtr<IUA>(args[index]);
-        if (IsError(iua_ptr)) {
+        iua_ref = TRef<IUA>(args[index]);
+        if (IsError(iua_ref)) {
           break;
         }
 
         // Read from slot and write to the slot:
         iua = *l_start;
         if (++l_start > l_end) l_start -= size;
-        *iua_ptr = iua;
-        ++iua_ptr;
+        *iua_ref = iua;
+        ++iua_ref;
 
         while (iua && count) {
           if (count-- == 0)
-            return ReturnError(slot, AErrorBooferUnderflow, params, index,
+            return ReturnError(slot, AErrorBufferUnderflow, params, index,
                                l_start);
-          D_COUT(iua);
+          _DROut(iua);
 
           iua = *l_start;  // Read IUA from ring-socket.
           if (++l_start > l_end) l_start -= size;
-          *iua_ptr = iua;  // Write IUA to destination.
-          ++iua_ptr;
+          *iua_ref = iua;  // Write IUA to destination.
+          ++iua_ref;
         }
 
-        D_COUT(" done!\n");
+        _DROut(" done!\n");
 
         if (type == 0) {
-          *iua_ptr = iua;
+          *iua_ref = iua;
         }
         break;
       case _ISA:  //< _R_e_a_d__1__B_y_t_e__T_y_p_e_s___________
       case _IUA:
-#ifdef USING_CRABS_1_BYTE_TYPES
+#ifdef _CrabsUsing1ByteTypes
         if (length == 0) {
-          return ReturnError(slot, AErrorBooferUnderflow, params, index,
+          return ReturnError(slot, AErrorBufferUnderflow, params, index,
                              l_start);
         }
         --length;
@@ -280,11 +276,11 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           l_start -= size;
         }
         // Load next pointer and increment args.
-        iua_ptr = TPtr<IUA>(args[index]);
-        if (IsError(iua_ptr)) {
+        iua_ref = TRef<IUA>(args[index]);
+        if (IsError(iua_ref)) {
           break;
         }
-        *iua_ptr = iua;  //< Write
+        *iua_ref = iua;  //< Write
         if (++l_start > l_end) {
           l_start -= size;
         }
@@ -295,32 +291,32 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
       case _ISB:  //< _R_e_a_d__1_6_-_b_i_t__T_y_p_e_s__________
       case _IUB:
       case _FPB:
-#ifdef USING_CRABS_2_BYTE_TYPES
+#ifdef _CrabsUsing2ByteTypes
         // Read2ByteType:{
         // Word-align
         offset = AlignUpB(l_start);
         if (IUW(length) < offset + 2) {
-          return ReturnError(slot, AErrorBooferUnderflow, params, index,
+          return ReturnError(slot, AErrorBufferUnderflow, params, index,
                              l_start);
         }
-        length -= (ISC)offset + 2;
+        length -= ISC(offset) + 2;
         l_start += offset;
         if (l_start > l_end) {
           l_start -= size;
         }
         // Read from socket and write to the stack:
-        iub_ptr = TPtr<IUB>(l_start);
-        iub = *iub_ptr;
+        iub_ref = TRef<IUB>(l_start);
+        iub = *iub_ref;
         l_start += sizeof(IUB);
         if (l_start > l_end) {
           l_start -= size;
         }
         // Load next pointer and increment args.
-        iub_ptr = TPtr<IUB>(args[index]);
-        if (IsError(iub_ptr)) {
+        iub_ref = TRef<IUB>(args[index]);
+        if (IsError(iub_ref)) {
           break;
         }
-        *iub_ptr = iub;
+        *iub_ref = iub;
         //}
         break;
 #else
@@ -331,19 +327,19 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
 #else
         return ReturnError(slot, AErrorInvalidType);
 #endif
-#if CPU_SIZE > 16
+#if _CPUSize > 16
       case SVI:
       case UVI:
 #endif
       case _ISC:  //< _R_e_a_d__3_2_-_b_i_t__T_y_p_e_s__________
       case _IUC:
       case _FPC:
-#ifdef USING_CRABS_4_BYTE_TYPES
+#ifdef _CrabsUsing4ByteTypes
         // Read4ByteType:{
         // Word-align
         offset = AlignUpC(l_start);
         if (length < offset + 4) {
-          return ReturnError(slot, AErrorBooferUnderflow, params, index,
+          return ReturnError(slot, AErrorBufferUnderflow, params, index,
                              l_start);
         }
         length -= ISC(offset + 4);
@@ -352,18 +348,18 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           l_start -= size;  //< Bound
         }
         // Read from socket and write to the stack:
-        iuc_ptr = TPtr<IUC>(l_start);
-        iuc = *iuc_ptr;          //< Read
+        iuc_ref = TRef<IUC>(l_start);
+        iuc = *iuc_ref;          //< Read
         l_start += sizeof(ISC);  //< Increment
         if (l_start > l_end) {
           l_start -= size;  //< Bound
         }
         // Load next pointer and increment args.
-        iuc_ptr = TPtr<IUC>(args[index]);
-        if (IsError(iuc_ptr)) {
+        iuc_ref = TRef<IUC>(args[index]);
+        if (IsError(iuc_ref)) {
           break;
         }
-        *iuc_ptr = iua;  //< Write
+        *iuc_ref = iua;  //< Write
         break;
 //}
 #else
@@ -373,12 +369,12 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
       case _IUD:
       case _FPD:
       case _SSD:
-#ifdef USING_CRABS_8_BYTE_TYPES
+#ifdef _CrabsUsing8ByteTypes
         // Read8ByteType:{
         // Word-align
         offset = ISC(AlignUpD(l_start));
         if (IUW(length) < offset + sizeof(ISD)) {
-          return ReturnError(slot, AErrorBooferUnderflow, params, index,
+          return ReturnError(slot, AErrorBufferUnderflow, params, index,
                              l_start);
         }
         length -= offset + sizeof(ISD);
@@ -387,16 +383,16 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           l_start -= size;  //< Bound
         }
         // Read from socket and write to the stack:
-        iud_ptr = TPtr<IUD>(l_start);
-        iud = *iud_ptr;          //< Read
+        iud_ref = TRef<IUD>(l_start);
+        iud = *iud_ref;          //< Read
         l_start += sizeof(IUD);  //< Increment
         if (l_start > l_end) {
           l_start -= size;  //< Bound
         }
         // Load next pointer and increment args.
-        iud_ptr = TPtr<IUD>(args[index]);
-        if (iud_ptr == 0) break;
-        *iud_ptr = iud;  //< Write.
+        iud_ref = TRef<IUD>(args[index]);
+        if (iud_ref == 0) break;
+        *iud_ref = iud;  //< Write.
         break;
 //}
 #else
@@ -411,8 +407,8 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           return ReturnError(slot, AErrorInvalidType, params, index, l_start);
         }
         // We don't care if it's a multidimensional array anymore.
-        iua_ptr = TPtr<IUA>(args[index]);
-        if (iua_ptr == NILP)
+        iua_ref = TRef<IUA>(args[index]);
+        if (iua_ref == _NilP)
           return ReturnError(slot, AErrorImplementation, params, index,
                              l_start);
         count &= 0x3;
@@ -423,47 +419,47 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
               return ReturnError(slot, AErrorInvalidType, params, index,
                                  l_start);
             }
-            count = (IUW)*iua_ptr;
+            count = (IUW)*iua_ref;
             break;
           }
           case 1: {  // It's a 16-bit count.
             if (length < 3) {
-              return ReturnError(slot, AErrorBooferUnderflow, params, index,
+              return ReturnError(slot, AErrorBufferUnderflow, params, index,
                                  l_start);
             }
             count -= 2;
-            iub_ptr = TPtr<IUB>(iua_ptr);
-            count = (IUW)*iub_ptr;
+            iub_ref = TRef<IUB>(iua_ref);
+            count = IUW(*iub_ref);
             if (count > length) {
-              return ReturnError(slot, AErrorBooferOverflow, params, index,
+              return ReturnError(slot, AErrorBufferOverflow, params, index,
                                  l_start);
             }
             break;
           }
           case 2: {  // It's a 32-bit count.
             if (length < 5) {
-              return ReturnError(slot, AErrorBooferUnderflow, params, index,
+              return ReturnError(slot, AErrorBufferUnderflow, params, index,
                                  l_start);
             }
             count -= 4;
-            iuc_ptr = TPtr<IUC>(iua_ptr);
-            count = (IUW)*iuc_ptr;
+            iuc_ref = TRef<IUC>(iua_ref);
+            count = IUW(*iuc_ref);
             if (count > length) {
-              return ReturnError(slot, AErrorBooferOverflow, params, index,
+              return ReturnError(slot, AErrorBufferOverflow, params, index,
                                  l_start);
             }
             break;
           }
           case 3: {  // It's a 64-bit count.
             if (length < 9) {
-              return ReturnError(slot, AErrorBooferUnderflow, params, index,
+              return ReturnError(slot, AErrorBufferUnderflow, params, index,
                                  l_start);
             }
             count -= 8;
-            iud_ptr = TPtr<IUD>(iua_ptr);
-            count = (IUW)*iud_ptr;
+            iud_ref = TRef<IUD>(iua_ref);
+            count = IUW(*iud_ref);
             if (count > length) {
-              return ReturnError(slot, AErrorBooferOverflow, params, index,
+              return ReturnError(slot, AErrorBufferOverflow, params, index,
                                  l_start);
             }
             break;
@@ -474,11 +470,11 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           }
         }
         if (length < count) {
-          return ReturnError(slot, AErrorBooferOverflow, params, index,
+          return ReturnError(slot, AErrorBufferOverflow, params, index,
                              l_start);
         }
         if (!count) {
-          return ReturnError(slot, AErrorBooferOverflow, params, index,
+          return ReturnError(slot, AErrorBufferOverflow, params, index,
                              l_start);
         }
         if (l_start + count >= l_end) {
@@ -487,8 +483,8 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
             if (++l_start > l_end) {
               l_start -= size;
             }
-            *iua_ptr = iua;
-            ++iua_ptr;
+            *iua_ref = iua;
+            ++iua_ref;
           }
           l_stop = l_begin - 1;
           for (; count > 0; --count) {
@@ -496,8 +492,8 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
             if (++l_start > l_end) {
               l_start -= size;
             }
-            *iua_ptr = iua;
-            ++iua_ptr;
+            *iua_ref = iua;
+            ++iua_ref;
           }
           break;
         }
@@ -506,16 +502,16 @@ const Op* SlotRead(Slot* slot, const DTB* params, void** args) {
           if (++l_start > l_end) {
             l_start -= size;
           }
-          *iua_ptr = iua;
-          ++iua_ptr;
+          *iua_ref = iua;
+          ++iua_ref;
         }
         break;
 #endif
       }
-        D_COUT(" |");
+        _DROut(" |");
     }
   }
-  D_COUT("\nDone reading.");
+  _DROut("\nDone reading.");
   // SlotWipe (slot);
 
   // Convert pointer back to offset
@@ -532,18 +528,10 @@ const Op* SlotWrite(Slot* slot, const Op& op, void** args) {
   return SlotWrite(slot, op.out, args);
 }
 
-const Op* SlotWrite(Slot* slot, Slot& other) { return NILP; }
+const Op* SlotWrite(Slot* slot, Slot& other) { return _NilP; }
 
-const Op* SlotWrite(Slot* slot, const IUA* message) { return NILP; }
+const Op* SlotWrite(Slot* slot, const IUA* message) { return _NilP; }
 
-#if USING_CRABS_TEXT
-UTF1& SlotPrint(UTF1& utf, Slot* slot) {
-  IUA* l_begin = slot->origin, *l_end = slot->stop;
-  return utf << Line('_', 80) << "\nSlot: origin:" << Hex<>(l_begin)
-             << " start:" << Hex<>(slot->origin) << "\nstop:" << Hex<>(slot->stop)
-             << " end:" << Hex<>(l_end) << Socket(l_begin, l_end);
-}
-#endif
-//< @} Slot
-}
-#endif
+}  //< namespace _
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsSlotHXX

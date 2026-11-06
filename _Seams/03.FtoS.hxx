@@ -1,27 +1,25 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_FTOS
-//
+#if _Seam >= _CrabsFToS
 #include "../Ryu.hpp"
 #include "../Random.h"
-#include <cstdlib>
-#if SEAM == CRABS_FTOS
+#if _Seam == _CrabsFToS
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
 #endif
 #endif
-
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
+
 const CHA* FtoS(const CHA* args) {
-#if SEAM >= CRABS_FTOS
-  A_TEST_BEGIN;
-  D_COUT("\n\nTesting Ryu (IEEE-754 float to shortest decimal string)...");
+#if _Seam >= _CrabsFToS
+  _ATestBegin;
+  _DROut("\n\nTesting Ryu (IEEE-754 float to shortest decimal string)...");
 
   enum { Size = RyuDoubleStringLengthMax + 1 };
   CHA socket[Size];
 
-  D_COUT("\n\nTesting RyuF2S known answers (FPC)...");
+  _DROut("\n\nTesting RyuF2S known answers (FPC)...");
   struct TFtoSCase {
     FPC value;
     const CHA* answer;
@@ -73,10 +71,10 @@ const CHA* FtoS(const CHA* args) {
   enum { FpcCaseCount = sizeof(f_pc_cases) / sizeof(f_pc_cases[0]) };
   for (ISC i = 0; i < FpcCaseCount; ++i) {
     RyuF2S(f_pc_cases[i].value, socket);
-    A_AVOW(f_pc_cases[i].answer, socket);
+    _AAvow(f_pc_cases[i].answer, socket);
   }
 
-  D_COUT("\n\nTesting RyuF2S known answers (bit patterns)...");
+  _DROut("\n\nTesting RyuF2S known answers (bit patterns)...");
   static const IUC f_pc_bits_cases[] = {
     0x00000000,  // +0.0
     0x80000000,  // -0.0
@@ -106,10 +104,10 @@ const CHA* FtoS(const CHA* args) {
   for (ISC i = 0; i < FpcBitsCount; ++i) {
     const FPC value = ToFloat(f_pc_bits_cases[i]);
     RyuF2S(value, socket);
-    A_AVOW(f_pc_bits_answers[i], socket);
+    _AAvow(f_pc_bits_answers[i], socket);
   }
 
-  D_COUT("\n\nTesting RyuD2S known answers (FPD)...");
+  _DROut("\n\nTesting RyuD2S known answers (FPD)...");
   struct TD2SCase {
     FPD value;
     const CHA* answer;
@@ -137,10 +135,10 @@ const CHA* FtoS(const CHA* args) {
   enum { DpcCaseCount = sizeof(d_pc_cases) / sizeof(d_pc_cases[0]) };
   for (ISC i = 0; i < DpcCaseCount; ++i) {
     RyuD2S(d_pc_cases[i].value, socket);
-    A_AVOW(d_pc_cases[i].answer, socket);
+    _AAvow(d_pc_cases[i].answer, socket);
   }
 
-  D_COUT("\n\nTesting RyuD2S known answers (bit patterns)...");
+  _DROut("\n\nTesting RyuD2S known answers (bit patterns)...");
   static const IUD d_pc_bits_cases[] = {
     IUD(0x8000000000000000),  // -0.0
     IUD(0x7ff0000000000001),  // NaN
@@ -168,45 +166,45 @@ const CHA* FtoS(const CHA* args) {
   for (ISC i = 0; i < DpcBitsCount; ++i) {
     const FPD value = ToFloat(d_pc_bits_cases[i]);
     RyuD2S(value, socket);
-    A_AVOW(d_pc_bits_answers[i], socket);
+    _AAvow(d_pc_bits_answers[i], socket);
   }
 
-  D_COUT("\n\nTesting RyuF2S/RyuD2S end-pointer contract...");
+  _DROut("\n\nTesting RyuF2S/RyuD2S end-pointer contract...");
   {
     // The end-pointer return must be exactly one past the last character,
     // i.e. socket + RyuX2S_N length.
     const ISN f_pc_length = RyuF2S_N(1.5f, socket);
     const CHA* f_pc_end = RyuF2S(1.5f, socket);
-    A_ASSERT(f_pc_end == socket + f_pc_length);
-    A_AVOW("1.5E0", socket);
+    _AAssert(f_pc_end == socket + f_pc_length);
+    _AAvow("1.5E0", socket);
   }
   {
     const ISN d_pc_length = RyuD2S_N(1.5, socket);
     const CHA* d_pc_end = RyuD2S(1.5, socket);
-    A_ASSERT(d_pc_end == socket + d_pc_length);
-    A_AVOW("1.5E0", socket);
+    _AAssert(d_pc_end == socket + d_pc_length);
+    _AAvow("1.5E0", socket);
   }
 
-  D_COUT("\n\nTesting TRyuF2S<CHA> (capacity-checked template)...");
+  _DROut("\n\nTesting TRyuF2S<CHA> (capacity-checked template)...");
   {
     const CHA* end = TRyuF2S<CHA>(1.5f, socket, socket + Size);
-    A_ASSERT_PTR(end);
-    A_AVOW("1.5E0", socket);
+    _AAssertPointer(end);
+    _AAvow("1.5E0", socket);
   }
-  D_COUT("\n\nTesting TRyuD2S<CHB> (UTF-16 output)...");
+  _DROut("\n\nTesting TRyuD2S<CHB> (UTF-16 output)...");
   {
     CHB utf16_socket[Size];
     const CHB* end = TRyuD2S<CHB>(1.5, utf16_socket, utf16_socket + Size);
-    A_ASSERT_PTR(end);
+    _AAssertPointer(end);
     static const CHB expecting[] = { '1', '.', '5', 'E', '0', 0 };
-    A_AVOW(expecting, utf16_socket);
+    _AAvow(expecting, utf16_socket);
   }
-  D_COUT("\n\nTesting socket overflow detection...");
-  A_ASSERT(IUW(TRyuF2S<CHA>(0.0f, socket, socket + 3)) == 0);
-  A_ASSERT(IUW(TRyuD2S<CHA>(0.0, socket, socket + 5)) == 0);
+  _DROut("\n\nTesting socket overflow detection...");
+  _AAssert(IUW(TRyuF2S<CHA>(0.0f, socket, socket + 3)) == 0);
+  _AAssert(IUW(TRyuD2S<CHA>(0.0, socket, socket + 5)) == 0);
 
-  D_COUT("\n\nTesting RyuF2S round-trip (random FPC bit patterns)...");
-#if SEAM == CRABS_FTOS
+  _DROut("\n\nTesting RyuF2S round-trip (random FPC bit patterns)...");
+#if _Seam == _CrabsFToS
   enum { FpcTestCount = 1 << 15 };
 #else
   enum { FpcTestCount = 1 << 10 };
@@ -220,38 +218,38 @@ const CHA* FtoS(const CHA* args) {
       }
       const FPC value = ToFloat(bits);
       const ISN length = RyuF2S_N(value, socket);
-      A_ASSERT(length >= 1 && length <= RyuFloatStringLengthMax - 1);
+      _AAssert(length >= 1 && length <= RyuFloatStringLengthMax - 1);
       socket[length] = 0;
-      const FPC parsed = strtof(socket, NILP);
+      FPC parsed; (void)SScan(socket, parsed);
       const IUC parsed_bits = ToUnsigned(parsed);
       if (parsed_bits != bits) {
-        D_COUT_ERROR("RyuF2S round-trip mismatch");
-        _::COut("\n  bits: 0x").Hex(bits) << "  parsed: 0x";
-        _::COut().Hex(parsed_bits) << "  text: " << socket;
-        A_ASSERT(false);
+        _DROutError("RyuF2S round-trip mismatch");
+        _::ROut("\n  bits: 0x").Hex(bits) << "  parsed: 0x";
+        _::ROut().Hex(parsed_bits) << "  text: " << socket;
+        _AAssert(false);
       }
     }
   }
 
-  D_COUT("\n\nTesting RyuF2S round-trip (every exponent band)...");
+  _DROut("\n\nTesting RyuF2S round-trip (every exponent band)...");
   {
     const IUC mantissa = 0x123456;
     for (IUC exponent = 0; exponent < 255; ++exponent) {
       const IUC bits = (exponent << 23) | mantissa;
       const FPC value = ToFloat(bits);
       RyuF2S(value, socket);
-      const FPC parsed = strtof(socket, NILP);
+      FPC parsed; (void)SScan(socket, parsed);
       const IUC parsed_bits = ToUnsigned(parsed);
       if (parsed_bits != bits) {
-        D_COUT_ERROR("RyuF2S band mismatch");
-        D_COUT("\n  exponent: " << exponent << "  text: " << socket);
-        A_ASSERT(false);
+        _DROutError("RyuF2S band mismatch");
+        _DROut("\n  exponent: " << exponent << "  text: " << socket);
+        _AAssert(false);
       }
     }
   }
 
-  D_COUT("\n\nTesting RyuD2S round-trip (random FPD bit patterns)...");
-#if SEAM == CRABS_FTOS
+  _DROut("\n\nTesting RyuD2S round-trip (random FPD bit patterns)...");
+#if _Seam == _CrabsFToS
   enum { DpcTestCount = 1 << 15 };
 #else
   enum { DpcTestCount = 1 << 10 };
@@ -267,20 +265,20 @@ const CHA* FtoS(const CHA* args) {
       }
       const FPD value = ToFloat(bits);
       const ISN length = RyuD2S_N(value, socket);
-      A_ASSERT(length >= 1 && length <= RyuDoubleStringLengthMax - 1);
+      _AAssert(length >= 1 && length <= RyuDoubleStringLengthMax - 1);
       socket[length] = 0;
-      const FPD parsed = strtod(socket, NILP);
+      const FPD parsed = strtod(socket, _NilP);
       const IUD parsed_bits = ToUnsigned(parsed);
       if (parsed_bits != bits) {
-        D_COUT_ERROR("RyuD2S round-trip mismatch");
-        _::COut("\n  bits: 0x").Hex(bits) << "  parsed: 0x";
-        _::COut().Hex(parsed_bits) << "  text: " << socket;
-        A_ASSERT(false);
+        _DROutError("RyuD2S round-trip mismatch");
+        _::ROut("\n  bits: 0x").Hex(bits) << "  parsed: 0x";
+        _::ROut().Hex(parsed_bits) << "  text: " << socket;
+        _AAssert(false);
       }
     }
   }
 
-  D_COUT("\n\nTesting RyuD2S round-trip (every exponent band)...");
+  _DROut("\n\nTesting RyuD2S round-trip (every exponent band)...");
   {
     // The mantissa must fit in the 52-bit fraction field (bits 0-51); a
     // wider constant would spill into the exponent field and corrupt the
@@ -290,17 +288,17 @@ const CHA* FtoS(const CHA* args) {
       const IUD bits = (IUD(exponent) << 52) | mantissa;
       const FPD value = ToFloat(bits);
       RyuD2S(value, socket);
-      const FPD parsed = strtod(socket, NILP);
+      const FPD parsed = strtod(socket, _NilP);
       const IUD parsed_bits = ToUnsigned(parsed);
       if (parsed_bits != bits) {
-        D_COUT_ERROR("RyuD2S band mismatch");
-        D_COUT("\n  exponent: " << exponent << "  text: " << socket);
-        A_ASSERT(false);
+        _DROutError("RyuD2S band mismatch");
+        _DROut("\n  exponent: " << exponent << "  text: " << socket);
+        _AAssert(false);
       }
     }
   }
 
 #endif
-  return NILP;
+  return _NilP;
 }
 }  //< namespace CRTest

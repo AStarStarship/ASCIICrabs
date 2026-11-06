@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_ADDRESS_HPP
-#define CRABS_ADDRESS_HPP
+#ifndef _CrabsAddressHPP
+#define _CrabsAddressHPP
 #include "Address.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* C++11 constexpr function for creating Crabs addresses headers with less
@@ -24,4 +24,4 @@ const CHA* TAddress() {
 
 }  //< namespace _
 #endif
-#endif  // CRABS_ADDRESS_HPP
+#endif  //< _CrabsAddressHPP

@@ -1,15 +1,17 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once 
 #include <_Config.h>
-#ifndef CRABS_STACK_HPP
-#define CRABS_STACK_HPP
-#if SEAM >= CRABS_STACK
+#ifndef _CrabsStackHPP
+#define _CrabsStackHPP
+#if _Seam >= _CrabsStack
 #include "Array.hpp"
-#if SEAM == CRABS_STACK
+#if _Seam == _CrabsStack
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
+namespace _ {
+
 /* @defgroup Stack
 ASCII Stack - contiguous LIFO memory
 A fixed-size stack of POD items with ISZ index tracking.
@@ -18,19 +20,17 @@ Slot offset maps. The T/A prefix convention: T=POD,
 A=Autoject (RAMFactory-managed).
 @{ */
 
-namespace _ {
-
 template<SCK_A>
 constexpr DTB CStackType() { return VTSCKBits | CATypePOD<T>(); }
 
-/* Returns the begin element such that the boofer size equals end - begin. */
+/* Returns the begin element such that the buffer size equals end - begin. */
 template<SCK_A>
 inline T* TStackBegin(void* stack) {
-  return TPtr<T>(stack, sizeof(SCK));
+  return TRef<T>(stack, sizeof(SCK));
 }
 template<SCK_A>
 inline const T* TStackBegin(const void* sck) {
-  return CPtr<T>(TStackBegin<SCK_P>(CPtr<void>(sck)));
+  return CRef<T>(TStackBegin<SCK_P>(CRef<void>(sck)));
 }
 
 /* Returns the first empty element of the stack. */
@@ -40,7 +40,7 @@ inline const T* TStackTop(const SCK* sck, ISY count) {
 }
 template<SCK_A>
 inline T* TStackTop(SCK* sck, ISY count) {
-  return CPtr<T>(TStackTop<SCK_P>(CPtr<SCK>(sck)), count);
+  return CRef<T>(TStackTop<SCK_P>(CRef<SCK>(sck)), count);
 }
 template<SCK_A>
 inline const T* TStackTop(const SCK* sck) {
@@ -54,22 +54,22 @@ inline T* TStackTop(SCK* sck) {
 /* Returns the element after the last element of the stack. */
 template<SCK_A>
 inline T* TStackEnd(void* sck, ISY total) {
-  void* ptr = TPtr<SCK>(sck);
+  void* pointer = TRef<SCK>(sck);
   return TStackBegin<SCK_P>(sck) + total;
 }
 template<SCK_A>
 inline const T* TStackEnd(const void* sck, ISY total) {
-  return CPtr<T>(TStackEnd<SCK_P>(CPtr<void>(sck), total));
+  return CRef<T>(TStackEnd<SCK_P>(CRef<void>(sck), total));
 }
 template<SCK_A>
 inline T* TStackEnd(void* sck) {
-  if(sck) return TStackBegin<SCK_P>(TPtr<SCK>(sck)) + TPtr<SCK>(sck)->total;
-  return NILP;
+  if(sck) return TStackBegin<SCK_P>(TRef<SCK>(sck)) + TRef<SCK>(sck)->total;
+  return _NilP;
 }
 template<SCK_A>
 inline const T* TStackEnd(const void* sck) {
-  if (sck) return TStackBegin<SCK_P>(TPtr<const SCK>(sck)) + TPtr<const SCK>(sck)->total;
-  return NILP;
+  if (sck) return TStackBegin<SCK_P>(TRef<const SCK>(sck)) + TRef<const SCK>(sck)->total;
+  return _NilP;
 }
 
 template<SCK_A>
@@ -88,11 +88,11 @@ Printer& TStackPrint(Printer& o, const SCK* sck) {
     << " total: " << total << " count:" << count << Linef("\n+---");
 
   const T* elements = TStackBegin<SCK_P>(sck);
-  D_COUT("\n     sck:0x" << Hexf(sck) << "\nelements:0x" << Hexf(elements) <<
+  _DROut("\n     sck:0x" << Hexf(sck) << "\nelements:0x" << Hexf(elements) <<
          "   delta:" << TDelta<>(sck, elements) << "\nsizeof():" << sizeof(SCK));
   for (ISC i = 0; i < count; ++i) o << "\n| " << i << ".) " << *elements++;
   if (count == 0) o << "\n| Empty";
-#ifdef D_THIS
+#ifdef _DThis
   o << Linef("\n+---") << Charsf(sck, TStackSizeOf<SCK_P>(sck->total)) << '\n';
 #endif
   return o;
@@ -100,9 +100,9 @@ Printer& TStackPrint(Printer& o, const SCK* sck) {
 
 template<SCK_A>
 CHA* TStackFill(void* origin, CHA fill_char=0, ISZ count_start=0) {
-  SCK* sck = TPtr<SCK>(origin);
+  SCK* sck = TRef<SCK>(origin);
   ISZ total = sck->total;
-  if (count_start < 0 || count_start >= total) return NILP;
+  if (count_start < 0 || count_start >= total) return _NilP;
   return ArrayFill(TStackBegin<SCK_P>(sck) + count_start,
                    sizeof(T) * (total - count_start), fill_char);
 }
@@ -111,20 +111,20 @@ CHA* TStackFill(void* origin, CHA fill_char=0, ISZ count_start=0) {
 template<SCK_A>
 inline SCK* TStackCopy(SCK* dest, ISZ dest_total, const SCK* src, ISZ src_count)
 {
-  if (dest_total < src_count) return NILP;
-  return TPtr<SCK>(ArrayCopy(TStackBegin<SCK_P>(dest), dest_total * sizeof(T),
+  if (dest_total < src_count) return _NilP;
+  return TRef<SCK>(ArrayCopy(TStackBegin<SCK_P>(dest), dest_total * sizeof(T),
                    TStackBegin<SCK_P>(src), src_count * sizeof(T)));
 }
 template<SCK_A>
 inline SCK* TStackCopy(SCK* dest, const SCK* src, ISZ src_count)
 {
-  if (IsError(dest)) return CPtr<SCK>(dest);
+  if (IsError(dest)) return CRef<SCK>(dest);
   return TStackCopy<SCK_P>(dest, dest->total, src, src_count);
 }
 template<SCK_A>
 inline SCK* TStackCopy(SCK* dest, ISZ dest_total, const SCK* src)
 {
-  if (IsError(src)) return CPtr<SCK>(src);
+  if (IsError(src)) return CRef<SCK>(src);
   return TStackCopy<SCK_P>(dest, dest->total, src, src->count);
 }
 
@@ -133,21 +133,21 @@ template<SCK_A>
 inline SCK* TStackCopy(SCK* dest, const SCK* src) {
   ISZ src_total = src->total,
       src_count = src->count;
-  D_ASSERT(src_count <= src_total);
-  if (src_count > src_total) return NILP;
+  _DAssert(src_count <= src_total);
+  if (src_count > src_total) return _NilP;
   return TStackCopy<SCK_P>(dest, TStackTop<SCK_P>(dest), src, src_count);
 }
 
 // Utility to cast Autoject origin to SCK*.
 template<SCK_A>
-inline TStack<SCK_P>* TStackPtr(IUW* boofer) {
-  return TPtr<TStack<SCK_P>>(boofer);
+inline TStack<SCK_P>* TStackPtr(IUW* buffer) {
+  return TRef<TStack<SCK_P>>(buffer);
 }
 
 // Utility to cast Autoject origin to SCK*.
 template<SCK_A>
-inline const SCK* TStackPtr(const IUW* boofer) {
-  return TPtr<const SCK>(boofer);
+inline const SCK* TStackPtr(const IUW* buffer) {
+  return TRef<const SCK>(buffer);
 }
 
 template<typename ISZ = ISW, typename DT = DTB, DT POD>
@@ -158,14 +158,14 @@ constexpr DT TStackType() {
 /* RAMFactoryStack function for the TStack.
 template<typename ISZ = ISW, typename DT = DTB, DT Type = _ISN>
 IUW* TStackFactoryStack(IUW* origin, ISW bytes) {
-  if (bytes <= 0) return TPtr<IUW>(TStackType<ISZ, DT, Type>());
+  if (bytes <= 0) return TRef<IUW>(TStackType<ISZ, DT, Type>());
   return RAMFactoryStack(origin, bytes);
 } */
 
 /* RAMFactoryHeap function for the TStack.
 template<typename ISZ = ISW, typename DT = DTB, DT Type = _ISN>
 IUW* TStackFactoryHeap(IUW* origin, ISW bytes) {
-  if (bytes <= 0) return TPtr<IUW>(TStackType<ISZ, DT, Type>());
+  if (bytes <= 0) return TRef<IUW>(TStackType<ISZ, DT, Type>());
   return RAMFactoryHeap(origin, bytes);
 } */
 
@@ -218,8 +218,8 @@ inline ISZ TStackSizeMin(ISY total) {
 @return A dynamically allocated socket. */
 template<SCK_A>
 SCK* TStackInit(SCK* stack, ISY total) {
-  if (IsError(stack) || total < 0) return NILP;
-  D_RAM_WIPE(stack, ISW(TStackSizeOf<SCK_P>(total)));
+  if (IsError(stack) || total < 0) return _NilP;
+  _DArrayFill(stack, ISW(TStackSizeOf<SCK_P>(total)));
   stack->total = total;
   stack->count = 0;
   return stack;
@@ -229,7 +229,7 @@ SCK* TStackInit(SCK* stack, ISY total) {
 template<SCK_A>
 void TStackReset(SCK* sck) {
   sck->count = 0;
-  D_RAM_WIPE(TStackBegin<SCK_P>(sck), TStackBytes<SCK_P>(sck) - sizeof(SCK));
+  _DArrayFill(TStackBegin<SCK_P>(sck), TStackBytes<SCK_P>(sck) - sizeof(SCK));
 }
 
 /* Initializes an obj from a preallocated socket who's size is a multiple of
@@ -238,8 +238,8 @@ void TStackReset(SCK* sck) {
 @return A dynamically allocated socket. */
 template<SCK_A>
 SCK* TStackInit(SCK* stack, ISZ size, const T* items, ISY count) {
-  if (IsError(stack) || !items || size <= 0 || count < 0) return NILP;
-  D_RAM_WIPE(stack, ISW(TStackSizeOf<SCK_P>(size)));
+  if (IsError(stack) || !items || size <= 0 || count < 0) return _NilP;
+  _DArrayFill(stack, ISW(TStackSizeOf<SCK_P>(size)));
 
   stack->total = size;
   stack->count = 0;
@@ -258,7 +258,7 @@ BOL TStackInBounds(const SCK* stack, ISY index) {
 @return -1 if a is nil and -2 if the index is out of bounds. */
 template<SCK_A>
 T TStackGet(const SCK* stack, ISY index) {
-  A_ASSERT(stack);
+  _AAssert(stack);
   if (index < 0 || index >= stack->count) return 0;
   return TStackBegin<SCK_P>(stack)[index];
 }
@@ -271,13 +271,13 @@ T TStackGet_NC(const SCK* stack, ISY index) {
 /* Peeks at the top item on the stack without popping it off. */
 template<SCK_A>
 T TStackPeek(const SCK* sck, ISY count) {
-  A_ASSERT(sck);
+  _AAssert(sck);
   if (count <= 1) return 0;
   return *(TStackTop<SCK_P>(sck, count) - 1);
 }
 template<SCK_A>
 T TStackPeek(const SCK* sck) {
-  A_ASSERT(sck);
+  _AAssert(sck);
   return TStackPeek<SCK_P>(sck, sck->count);
 }
 
@@ -303,14 +303,14 @@ inline ISY TStackInsert(T* begin, ISY total, ISY count, T item, ISY index = PSH)
 }
 template<SCK_A>
 inline ISY TStackInsert(SCK* stack, T item, ISY index = PSH) {
-  //D_CHECK_PTR_TRETURN(ISY, stack);
+  //_DCheckPointerTReturn(ISY, stack);
   if (index < PSH) return -AErrorInvalidIndex;
   ISY count = ISY(stack->count),
       total = ISY(stack->total);
   if (count >= total) return -AErrorStackOverflow;
   if (index == PSH) index = count;
-  D_COUT("  Pushing:" << item << " total:" << total << " count:" << count);
-  D_COUT("\n| Before:" << Charsf(stack, TStackSizeOf<SCK_P>(total)));
+  _DROut("  Pushing:" << item << " total:" << total << " count:" << count);
+  _DROut("\n| Before:" << Charsf(stack, TStackSizeOf<SCK_P>(total)));
   TArrayInsert_NC<T, ISZ>(TStackBegin<SCK_P>(stack), count++, index, item);
   stack->count = count;
   return index;
@@ -335,7 +335,7 @@ inline ISY TStackInsertDown(T* start, ISY total, ISY count, T item,
 @return The item popped off the obj. */
 template<SCK_A>
 T TStackPop(SCK* stack) {
-  A_ASSERT(stack);
+  _AAssert(stack);
   ISY count = stack->count;
   if (count == 0) return 0;
   T* items = TStackBegin<SCK_P>(stack);
@@ -357,7 +357,7 @@ void TStackRemove(T* elements, ISW element_number, ISW element_count) {
 @return The new count of the stack. */
 template<SCK_A>
 inline ISZ TStackRemove(T* elements, ISY count, ISY index) {
-  A_ASSERT(elements);
+  _AAssert(elements);
   if (index < 0 || index >= count) return -1;
   elements += index;
   T* elements_end = elements + --count;
@@ -371,7 +371,7 @@ inline ISZ TStackRemove(T* elements, ISY count, ISY index) {
 @return True if the index is out of bounds. */
 template<SCK_A>
 ISZ TStackRemove(SCK* stack, ISY index) {
-  A_ASSERT(stack);
+  _AAssert(stack);
   ISZ result =
       TStackRemove<SCK_P>(TStackBegin<SCK_P>(stack), stack->count, index);
   if (result < 0) return result;
@@ -383,11 +383,11 @@ ISZ TStackRemove(SCK* stack, ISY index) {
 @return false upon failure. */
 template<SCK_A>
 BOL TStackContains(SCK* stack, void* address) {
-  A_ASSERT(stack);
-  CHA *ptr = TPtr<CHA>(stack),
-      *adr = TPtr<CHA>(address);
-  if (adr < ptr) return false;
-  if (adr >= ptr + stack->size_array) return false;
+  _AAssert(stack);
+  CHA *pointer = TRef<CHA>(stack),
+      *adr = TRef<CHA>(address);
+  if (adr < pointer) return false;
+  if (adr >= pointer + stack->size_array) return false;
   return true;
 }
 
@@ -407,7 +407,7 @@ inline ISZ TStackSizeWords(ISY count) {
 |  Packed Stack  |
 |----------------|
 |  Word Aligned  |
-|     Boofer     |
+|     Buffer     |
 |----------------|
 | Stack Elements |
 |----------------|  +
@@ -418,7 +418,7 @@ inline ISZ TStackSizeWords(ISY count) {
 template<SCK_A, ISZ TotalInit_ = AStackTotalDefault,
          typename BOF = TBOF<TotalInit_, T, ISZ, TStack<SCK_P>>>
 class AStack {
-  Autoboofer<T, ISZ, BOF, TStack<SCK_P>> aobj_; //< An Auto-Object or Auto-Array.
+  Autobuffer<T, ISZ, BOF, TStack<SCK_P>> aobj_; //< An Auto-Object or Auto-Array.
 
   constexpr RAMFactory InitRamFactory() {
     return sizeof(BOF) == 0 ? TObjectFactory<ISZ>::StackHeap
@@ -445,7 +445,7 @@ class AStack {
     Reset();
   }
 
-  /* Copies the items into the obj_.Boofer () with some additional
+  /* Copies the items into the obj_.Buffer () with some additional
   empty_elements. */
   AStack(ISY total, const T* items, ISY items_count)
       : aobj_(TStackBytes<SCK_P>(items_count)) {
@@ -453,7 +453,7 @@ class AStack {
     TStackInsert<SCK_P>(This(), items, items_count);
   }
 
-  /* Copies the items into the obj_.Boofer () with some additional
+  /* Copies the items into the obj_.Buffer () with some additional
   empty_elements. */
   AStack(const T* items, ISY items_count)
       : aobj_(TStackBytes<SCK_P>(items_count)) {
@@ -479,7 +479,7 @@ class AStack {
   /* Gets this auto-object. */
   inline Autoject& AJT() { return aobj_.AJT(); }
 
-  /* Returns the boofer_. */
+  /* Returns the buffer_. */
   inline IUW* Origin() { return AJT().origin; }
 
   /* Sets the origin to the given pointer.
@@ -488,9 +488,14 @@ class AStack {
     return OriginSet(aobj_, socket);
   }
 
+  /* Returns true if the given origin pointer is a valid (non-nil)
+     allocation. Used after a Clone/growth to check the RAM factory
+     succeeded. A nil origin means the allocation failed. */
+  inline BOL PtrIsValid(IUW* origin) const { return origin != _NilP; }
+
   /* Return the Origin base pointer as type T. */
   template<typename T_ = SCK>
-  inline T_* As() { return TPtr<T_>(Origin()); }
+  inline T_* As() { return TRef<T_>(Origin()); }
 
   /* Adds the given item to the stop of the obj.
   @return The index of the newly stacked item or -1 upon failure.
@@ -503,9 +508,9 @@ class AStack {
   Insert:
     ISZ result = TStackInsert<SCK_P>(src, item, index);
     if (result < 0) {
-      D_COUT("\n\nError " << result << ": " << TAErrors<>(result) <<
+      _DROut("\n\nError " << result << ": " << TAErrors<>(result) <<
         " at index:" << index << "\nAutogrowing...");
-      Autoject dest = { NILP, AJT().ram };
+      Autoject dest = { _NilP, AJT().ram };
       src = Clone(dest, src);
       IUW* origin = dest.origin;
       if (IsError(origin))
@@ -523,9 +528,9 @@ class AStack {
   @param items       The  items to push onto the obj.
   @param items_count The number of items to push. */
   ISZ Insert(const T* items, ISY items_count) {
-    D_ASSERT(items);
-    D_ASSERT(items_count >= 0);
-    D_COUT("\nPushing " << items_count << " items:");
+    _DAssert(items);
+    _DAssert(items_count >= 0);
+    _DROut("\nPushing " << items_count << " items:");
     SCK obj = This();
     ISY count = obj->count;
     auto result = 0;
@@ -551,32 +556,32 @@ class AStack {
   inline BOL Remove(ISY index) { return TStackRemove<SCK_P>(This(), index); }
 
   /* Creates a clone on the heap.
-  @return NILP if the inputs are invalue */
+  @return _NilP if the inputs are invalue */
   inline static SCK* Clone(Autoject& dest, const SCK* src, ISZ total_new = -1, 
                            ISZ count_start = 0, ISZ count_stop = -1) {
-    D_ASSERT(src);
+    _DAssert(src);
     ISY total = src->total,
         count = src->count;
-    D_ASSERT(total >= 0);
-    D_ASSERT(count >= 0);
-    D_ASSERT(count <= total);
+    _DAssert(total >= 0);
+    _DAssert(count >= 0);
+    _DAssert(count <= total);
     if (count_stop < 0) count_stop = count;
     if (total_new < 0) total_new = AutojectGrowTotal(total);
     if (total < 0 || count < 0 || count > total || count_start < 0 || 
         count_start >= count || count_stop > count)
-      return NILP;
-#ifdef D_THIS
-    D_COUT("\nAuto-growing Stack...\nBefore:");
-    TStackPrint<COut, T, ISZ>(StdOut(), src);
+      return _NilP;
+#ifdef _DThis
+    _DROut("\nAuto-growing Stack...\nBefore:");
+    TStackPrint<ROut, T, ISZ>(RefOut(), src);
 #endif
     ISZ count_new = count_stop - count_start,
         bytes_copy = count_new * sizeof(T),
         bytes      = sizeof(SCK) + total_new * sizeof(T);
-    SCK* dest_sck = TPtr<SCK>(dest.ram(NILP, bytes));
+    SCK* dest_sck = TRef<SCK>(dest.ram(_NilP, bytes));
     if (IsError(dest_sck))
       return dest_sck;
     *dest_sck = { total_new, count_new };
-    D_COUT("\nCopying data..." <<
+    _DROut("\nCopying data..." <<
       "\ncount_start:" << count_start << " count_stop:" << count_stop <<
       "\nstack_new.count: " << dest_sck->count <<
       "\nstack_new.total: " << dest_sck->total <<
@@ -584,12 +589,12 @@ class AStack {
       "\nTStackStart<SCK_P>(stack): " << Hexf(TStackBegin<SCK_P>(src)));
     ArrayCopy(TStackBegin<SCK_P>(dest_sck), bytes_copy,
               TStackBegin<SCK_P>(src) + count_start, bytes_copy);
-#ifdef D_THIS
-    D_COUT("\nResult:");
-    TStackPrint<COut, T, ISZ>(StdOut(), dest_sck);
+#ifdef _DThis
+    _DROut("\nResult:");
+    TStackPrint<ROut, T, ISZ>(RefOut(), dest_sck);
 #endif
-    dest.origin = TPtr<IUW>(dest_sck);
-    dest.ram = RAMFactory(dest.ram(NILP, 0));
+    dest.origin = TRef<IUW>(dest_sck);
+    dest.ram = RAMFactory(dest.ram(_NilP, 0));
     dest_sck->total = total_new;
     dest_sck->count = count_new;
     return dest_sck;
@@ -598,7 +603,7 @@ class AStack {
   /* Clones the other object including the total, growing if necessary.
   @return true upon success and false upon failure. */
   inline SCK* Clone(SCK* src) {
-    if (IsError(src)) return NILP;
+    if (IsError(src)) return _NilP;
     SCK* ths = This();
     ISZ this_total = ths->total,
         this_count = ths->count,
@@ -607,7 +612,7 @@ class AStack {
     if (this_total <= 0 || src_total <= 0 ||
         this_count <  0 || src_count <  0 ||
         this_count > this_total || src_count > src_total) {
-      return TPtr<SCK>(AErrorInvalidInput);
+      return TRef<SCK>(AErrorInvalidInput);
     }
     ISZ count_new = src_count + this_count;
     if (count_new > this_total) {
@@ -623,7 +628,7 @@ class AStack {
     if (count_new < 0) count_new = ths->count;
 
     ISY total = ths->total;
-    if (count_new > total) return NILP;
+    if (count_new > total) return _NilP;
 
     if (total_new < 0) total_new = AutojectGrowTotal(total);
     else if (total_new < count_new) count_new = total_new;
@@ -634,7 +639,7 @@ class AStack {
     }
 
     Autoject& ajt = AJT();
-    Autoject growth = { NILP, ajt.ram };
+    Autoject growth = { _NilP, ajt.ram };
   AttemptToResize:
     Clone(growth, ths, total_new, 0, count_new);
     IUW* origin_new = growth.origin;
@@ -642,11 +647,11 @@ class AStack {
       Delete(ajt);
       ajt.origin = growth.origin;
       ajt.ram = growth.ram;
-      return TPtr<SCK>(origin_new);
+      return TRef<SCK>(origin_new);
     }
-    D_ASSERT(false);
+    _DAssert(false);
     goto AttemptToResize;
-    return NILP;
+    return _NilP;
   }
 
   /* Checks if the given index is a valid element.
@@ -694,7 +699,7 @@ class AStack {
       t->count = total_new;
       return t;
     }
-    Autoject growth = { NILP, AJT().ram };
+    Autoject growth = { _NilP, AJT().ram };
     SCK* result = Clone(growth, t, total_new, count_start, count_stop);
     if (result) {
       Autoject& ths = AJT();
@@ -708,7 +713,7 @@ class AStack {
 
   /* Gets this ASCII Object. */
   inline SCK* This() {
-    return TPtr<SCK>(aobj_.Origin());
+    return TRef<SCK>(aobj_.Origin());
   }
 
   /* Prints this object to a Printer. */
@@ -718,7 +723,7 @@ class AStack {
   }
 
   /* Prints this object to the given UTF. */
-  inline void CPrint() { PrintTo<::_::COut>(::_::StdOut()); }
+  inline void CPrint() { PrintTo<::_::ROut>(::_::RefOut()); }
 
   /* Gets a reference to the given element index. */
   inline T& operator[](ISY index) { return Begin()[index]; }
@@ -744,4 +749,4 @@ class AStack {
 //}
 
 #endif
-#endif
+#endif  //< _CrabsStackHPP

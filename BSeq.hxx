@@ -1,6 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsBSeqHXX
+#define _CrabsBSeqHXX
 #include "BSeq.h"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 IUC BSeqParamNumber(const DTB* params, ISN param_number) {
@@ -41,3 +44,5 @@ IUC BSeqParamNumber(const DTB* params, ISN param_number) {
 }
 }  //< namespace _
 #endif
+
+#endif  //< _CrabsBSeqHXX

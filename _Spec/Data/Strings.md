@@ -7,8 +7,8 @@ Unicode strings can be created two different ways, using ASCII Strings and ASCII
 number of Unicode characters. */
 template<SND_A>
 struct TString {
-  ISZ total,  //< Total elements in the boofer.
-      count;  //< Count of characters in the boofer.
+  ISZ total,  //< Total elements in the buffer.
+      count;  //< Count of characters in the buffer.
 };
 
 /* A UTF-8 or UTF-16 ASCII string created from an ASCII Stack that keeps track of the number of Unicode characters. */
@@ -17,7 +17,7 @@ struct TSRope {
   ISZ datum,  //< Memory alignment datum can be used for multiple purposes.
       chars,  //< Unicode Character Count.
       total,  //< Size of the string in bytes including the header.
-      count;  //< Count of elements in the boofer.
+      count;  //< Count of elements in the buffer.
 };
 ```
 

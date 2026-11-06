@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_CLOCK_DECL
-#define CRABS_CLOCK_DECL
+#ifndef _CrabsClockH
+#define _CrabsClockH
 #include <_Config.h>
-#if SEAM >= CRABS_CLOCK
+#if _Seam >= _CrabsClock
 
 namespace _ {
 
@@ -326,7 +326,6 @@ TMC ClockTimeTMC(ISN year, ISN month, ISN day, ISN hour = 0,
 TMD ClockTimeTMD(ISN year, ISN month, ISN day, ISN hour = 0,
                  ISN minute = 0, ISN second = 0, TMC epoch = ClockEpoch());
 
-#if USING_STA == YES_0
 /* Writes the given time to the text socket.
 @return Null upon failure or a pointer to the IUA after the last
 IUA written.
@@ -395,10 +394,6 @@ const CHA* SScanTime(const CHA*, TMC& result);
 
 /* Converts a keyboard input to a ISD. */
 const CHA* SScanTime(const CHA*, TMD& result);
-
-#endif  //< #if USING_STA == YES_0
-
-#if USING_STB == YES_0
 
 /* Writes the given time to the text socket.
 @return Null upon failure or a pointer to the IUA after the last
@@ -476,8 +471,6 @@ const CHB* ScanTime(const CHB*, ISC& result);
 /* Converts a keyboard input to a TMD. */
 const CHB* ScanTime(const CHB*, ISD& result);
 
-#endif  //< #if USING_STB == YES_0
-#if USING_STC == YES_0
 /* Writes the given time to the text socket.
 @return Null upon failure or a pointer to the IUA after the last
 IUA written.
@@ -545,7 +538,6 @@ const CHC* ScanTime(const CHC* input, ISC& result);
 /* Converts a keyboard input to a signed integer. */
 const CHC* ScanTime(const CHC* input, ISD& result);
 
-#endif  //< #if USING_STC == YES_0
 }  //< namespace _
 
 #endif

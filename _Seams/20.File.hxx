@@ -1,7 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
-#if SEAM >= CRABS_FILE
+#if _Seam >= _CrabsFile
 #include "../File.h"
-#if SEAM == CRABS_FILE
+#if _Seam == _CrabsFile
 #include "../_Debug.h"
 #else
 #include "../_Release.h"
@@ -13,39 +13,39 @@
 #include <unistd.h>
 #endif
 #endif
-using namespace ::_;
 namespace CRTest {
+using namespace ::_;
 
 static const CHA* File(const CHA* args) {
-#if SEAM >= CRABS_FILE
-  A_TEST_BEGIN;
+#if _Seam >= _CrabsFile
+  _ATestBegin;
 
   static const CHR* TestURI = "_Seams/Test.crabs";
 
   ::_::File file(TestURI);
 
-  D_COUT("\nTesting File(\"" << TestURI << "\")");
+  _DROut("\nTesting File(\"" << TestURI << "\")");
 
-  A_AVOW(TestURI, file.URI());
+  _AAvow(TestURI, file.URI());
 
-  A_ASSERT(file.Exists());
+  _AAssert(file.Exists());
 
-  A_ASSERT(!file.IsOpen());
+  _AAssert(!file.IsOpen());
 
-  A_AVOW(ISN(0), file.Open(TestURI));
+  _AAvow(ISN(0), file.Open(TestURI));
 
-  A_ASSERT(file.IsOpen());
+  _AAssert(file.IsOpen());
 
-  D_({
+  _D({
     
   })
 
   file.Close();
 
-  A_ASSERT(!file.IsOpen());
+  _AAssert(!file.IsOpen());
 
   // Exercise the Folder API with the ASCII Data Type ISW index.
-  D_COUT("\nTesting Folder(\"_Seams/TestFolder\")");
+  _DROut("\nTesting Folder(\"_Seams/TestFolder\")");
   static const CHR* TestFolderURI = "_Seams/TestFolder";
 #ifndef _WIN32
   // Clean slate in case an earlier run crashed mid-test.
@@ -62,20 +62,20 @@ static const CHA* File(const CHA* args) {
   ::mkdir("_Seams/TestFolder/sub", 0755);
 #endif
   Folder folder(TestFolderURI);
-  A_AVOW(ISN(0), folder.OpenSorted(TestFolderURI));
+  _AAvow(ISN(0), folder.OpenSorted(TestFolderURI));
   // Directories sort first: 0=".", 1="..", 2="sub"; then files by name:
   // 3="aaa.crabs", 4="bbb.crabs", 5="ccc.crabs".
   ::_::File entry;
-  A_AVOW(ISN(0), folder.ReadFile(&entry, 3));
-  A_ASSERT(TSEquals<CHR>(entry.Name(), "aaa.crabs") != NILP);
-  A_ASSERT(entry.is_reg_ != 0);
-  A_AVOW(ISN(0), folder.ReadFile(&entry, 4));
-  A_ASSERT(TSEquals<CHR>(entry.Name(), "bbb.crabs") != NILP);
-  A_AVOW(ISN(0), folder.ReadFile(&entry, 5));
-  A_ASSERT(TSEquals<CHR>(entry.Name(), "ccc.crabs") != NILP);
+  _AAvow(ISN(0), folder.ReadFile(&entry, 3));
+  _AAssert(TSEquals<CHR>(entry.Name(), "aaa.crabs") != _NilP);
+  _AAssert(entry.is_reg_ != 0);
+  _AAvow(ISN(0), folder.ReadFile(&entry, 4));
+  _AAssert(TSEquals<CHR>(entry.Name(), "bbb.crabs") != _NilP);
+  _AAvow(ISN(0), folder.ReadFile(&entry, 5));
+  _AAssert(TSEquals<CHR>(entry.Name(), "ccc.crabs") != _NilP);
   // Out-of-range index is an error.
-  A_ASSERT(folder.ReadFile(&entry, 99) < 0);
-  A_AVOW(ISN(0), folder.OpenSubfolder(2));
+  _AAssert(folder.ReadFile(&entry, 99) < 0);
+  _AAvow(ISN(0), folder.OpenSubfolder(2));
   folder.Close();
 #ifndef _WIN32
   ::remove("_Seams/TestFolder/ccc.crabs");
@@ -87,46 +87,46 @@ static const CHA* File(const CHA* args) {
 
   // WRITE-then-READ round-trip: operator<< writes, Read() reads.
   static const CHR* TestIOURI = "_Seams/TestIO.crabs";
-  D_COUT("\nTesting File write/read round-trip(\"" << TestIOURI << "\")");
+  _DROut("\nTesting File write/read round-trip(\"" << TestIOURI << "\")");
   {
     ::_::File out;
-    A_AVOW(ISN(0), out.OpenWrite(TestIOURI));
-    A_ASSERT(out.IsOpen());
+    _AAvow(ISN(0), out.OpenWrite(TestIOURI));
+    _AAssert(out.IsOpen());
     out << "abc" << 123 << 4.5;
     out.Close();
-    A_ASSERT(!out.IsOpen());
+    _AAssert(!out.IsOpen());
   }
   {
     ::_::File in;
-    A_AVOW(ISN(0), in.OpenRead(TestIOURI));
-    A_ASSERT(in.IsOpen());
+    _AAvow(ISN(0), in.OpenRead(TestIOURI));
+    _AAssert(in.IsOpen());
     // Expected: "abc" + "123" + float render of 4.5 (Puff/TDecimalFloat).
     CHA int_sock[24];
-    A_ASSERT((TSPrintSigned<ISD, IUD, CHA>(int_sock, 24, ISD(123)) != NILP));
+    _AAssert((TSPrintSigned<ISD, IUD, CHA>(int_sock, 24, ISD(123)) != _NilP));
     CHA float_sock[32];
-    A_ASSERT((TSPrint<CHA>(float_sock, 32, 4.5) != NILP));
+    _AAssert((TSPrint<CHA>(float_sock, 32, 4.5) != _NilP));
     CHA expected[128];
     SPrint(expected, 128, "abc");
     TSConcat<CHR, CHC>(expected, 128, int_sock);
     TSConcat<CHR, CHC>(expected, 128, float_sock);
     ISW size = in.Size();
-    A_ASSERT(size > 0);
-    A_AVOW(ISW(0), in.Seek(0, SEEK_SET));
+    _AAssert(size > 0);
+    _AAvow(ISW(0), in.Seek(0, SEEK_SET));
     CHA buf[128];
     buf[127] = 0;
     ISW got = in.Read(buf, 127);
     in.Close();
-    A_ASSERT(!in.IsOpen());
-    A_ASSERT(got > 0);
-    A_ASSERT((TSEquals<CHR>(buf, expected) != NILP));
+    _AAssert(!in.IsOpen());
+    _AAssert(got > 0);
+    _AAssert((TSEquals<CHR>(buf, expected) != _NilP));
   }
 #ifndef _WIN32
   ::remove(TestIOURI);
 #endif
 
-  D_COUT("\nFile test complete.");
+  _DROut("\nFile test complete.");
 #endif
-  return NILP;
+  return _NilP;
 }
 
 }  //< namespace CRTest

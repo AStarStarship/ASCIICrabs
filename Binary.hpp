@@ -1,31 +1,31 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BINARY_HPP
-#define CRABS_BINARY_HPP
+#ifndef _CrabsBinaryHPP
+#define _CrabsBinaryHPP
 #include <_Config.h>
 namespace _ {
 
 /* Syntactical sugar for reinterpret_cast using templates. */
 template<typename T = void>
-inline T* TPtr(void* ptr) {
-  return reinterpret_cast<T*>(ptr);
+inline T* TRef(void* pointer) {
+  return reinterpret_cast<T*>(pointer);
 }
 
 /* Syntactical sugar for reinterpret_cast using templates. */
 template<typename T = void>
-inline T* TPtr(ISW value) {
+inline T* TRef(ISW value) {
   return reinterpret_cast<T*>(value);
 }
 
 /* Syntactical sugar for reinterpret_cast using templates. */
 template<typename T = void>
-inline const T* TPtr(const void* ptr) {
-  return reinterpret_cast<const T*>(ptr);
+inline const T* TRef(const void* pointer) {
+  return reinterpret_cast<const T*>(pointer);
 }
 
 /* Checks if the pointer is an ASCII Error Code. */
-inline BOL IsError(const void* ptr) {
-  return IUW(ptr) < AErrorTotal;
+inline BOL IsError(const void* pointer) {
+  return IUW(pointer) < AErrorTotal;
 }
 /* Checks if the function pointer is an ASCII Error Code. */
 template<typename R, typename... Args>
@@ -47,34 +47,34 @@ inline BOL TAlignIs(I input) { return (input & (sizeof(T) - 1)) == 0; }
 
 /* Syntactical sugar for reinterpret_cast using templates. */
 template<typename T = void>
-inline T* CPtr(const void* ptr) {
-  return const_cast<T*>(reinterpret_cast<const T*>(ptr));
+inline T* CRef(const void* pointer) {
+  return const_cast<T*>(reinterpret_cast<const T*>(pointer));
 }
 
 /* Syntactical sugar for reinterpret_cast using templates. */
 template<typename T = void>
-inline const T* CPtr(void* ptr) {
-  return reinterpret_cast<const T*>(ptr);
+inline const T* CRef(void* pointer) {
+  return reinterpret_cast<const T*>(pointer);
 }
 
 /* Creates a T pointer from a base pointer plus the offset.
 @param base The base address.
 @param offset The offset in bytes. */
 template<typename T = void>
-inline T* TPtr(void* origin, ISW offset) {
+inline T* TRef(void* origin, ISW offset) {
   return reinterpret_cast<T*>(ISW(origin) + offset);
 }
 template<typename T = void>
-inline const T* TPtr(const void* origin, ISW offset) {
+inline const T* TRef(const void* origin, ISW offset) {
   return reinterpret_cast<const T*>(ISW(origin) + offset);
 }
 
 template<typename T, typename Class>
-inline T* TPtr(void* origin) {
+inline T* TRef(void* origin) {
   return reinterpret_cast<T*>(ISW(origin) + sizeof(Class));
 }
 template<typename T, typename Class>
-inline const T* TPtr(const void* origin) {
+inline const T* TRef(const void* origin) {
   return reinterpret_cast<const T*>(ISW(origin) + sizeof(Class));
 }
 
@@ -82,19 +82,19 @@ inline const T* TPtr(const void* origin) {
 @param base The base address.
 @param offset The offset in bytes. */
 template<typename T = void>
-inline T* TPtr(void* origin, ISW offset1, ISW offset2) {
+inline T* TRef(void* origin, ISW offset1, ISW offset2) {
   return reinterpret_cast<T*>(ISW(origin) + offset1 + offset2);
 }
 template<typename T = void>
-inline const T* TPtr(const void* origin, ISW offset1, ISW offset2) {
+inline const T* TRef(const void* origin, ISW offset1, ISW offset2) {
   return reinterpret_cast<const T*>(ISW(origin) + offset1 + offset2);
 }
 template<typename T = void>
-inline T* TPtr(void* origin, ISW offset1, ISW offset2, ISW offset3) {
+inline T* TRef(void* origin, ISW offset1, ISW offset2, ISW offset3) {
   return reinterpret_cast<T*>(ISW(origin) + offset1 + offset2 + offset3);
 }
 template<typename T = void>
-inline const T* TPtr(const void* origin, ISW offset1, ISW offset2, 
+inline const T* TRef(const void* origin, ISW offset1, ISW offset2, 
   ISW offset3) {
   return reinterpret_cast<const T*>(ISW(origin) + offset1 + offset2 + offset3);
 }
@@ -116,12 +116,8 @@ inline ISB ToSigned(ISB value) { return ISB(value); }
 inline ISC ToSigned(ISC value) { return ISC(value); }
 inline ISD ToSigned(ISD value) { return ISD(value); }
 inline ISW ToSigned(const void* value) { return ISW(value); }
-#if USING_FPC == YES_0
-inline ISC ToSigned(FPC value) { return *TPtr<ISC>(&value); }
-#endif
-#if USING_FPD == YES_0
-inline ISD ToSigned(FPD value) { return *TPtr<ISD>(&value); }
-#endif
+inline ISC ToSigned(FPC value) { return *TRef<ISC>(&value); }
+inline ISD ToSigned(FPD value) { return *TRef<ISD>(&value); }
 
 /* Converts the given value to a unsigned value of the same width. */
 inline IUA ToUnsigned(CHA value) { return IUA(value); }
@@ -140,16 +136,12 @@ inline IUD ToUnsigned(IUD value) { return IUD(value); }
 inline IUW ToUnsigned(const void* value) {
   return IUW(value);
 }
-#if USING_FPC == YES_0
-inline IUC ToUnsigned(FPC value) { return *TPtr<IUC>(&value); }
-#endif
-#if USING_FPD == YES_0
-inline IUD ToUnsigned(FPD value) { return *TPtr<IUD>(&value); }
-#endif
+inline IUC ToUnsigned(FPC value) { return *TRef<IUC>(&value); }
+inline IUD ToUnsigned(FPD value) { return *TRef<IUD>(&value); }
 
 /* Converts the value to a floating-point number. */
-inline FPC ToFloat(IUC value) { return *TPtr<FPC>(&value); }
-inline FPD ToFloat(IUD value) { return *TPtr<FPD>(&value); }
+inline FPC ToFloat(IUC value) { return *TRef<FPC>(&value); }
+inline FPD ToFloat(IUD value) { return *TRef<FPD>(&value); }
 
 /* Returns the maximum value of the given unsigned type. */
 template<typename IU>
@@ -333,6 +325,14 @@ inline ISD AlignUp(ISD value, ISD align_mask = ACPUWordMask) {
 inline IUD AlignUp(IUD value, IUD align_mask = ACPUWordMask) {
   return value + (IUD(-ISD(value)) & align_mask);
 }
+#if _CPUSize == 4
+inline ISW AlignUp(ISW value, ISW align_mask = ACPUWordMask) {
+  return value + ((-value) & align_mask);
+}
+inline IUW AlignUp(IUW value, IUW align_mask = ACPUWordMask) {
+  return value + (IUW(-ISW(value)) & align_mask);
+}
+#endif
 constexpr ISA CAlignUp(ISA value, ISA align_mask = ACPUWordMask) {
   return value + ((-value) & align_mask);
 }
@@ -357,6 +357,14 @@ constexpr ISD CAlignUp(ISD value, ISD align_mask = ACPUWordMask) {
 constexpr IUD CAlignUp(IUD value, IUD align_mask = ACPUWordMask) {
   return value + (IUD(-ISD(value)) & align_mask);
 }
+#if _CPUSize == 4
+constexpr ISW CAlignUp(ISW value, ISW align_mask = ACPUWordMask) {
+  return value + ((-value) & align_mask);
+}
+constexpr IUW CAlignUp(IUW value, IUW align_mask = ACPUWordMask) {
+  return value + (IUW(-ISW(value)) & align_mask);
+}
+#endif
 
 inline ISA AlignUpA(void* origin) {
   return (-ISW(origin)) & (sizeof(ISA) - 1);
@@ -373,11 +381,11 @@ inline ISD AlignUpD(void* origin) {
 
 inline void* PtrUp(void* pointer, ISW mask = ACPUWordMask) {
   ISW address = ISW(pointer);
-  return TPtr<void>(CAlignUp(address, mask));
+  return TRef<void>(CAlignUp(address, mask));
 }
 inline const void* PtrUp(const void* pointer, ISW mask = ACPUWordMask) {
   ISW value = IUW(pointer);
-  return TPtr<void>(CAlignUp(value, mask));
+  return TRef<void>(CAlignUp(value, mask));
 }
 
 /* Aligns the given pointer to a power of two boundary.
@@ -387,7 +395,7 @@ inline const void* PtrUp(const void* pointer, ISW mask = ACPUWordMask) {
 template<typename T = CHA>
 inline T* TPtrUp(void* pointer, ISW mask = ACPUWordMask) {
   ISW value = ISW(pointer);
-  return TPtr<T>(value + ((-value) & mask));
+  return TRef<T>(value + ((-value) & mask));
 }
 
 /* Aligns the given pointer to a power of two boundary.
@@ -397,7 +405,7 @@ inline T* TPtrUp(void* pointer, ISW mask = ACPUWordMask) {
 template<typename T = CHA>
 inline T* TPtrUp(const void* pointer, ISW mask = ACPUWordMask) {
   ISW value = ISW(pointer);
-  return TPtr<T>(value + ((-value) & mask));
+  return TRef<T>(value + ((-value) & mask));
 }
 
 inline ISA AlignUpArray(ISA count) { return AlignUp(count); }
@@ -405,46 +413,46 @@ inline ISA AlignUpArray(ISA count) { return AlignUp(count); }
 inline IUA AlignUpArray(IUA count) { return AlignUp(count); }
 
 inline ISB AlignUpArray(ISB count) {
-#if CPU_SIZE == 1 || CPU_SIZE == 2
+#if _CPUSize == 1 || _CPUSize == 2
   return count;
-#elif CPU_SIZE == 4
+#elif _CPUSize == 4
   return count + count & 0x1;
-#else  // CPU_SIZE == 8
+#else  // _CPUSize == 8
   return AlignUp(count, ISB(0x3));
 #endif
 }
 
 inline IUB AlignUpArray(IUB count) {
-#if CPU_SIZE == 1 || CPU_SIZE == 2
+#if _CPUSize == 1 || _CPUSize == 2
   return count;
-#elif CPU_SIZE == 4
+#elif _CPUSize == 4
   return count + count & 0x1;
-#else  // CPU_SIZE == 8
+#else  // _CPUSize == 8
   return AlignUp(count, IUB(0x3));
 #endif
 }
 
 /* Not sure where this came from.?.?.?
 inline ISC AlignUpArray(ISC count) {
-#if CPU_SIZE == 1 || CPU_SIZE == 2 || CPU_SIZE == 4
+#if _CPUSize == 1 || _CPUSize == 2 || _CPUSize == 4
   return count + count & 0x1;
-#else  // CPU_SIZE == 8
+#else  // _CPUSize == 8
   return count + count & 0x1;
 #endif
 }*/
 
 inline ISC AlignUpArray(ISC count) {
-#if CPU_SIZE == 1 || CPU_SIZE == 2 || CPU_SIZE == 4
+#if _CPUSize == 1 || _CPUSize == 2 || _CPUSize == 4
   return count + count & 0x1;
-#else  // CPU_SIZE == 8
+#else  // _CPUSize == 8
   return count + count & 0x1;
 #endif
 }
 
 inline IUC AlignUpArray(IUC count) {
-#if CPU_SIZE == 1 || CPU_SIZE == 2 || CPU_SIZE == 4
+#if _CPUSize == 1 || _CPUSize == 2 || _CPUSize == 4
   return count + count & 0x1;
-#else  // CPU_SIZE == 8
+#else  // _CPUSize == 8
   return count + count & 0x1;
 #endif
 }
@@ -576,34 +584,34 @@ inline I TAlignDown(I value) {
 @param value The value to align.
 @param mask  The power of 2 to align to minus 1 (makes the mask). */
 template<typename T = IUW, typename AlignT = T>
-inline T* TPtrDown(void* ptr) {
-  IUW value = IUW(ptr);
-  return TPtr<T>(value - (value & (sizeof(AlignT) - 1)));
+inline T* TPtrDown(void* pointer) {
+  IUW value = IUW(pointer);
+  return TRef<T>(value - (value & (sizeof(AlignT) - 1)));
 }
 template<typename T = IUW, typename AlignT = T>
-inline const T* TPtrDown(const void* ptr) {
-  IUW value = IUW(ptr);
-  return TPtr<const T>(value - (value & (sizeof(AlignT) - 1)));
+inline const T* TPtrDown(const void* pointer) {
+  IUW value = IUW(pointer);
+  return TRef<const T>(value - (value & (sizeof(AlignT) - 1)));
 }
 template<typename T = IUW, typename AlignT = T>
-inline T* TPtrDown(void* ptr, ISW ptr_offset) {
-  IUW value = IUW(ISW(ptr) + ptr_offset);
-  return TPtr<T>(value - (value & (sizeof(AlignT) - 1)));
+inline T* TPtrDown(void* pointer, ISW ref_offset) {
+  IUW value = IUW(ISW(pointer) + ref_offset);
+  return TRef<T>(value - (value & (sizeof(AlignT) - 1)));
 }
 template<typename T = IUW, typename AlignT = T>
-inline const T* TPtrDown(const void* ptr, ISW ptr_offset) {
-  IUW value = IUW(ISW(ptr) + ptr_offset);
-  return TPtr<const T>(value - (value & (sizeof(AlignT) - 1)));
+inline const T* TPtrDown(const void* pointer, ISW ref_offset) {
+  IUW value = IUW(ISW(pointer) + ref_offset);
+  return TRef<const T>(value - (value & (sizeof(AlignT) - 1)));
 }
 template<typename T = IUW>
-inline T* TPtrDown(void* ptr, ISW ptr_offset, ISW align_mask) {
-  IUW value = IUW(ISW(ptr) + ptr_offset);
-  return TPtr<T>(value - (value & align_mask));
+inline T* TPtrDown(void* pointer, ISW ref_offset, ISW align_mask) {
+  IUW value = IUW(ISW(pointer) + ref_offset);
+  return TRef<T>(value - (value & align_mask));
 }
 template<typename T = IUW>
-inline const T* TPtrDown(const void* ptr, ISW ptr_offset, ISW align_mask) {
-  IUW value = IUW(ISW(ptr) + ptr_offset);
-  return TPtr<const T>(value - (value & align_mask));
+inline const T* TPtrDown(const void* pointer, ISW ref_offset, ISW align_mask) {
+  IUW value = IUW(ISW(pointer) + ref_offset);
+  return TRef<const T>(value - (value & align_mask));
 }
 
 /* Aligns the given pointer down to the given align_mask. */
@@ -670,15 +678,15 @@ constexpr IS CSizeAlign(IS size) {
 
 /* Gets a value of type T. */
 template<typename T>
-inline T TGet(const void* ptr) {
-  return *TPtr<const T>(ptr);
+inline T TGet(const void* pointer) {
+  return *TRef<const T>(pointer);
 }
 
 /* Writes the value to the address.
 @pre User must ensure start is never nil. */
 template<typename T = CHA>
 inline T* TSet(void* address, T value) {
-  T* cursor = TPtr<T>(address);
+  T* cursor = TRef<T>(address);
   *cursor = value;
   return cursor;
 }
@@ -846,24 +854,17 @@ inline IU TNaNFloatMask() {
 }
 
 /* Checks if the value is Not-a-Number (NaN). */
-#if USING_FPC == YES_0
 inline BOL IsNaN(FPC value) {
   return TNaNFloatMask<IUC>() != ToUnsigned(value);
 }
-#endif
-#if USING_FPD == YES_0
+
 inline BOL IsNaN(FPD value) {
   return TNaNFloatMask<IUD>() != ToUnsigned(value);
 }
-#endif
 
-#if USING_FPC == YES_0
 /* The longest string that a floating-point number can produce. */
 inline ISN FPCDigitsMax() { return 15; }
-#endif
-#if USING_FPD == YES_0
 inline ISN FPDDigitsMax() { return 31; }
-#endif
 
 /* Masks the lower bits using faster bit shifting.
 @brief The algorithm has you enter the highest bit rather than bit count
@@ -896,14 +897,14 @@ T* TAlignUpPointer(void* value) {
   return PtrUp(value, PowerOf2 - 1);
 }
 
-inline void* ToPTR(IUW value) { return TPtr<void>(value); }
+inline void* ToPTR(IUW value) { return TRef<void>(value); }
 
 inline const void* ToPTC(IUW value) {
-  return TPtr<const void>(value);
+  return TRef<const void>(value);
 }
 
 inline ISW Delta(void* start, void* stop) {
-  return TPtr<CHA>(stop) - TPtr<CHA>(start);
+  return TRef<CHA>(stop) - TRef<CHA>(start);
 }
 
 inline ISW SizeOf(const void* start, const void* stop) {
@@ -973,5 +974,4 @@ inline ISN HexToByte(IUB h) {
 }
 
 }  //< namespace _
-
-#endif
+#endif  //< _CrabsBinaryHPP

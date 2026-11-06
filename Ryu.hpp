@@ -1,10 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_RYU_HPP
-#define CRABS_RYU_HPP
+#ifndef _CrabsRyuHPP
+#define _CrabsRyuHPP
 #include "Ryu.h"
-#if SEAM >= CRABS_FTOS
-#include "Binary.hpp"  //< ToFloat/ToUnsigned bit casts.
+#if _Seam >= _CrabsFToS
 namespace _ {
 
 /* Capacity-checked Ryu shortest float print.
@@ -18,7 +17,7 @@ upon success.
 @param stop The stop address of the socket. */
 template <class CHS = CHR>
 CHS* TRyuF2S(FPC value, CHS* socket, CHS* stop) {
-  if (stop - socket < RyuFloatStringLengthMax) return NILP;
+  if (stop - socket < RyuFloatStringLengthMax) return _NilP;
   CHA buffer[RyuFloatStringLengthMax];
   const ISN length = RyuF2S_N(value, buffer);
   for (ISN i = 0; i < length; ++i) socket[i] = CHS(buffer[i]);
@@ -42,7 +41,7 @@ upon success.
 @param stop The stop address of the socket. */
 template <class CHS = CHR>
 CHS* TRyuD2S(FPD value, CHS* socket, CHS* stop) {
-  if (stop - socket < RyuDoubleStringLengthMax) return NILP;
+  if (stop - socket < RyuDoubleStringLengthMax) return _NilP;
   CHA buffer[RyuDoubleStringLengthMax];
   const ISN length = RyuD2S_N(value, buffer);
   for (ISN i = 0; i < length; ++i) socket[i] = CHS(buffer[i]);
@@ -56,5 +55,5 @@ CHS* TRyuD2S(FPD value, CHS* socket, ISW size) {
 }
 
 }  //< namespace _
-#endif
-#endif
+#endif  // _Seam >= _CrabsFToS
+#endif  //< _CrabsRyuHPP

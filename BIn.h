@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BIN_DECL
-#define CRABS_BIN_DECL
+#ifndef _CrabsBInH
+#define _CrabsBInH
 #include <_Config.h>
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
 /* @defgroup TBIn B-Input Slot
@@ -54,13 +54,10 @@ inline ISW SlotSpace(IUA* origin, IUA* stop, IUW size);
 /* Gets the rx socket length. */
 inline ISN BInSpace(TBIn<ISC>* bin);
 
-inline ISN BinBooferLength(TBIn<ISC>* bin);
-
-#if USING_CRABS_TEXT == YES_0
+inline ISN BinBufferLength(TBIn<ISC>* bin);
 
 /* Pulls the keyboard input into the ring socket. */
 // void BInKeyboard()
-#endif
 
 /* Initializes the TBIn struct to an empty socket. */
 TBIn<ISC>* BInInit(TBIn<ISC>* socket, ISN size);
@@ -87,5 +84,5 @@ const Op* BInRead(TBIn<ISC>* bin, const DTB* params, void** args, IUD
 }  //< namespace _
 
 /* @} */  // End of TBIn group.
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsBInH

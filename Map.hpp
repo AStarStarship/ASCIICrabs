@@ -1,11 +1,11 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_MAP_HPP
-#define CRABS_MAP_HPP
+#ifndef _CrabsMapHPP
+#define _CrabsMapHPP
 #include <_Config.h>
-#if SEAM >= CRABS_MAP
+#if _Seam >= _CrabsMap
 #include "Stack.hpp"
-#if SEAM == CRABS_MAP
+#if _Seam == _CrabsMap
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -20,11 +20,11 @@ offsets).
 @code
          Map Memory Layout
 +-------------------------------+
-|_____   Boofer       ISZ       |
+|_____   Buffer       ISZ       |
 |_____ ^ Y_n        Codomain    |
 |      | Y_0        Mappings    |
 +-------------------------------+
-|_____   Boofer                 |
+|_____   Buffer                 |
 |_____ ^ X_n     Sorted Domain  |
 |      | X_0         Values     |
 +-------------------------------+  ^ Up in addresses.
@@ -53,27 +53,27 @@ struct TMapBuf {
 /* Returns the start of the domain. */
 template<MAP_A>
 inline D* TMapDomain(MAP* map) {
-  return TPtr<D>(map, sizeof(MAP));
+  return TRef<D>(map, sizeof(MAP));
 }
 template<MAP_A>
 inline const D* TMapDomain(const MAP* map) {
-  return CPtr<D>(TMapDomain<MAP_P>(CPtr<MAP>(map)));
+  return CRef<D>(TMapDomain<MAP_P>(CRef<MAP>(map)));
 }
 
 /* Returns the start of the domain. */
 template<MAP_A>
 inline D TMapDomain_NC(MAP* map, ISZ index) {
-  return TPtr<D>(map, sizeof(MAP))[index];
+  return TRef<D>(map, sizeof(MAP))[index];
 }
 template<MAP_A>
 inline const D TMapDomain_NC(const MAP* map, ISZ index) {
-  return CPtr<D>(TMapDomain_NC<MAP_P>(CPtr<MAP>(map), index));
+  return CRef<D>(TMapDomain_NC<MAP_P>(CRef<MAP>(map), index));
 }
 
 /* Returns the start of the codomain. */
 template<MAP_A>
 inline const ISZ* TMapCodomain(const D* domain, ISZ size) {
-  return TPtr<const ISZ>(domain + size);
+  return TRef<const ISZ>(domain + size);
 }
 template<MAP_A>
 inline ISZ* TMapCodomain(D* domain, ISZ size) {
@@ -105,7 +105,7 @@ inline ISZ* TMapCodomain(MAP* map) {
 
 template<MAP_A>
 inline ISZ TMapMapping(const MAP* map, ISZ index) {
-  if (index < 0 || index >= map->count) return NILP;
+  if (index < 0 || index >= map->count) return _NilP;
   return *(TMapCodomain<MAP_P>(map) + index);
 }
 template<MAP_A>
@@ -145,7 +145,7 @@ Printer& TMapPrint(Printer& o, const MAP* map) {
       << Centerf(*domain++, DomainColumns)
       << Centerf(*codomain++, DomainColumns);
   }
-#ifdef D_THIS
+#ifdef _DThis
   return o << Linef("\n+---\n");
   //<< Charsf(map, map->size * sizeof(TMapBuf<MAP_P>));
 #else
@@ -170,8 +170,8 @@ constexpr ISZ CMapSizeRequired(ISZ count) {
 
 template<MAP_A>
 inline MAP* TMapInit(MAP* map, ISZ total) {
-  D_ASSERT(map);
-  D_ASSERT(total >= 0);
+  _DAssert(map);
+  _DAssert(total >= 0);
   map->total = total;
   map->count = 0;
   return map;
@@ -181,29 +181,29 @@ inline MAP* TMapInit(MAP* map, ISZ total) {
 @return An invalid index upon failure or valid index upon success. */
 template<MAP_A>
 ISZ TMapAdd(MAP* map, D domain_value, ISZ codomain_mapping) {
-  D_ASSERT(map);
-  D_COUT("\n\nAdding:" << domain_value << "->" << codomain_mapping);
+  _DAssert(map);
+  _DROut("\n\nAdding:" << domain_value << "->" << codomain_mapping);
   ISZ count = map->count, size = map->total;
-  if (count >= size) D_RETURNT(ISZ, -AErrorBooferOverflow);
+  if (count >= size) _DReturnT(ISZ, -AErrorBufferOverflow);
   D  * domain   = TMapDomain<MAP_P>(map);
   ISZ* codomain = TMapCodomain<MAP_P>(domain, size);
 
   if (count == 0) {
     *domain = domain_value;
     *codomain = codomain_mapping;
-    D_COUT("\n  Added the first codomain_mapping:(" << domain_value << ','
+    _DROut("\n  Added the first codomain_mapping:(" << domain_value << ','
                                                     << codomain_mapping << ')');
     map->count = 1;
-    D_COUT_MAP(map);
+    _DROutMap(map);
     return count;
   };
-  D_COUT("\n\n  Searching for index in the domain... ");
+  _DROut("\n\n  Searching for index in the domain... ");
   ISZ low = 0, mid = 0, high = count - 1;
   D current_domain_value = 0;
   while (low <= high) {
     mid = (low + high) >> 1;
     current_domain_value = domain[mid];
-    D_COUT("\n     low:" << low << " mid:" << mid << " high:" << high
+    _DROut("\n     low:" << low << " mid:" << mid << " high:" << high
                          << " domain_value:" << current_domain_value);
 
     if (current_domain_value > domain_value) {
@@ -211,7 +211,7 @@ ISZ TMapAdd(MAP* map, D domain_value, ISZ codomain_mapping) {
     } else if (current_domain_value < domain_value) {
       low = mid + 1;
     } else {
-      D_COUT(". The value exists in the domain.");
+      _DROut(". The value exists in the domain.");
       return CAInvalidIndex<ISZ>();
     }
   }
@@ -229,9 +229,9 @@ ISZ TMapAdd(MAP* map, D domain_value, ISZ codomain_mapping) {
     *(domain + count) = domain_value;
     *(codomain + count) = codomain_mapping;
   }
-  D_COUT(" mid:" << insert_at);
+  _DROut(" mid:" << insert_at);
   map->count = count + 1;
-  D_COUT_MAP(map);
+  _DROutMap(map);
   return insert_at;
 }
 
@@ -251,8 +251,8 @@ inline ISZ TMapSizeBytes(ISZ size) {
          value at that index. */
 template<MAP_A>
 ISZ TMapFind(const MAP* map, const D& domain_member) {
-  D_ASSERT(map);
-  D_COUT("\nSearching for domain_member:" << domain_member);
+  _DAssert(map);
+  _DROut("\nSearching for domain_member:" << domain_member);
 
   const D* domain = TMapDomain<MAP_P>(map);
   ISZ count = map->count, size = map->total;
@@ -260,18 +260,18 @@ ISZ TMapFind(const MAP* map, const D& domain_member) {
   while (low <= high) {
     mid = (low + high) >> 1;
     D x_i = domain[mid];
-    D_COUT("\n   low:" << low << " mid:" << mid << " high:" << high <<
+    _DROut("\n   low:" << low << " mid:" << mid << " high:" << high <<
            " x_i:" << x_i);
     if (x_i > domain_member) {
       high = mid - 1;
     } else if (x_i < domain_member) {
       low = mid + 1;
     } else {
-      D_COUT(". Hit!");
+      _DROut(". Hit!");
       return mid;
     }
   }
-  D_COUT("\n  Domain does not contain domain_member.");
+  _DROut("\n  Domain does not contain domain_member.");
   return CAInvalidIndex<ISZ>();
 }
 
@@ -295,7 +295,7 @@ inline ISZ TMapFindCodomain(const MAP* map, const ISZ& codomain_mapping) {
 /* Remaps the */
 template<MAP_A>
 inline void TMapRemapCodomain(MAP* map, ISZ index, ISZ codomain_mapping) {
-  D_ASSERT(map);
+  _DAssert(map);
   TMapCodomain<MAP_P>(map)[index] = codomain_mapping;
 }
 
@@ -304,7 +304,7 @@ inline void TMapRemapCodomain(MAP* map, ISZ index, ISZ codomain_mapping) {
 */
 template<MAP_A>
 ISZ TMapRemove(MAP* map, ISZ index) {
-  if (index < 0 || index >= map->count) D_RETURNT(ISZ, -AErrorInvalidIndex);
+  if (index < 0 || index >= map->count) _DReturnT(ISZ, -AErrorInvalidIndex);
   ISZ size = map->total, count = map->count, zero = 0;
   if (count == zero)
     if (--count == zero) {
@@ -412,18 +412,18 @@ class AMap {
     return TMapPrint<Printer, MAP_P>(o, This());
   }
 
-  /* Prints This object to the COut. */
-  inline COut& CPrint() { return PrintTo<COut>(StdOut()); }
+  /* Prints This object to the ROut. */
+  inline ROut& CPrint() { return PrintTo<ROut>(RefOut()); }
 
   /* Gets the aarray_. */
   inline AArray<IUA, ISZ, BytesInit_, BOF>& AJT() { return array_; }
 
   /* Gets a pointer to the object at the origin of the aarray_. */
-  inline MAP* This() { return TPtr<MAP>(AJT().Origin()); }
+  inline MAP* This() { return TRef<MAP>(AJT().Origin()); }
 };
 }  //< namespace _
 #undef TARGS
 #undef TPARAMS
 
 #endif
-#endif
+#endif  //< _CrabsMapHPP

@@ -1,19 +1,18 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_BIN_HPP
-#define CRABS_BIN_HPP
+#ifndef _CrabsBInHPP
+#define _CrabsBInHPP
 #include "BIn.h"
 #include "AType.hpp"
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 namespace _ {
 
-#if USING_CRABS_TEXT == YES_0
 inline const IUA* BInOrigin(const TBIn<ISC>* bin) { 
-  return TPtr<IUA>(bin, sizeof(TBIn<ISC>));
+  return TRef<IUA>(bin, sizeof(TBIn<ISC>));
 }
 
 inline IUA* BInOrigin(TBIn<ISC>* bin) {
-    return TPtr<IUA>(bin, sizeof(TBIn<ISC>));
+    return TRef<IUA>(bin, sizeof(TBIn<ISC>));
 }
 
 template<typename Printer>
@@ -58,9 +57,8 @@ inline const CHS* TBInStates(IS state) {
   if (state < 0 || state >= BInStateInvalid) state = BInStateInvalid;
   return &TBInStates<CHS>()[BInStateInvalid * 32];
 }
-#endif
 
 }  //< namespace _
 
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsBInHPP

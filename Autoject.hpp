@@ -1,13 +1,14 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_AUTOJECT_CODE
-#define CRABS_AUTOJECT_CODE
+#ifndef _CrabsAutojectHPP
+#define _CrabsAutojectHPP
 #include "Autoject.h"
 #include "Array.h"
+#include "Array.hpp"
 #include "Binary.hpp"
 #include "AType.hpp"
-#if SEAM >= CRABS_UNIPRINTER
-#if SEAM == CRABS_UNIPRINTER
+#if _Seam >= _CrabsUniprinter
+#if _Seam == _CrabsUniprinter
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -22,12 +23,12 @@ Please see the ASCII Data Specification for DRY documentation.
   template<typename T = CHA, typename ISZ = ISW, typename Class = ISZ>
   inline T* TObjectStart(void* obj) {
     IUW start = IUW(obj) + sizeof(Class);
-    return TPtr<T>(start);
+    return TRef<T>(start);
   }
 
   template<typename T = CHA, typename ISZ = ISW, typename Class>
   inline const T* TObjectStart(const void* obj) {
-    return CPtr<T>(TObjectStart<T, ISZ, Class>(CPtr<void>(obj)));
+    return CRef<T>(TObjectStart<T, ISZ, Class>(CRef<void>(obj)));
   }
   
 /* A word-aligned array of Size_ elements of T on the progam stack. */
@@ -36,7 +37,7 @@ template<ISW Size_ = ACPUCacheLineSize, typename T = IUA, typename ISZ = ISW,
 class TBOF {
  public:
   /* Default destructor does nothing. */
-  TBOF() : words_() { *TPtr<ISZ>(words_) = Size(); }
+  TBOF() : words_() { *TRef<ISZ>(words_) = Size(); }
 
   /* Returns the socket as a IUW*. */
   inline IUW* Words() { return words_; }
@@ -50,14 +51,14 @@ class TBOF {
   /* Gets the origin element of the socket. */
   template<typename T_ = CHA>
   inline T_* Begin() {
-    return TPtr<T_>(words_);
+    return TRef<T_>(words_);
   }
 
   /* Returns the first element of the ASCII Object data section. */
   template<typename RT = T>
   inline RT* Start() {
     ISW address = IUW(words_);
-    return TPtr<RT>(address + sizeof(Class));
+    return TRef<RT>(address + sizeof(Class));
   }
 
   /* Gets the end element of the socket. */
@@ -69,15 +70,15 @@ class TBOF {
   /* Gets the origin of the socket. */
   template<typename T_ = CHA, typename ISZ_ = ISW>
   inline T_& Element(ISZ_ index) {
-    if (index < 0 || index >= Size()) return NILP;
+    if (index < 0 || index >= Size()) return _NilP;
     return Begin()[index];
   }
 
   /* Sets the size to the new value. */
   template<typename ISW_>
   inline IUW* SizeSet(ISW_ size) {
-    A_ASSERT((size & ACPUWordMask) == 0);
-    *TPtr<ISZ>(words_) = size;
+    _AAssert((size & ACPUWordMask) == 0);
+    *TRef<ISZ>(words_) = size;
     return words_;
   }
 
@@ -106,25 +107,25 @@ public:
 
   /* RAMFactory Stack function allocates heap memory, returns the heap function,
   or returns the type. */
-  static IUW* Stack(IUW* boofer, ISW total) {
-    if (boofer == NILP)
+  static IUW* Stack(IUW* buffer, ISW total) {
+    if (buffer == _NilP)
       return reinterpret_cast<IUW*>(&Heap);
-    if (total < 0) return NILP;
+    if (total < 0) return _NilP;
     ISW bytes = total * sizeof(T);
     if (bytes < sizeof(ISW)) bytes = sizeof(ISW);
     ISW size_words = AlignUp(bytes) >> ACPUBytesLog2;
-    boofer = new IUW[size_words];
-    *TPtr<ISZ>(boofer) = total;
-    return boofer;
+    buffer = new IUW[size_words];
+    *TRef<ISZ>(buffer) = total;
+    return buffer;
   }
 
-  /* Deletes a non-nil boofer or calls Stack(boofer, bytes). */
-  static IUW* Heap(IUW* boofer, ISW bytes) {
-    if (boofer) {
-      delete[] boofer;
-      return NILP;
+  /* Deletes a non-nil buffer or calls Stack(buffer, bytes). */
+  static IUW* Heap(IUW* buffer, ISW bytes) {
+    if (buffer) {
+      delete[] buffer;
+      return _NilP;
     }
-    return Stack(boofer, bytes);
+    return Stack(buffer, bytes);
   }
 
   /* Gets the initial RAMFactory for the program stack or heap. */
@@ -152,23 +153,23 @@ class TObjectFactory {
 public:
 
   /* RAMFactory Stack function allocates heap memory, returns the heap function, or returns the type. */
-  static IUW* Stack(IUW* boofer, ISW bytes) {
-    if (boofer == NILP && bytes == 0) 
+  static IUW* Stack(IUW* buffer, ISW bytes) {
+    if (buffer == _NilP && bytes == 0) 
       return reinterpret_cast<IUW*>(&Heap);
-    if(bytes < sizeof(ISZ)) return NILP;
+    if(bytes < sizeof(ISZ)) return _NilP;
     ISW size_words = AlignUp(bytes) >> ACPUBytesLog2;
-    boofer = new IUW[size_words];
-    *TPtr<ISZ>(boofer) = ISZ(bytes);
-    return boofer;
+    buffer = new IUW[size_words];
+    *TRef<ISZ>(buffer) = ISZ(bytes);
+    return buffer;
   }
 
-  /* Deletes a non-nil boofer or calls Stack(boofer, bytes). */
-  static IUW* Heap(IUW* boofer, ISW bytes) {
-    if (boofer) {
-      delete[] boofer;
-      return NILP;
+  /* Deletes a non-nil buffer or calls Stack(buffer, bytes). */
+  static IUW* Heap(IUW* buffer, ISW bytes) {
+    if (buffer) {
+      delete[] buffer;
+      return _NilP;
     }
-    return Stack(boofer, bytes);
+    return Stack(buffer, bytes);
   }
 
   /* Gets the initial RAMFactory for the program stack or heap. */
@@ -195,22 +196,22 @@ public:
 };
 
 /* Deletes the given obj using the obj.factory. */
-inline void Delete(Autoject& obj, IUW* origin = NILP) {
+inline void Delete(Autoject& obj, IUW* origin = _NilP) {
   RAMFactory ram = obj.ram;
   if (ram) ram(obj.origin, RAMFactoryDelete);
   obj.origin = origin;
 }
 inline RAMFactory RAMFactoryHeap(RAMFactory ram) {
-  return RAMFactory(ram(NILP, 0));
+  return RAMFactory(ram(_NilP, 0));
 }
 inline RAMFactory RAMFactoryHeap(Autoject& obj) {
-  return RAMFactory(obj.ram(NILP, 0));
+  return RAMFactory(obj.ram(_NilP, 0));
 }
 
 /* Sets the size to the new_size*/
 template<typename ISZ = ISW>
 inline IUW* TSizeSet(IUW* origin, ISZ new_size) {
-  *TPtr<ISZ>(origin) = new_size;
+  *TRef<ISZ>(origin) = new_size;
   return origin;
 }
 
@@ -222,7 +223,7 @@ inline ISZ TSizeSet(Autoject& autoject, ISZ new_size) {
 /* Gets the ASCII Autoject size. */
 template<typename ISZ = ISW>
 inline ISZ TSize(IUW* origin) {
-  return *TPtr<ISZ>(origin);
+  return *TRef<ISZ>(origin);
 }
 
 /* Gets the ASCII Autoject size. */
@@ -265,7 +266,7 @@ inline ISZ TSizeWords(Autoject& autoject) {
 @param socket A raw ASCII Socket to clone. */
 template<typename T, typename ISZ = ISW, typename Class>
 IUW* TObjectFactoryNew(RAMFactory factory, ISZ size) {
-  IUW* origin = factory(NILP, TSizeBytes<T, ISZ, Class>(size));
+  IUW* origin = factory(_NilP, TSizeBytes<T, ISZ, Class>(size));
   TSizeSet<ISZ>(origin, size);
   return origin;
 }
@@ -305,64 +306,64 @@ template<typename IS>
 inline BOL TAutojectCanGrow(Autoject& obj) {
   IUW* origin = obj.origin;
   if (IsError(origin)) return false;
-  IS size = *TPtr<IS>(origin);
+  IS size = *TRef<IS>(origin);
   return AutojectCanGrow(size, AutojectGrowBytes(size));
 }
 
 
-/* A templated auto-object that has an optional boofer on the program stack. */
+/* A templated auto-object that has an optional buffer on the program stack. */
 template<typename T, typename ISZ, typename BOF, 
          typename Class>
-class Autoboofer {
+class Autobuffer {
   Autoject ajt_;  //< Automatic Object.
-  BOF      bof_;  //< Optional boofer on the program stack.
+  BOF      bof_;  //< Optional buffer on the program stack.
 
  public:
 
   /* Writes the size to the given word-aligned-down socket, making a new one if
   required. */
-  inline IUW* Init(IUW* boofer, ISZ size, RAMFactory ram) {
-    D_ASSERT(ram);
-    D_ASSERT(size >= CSizeMin<ISZ>());
+  inline IUW* Init(IUW* buffer, ISZ size, RAMFactory ram) {
+    _DAssert(ram);
+    _DAssert(size >= CSizeMin<ISZ>());
     ajt_.ram = ram;
-    if (IsError(boofer)) {
-      ISZ boofer_size = AlignUp(ISZ(size * sizeof(T) + sizeof(Class)));
-      boofer = ram(NILP, boofer_size);
+    if (IsError(buffer)) {
+      ISZ buffer_size = AlignUp(ISZ(size * sizeof(T) + sizeof(Class)));
+      buffer = ram(_NilP, buffer_size);
     }
-    D_RAM_WIPE(boofer, size * sizeof(T) + sizeof(Class));
-    TSizeSet<ISZ>(boofer, size);
-    ajt_.origin = boofer;
-    return boofer;
+    _DArrayFill(buffer, size * sizeof(T) + sizeof(Class));
+    TSizeSet<ISZ>(buffer, size);
+    ajt_.origin = buffer;
+    return buffer;
   }
 
   /* Constructs. */
-  Autoboofer() {
+  Autobuffer() {
     Init(bof_.Words(), ISZ(bof_.Size()),
          TObjectFactory<ISZ>().template Init<BOF>());
   }
 
   /* Creates a autoject with either statically or dynamically allocated
-  memory based on the size can fit in the boofer_. If the boofer_ is
-  statically allocated but the size can't fit in the boofer a new block of
+  memory based on the size can fit in the buffer_. If the buffer_ is
+  statically allocated but the size can't fit in the buffer a new block of
   dynamic memory will be created. */
-  Autoboofer(ISZ size, RAMFactory ram = NILP) {
+  Autobuffer(ISZ size, RAMFactory ram = _NilP) {
     Init(bof_.Words(), size,
          TObjectFactory<ISZ>().template Init<BOF>(ram));
   }
 
   /* Stores the origin and ram to the obj_. */
-  Autoboofer(IUW* origin, RAMFactory ram) {
+  Autobuffer(IUW* origin, RAMFactory ram) {
     ajt_.origin = origin;
     ajt_.ram = ram;
   }
 
   /* Destructor calls the RAMFactory factory. */
-  ~Autoboofer() { Delete(ajt_); }
+  ~Autobuffer() { Delete(ajt_); }
 
-  /* Gets the boofer_. */
-  inline BOF& Boofer() { return bof_; }
+  /* Gets the buffer_. */
+  inline BOF& Buffer() { return bof_; }
 
-  /* Returns the boofer_. */
+  /* Returns the buffer_. */
   inline IUW* Origin() { return ajt_.origin; }
 
   /* Sets the origin to the given pointer.
@@ -386,7 +387,7 @@ class Autoboofer {
 
   /* Returns the begin of the OBJ. */
   inline T* Begin() {
-    return TPtr<T>(ajt_.origin, sizeof(Class));
+    return TRef<T>(ajt_.origin, sizeof(Class));
   }
 
   /* Returns the start of the OBJ. */
@@ -396,7 +397,7 @@ class Autoboofer {
 
   /* Gets the stop of the OBJ. */
   inline CHA* Stop() {
-    return TPtr<CHA>(ajt_.origin) + CBytes() - 1;
+    return TRef<CHA>(ajt_.origin) + CBytes() - 1;
   }
 
   /* Gets the Autoject. */
@@ -411,7 +412,7 @@ class Autoboofer {
     Grow(ajt_);
   }
 
-  /* Returns true if the boofer is a Socket and false if it's a Nil. */
+  /* Returns true if the buffer is a Socket and false if it's a Nil. */
   static constexpr BOL UsesStack() { return sizeof(bof_) != 0; }
 
   /* Prints this autoject to the given printer. */
@@ -420,7 +421,7 @@ class Autoboofer {
     return o;
   }
 
-  //void CPrint() { PrintTo<::_::COut>(::_::StdOut()); }
+  //void CPrint() { PrintTo<::_::ROut>(::_::RefOut()); }
 
   private:
 
@@ -437,18 +438,18 @@ class Autoboofer {
   /* Resizes the given array.
   @return True upon success and false upon failure. */
   static BOL Resize(Autoject& obj, ISZ new_size) {
-    D_COUT("\nResizing Array to new_size:" << new_size);
-    IUW* boofer = obj.origin;
-    if (IsError(boofer)) return false;
-    ISZ size = TSizeBytes<ISZ>(boofer);
+    _DROut("\nResizing Array to new_size:" << new_size);
+    IUW* buffer = obj.origin;
+    if (IsError(buffer)) return false;
+    ISZ size = TSizeBytes<ISZ>(buffer);
     if (size < new_size) {
       if (size <= 0) return false;
-      TSizeSet<ISZ>(boofer, new_size);
+      TSizeSet<ISZ>(buffer, new_size);
       return true;
     }
-    IUW* new_begin = obj.ram(NILP, new_size);
+    IUW* new_begin = obj.ram(_NilP, new_size);
     TSizeSet<ISZ>(new_begin, new_size);
-    ArrayCopy(new_begin, boofer, new_size);
+    ArrayCopy(new_begin, buffer, new_size);
     obj.origin = new_begin;
     return true;
   }

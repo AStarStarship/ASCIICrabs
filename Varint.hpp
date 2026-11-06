@@ -1,12 +1,12 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_VARINT_HPP
-#define CRABS_VARINT_HPP
+#ifndef _CrabsVarintHPP
+#define _CrabsVarintHPP
 #include <_Config.h>
-#if SEAM >= CRABS_DIC
+#if _Seam >= _CrabsDictionary
 namespace _ {
 
-#if CPU_SIZE == CPU_2_BYTE
+#if _CPUSize == _CPU16Bit
 inline ISB UnpackISV(ISB value) {
   if (value < 0) {
     IUB result = 0x8000 return result | ~(value - 1);
@@ -65,5 +65,5 @@ inline IS TVarintPack(IS value) {
 }
 
 }  //< namespace _
-#endif
-#endif
+#endif  //< _Seam >= _CrabsDictionary
+#endif  //< _CrabsVarintHPP

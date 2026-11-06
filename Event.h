@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_EVENT_DECL
-#define CRABS_EVENT_DECL
+#ifndef _CrabsEventH
+#define _CrabsEventH
 #include <_Config.h>
-#if SEAM >= CRABS_DIC
+#if _Seam >= _CrabsDictionary
 namespace _ {
 
 /* Interface for an abstract event.
@@ -18,4 +18,4 @@ struct Event {
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsEventH

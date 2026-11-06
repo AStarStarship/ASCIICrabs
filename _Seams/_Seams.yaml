@@ -1,5 +1,5 @@
-# __Seams.yaml - Single source of truth for ASCIICrabs seam numbers.
-# Regenerate the seam table by running: python3 Hatch/SyncSeams.py __Seams.yaml
+# _Seams.yaml - Single source of truth for ASCIICrabs seam numbers.
+# Regenerate the seam table by running: python3 Hatch/SyncSeams.py _Seams.yaml
 #
 # Never edit _Seams.h by hand -- edit this file and re-run SyncSeams.py.
 #
@@ -16,126 +16,126 @@
 
 project: ASCIICrabs
 mode: ASCIICrabs
-release: CRABS_RELEASE
+release: _CrabsRelease
 
 seams:
-  - name: CRABS_CORE
+  - name: _CrabsCore
     module: Crabs
     file: 01.Core.hxx
     label: "Testing Crabs core types..."
 
-  - name: CRABS_ITOS
+  - name: _CrabsIToS
     module: Crabs
     file: 02.ItoS.hxx
     label: "Testing ITOS conversion..."
 
-  - name: CRABS_FTOS
+  - name: _CrabsFToS
     module: Crabs
     file: 03.FtoS.hxx
     label: "Testing FTOS conversion (Ryu)..."
 
-  - name: CRABS_UNIPRINTER
+  - name: _CrabsUniprinter
     module: Crabs
     file: 04.Uniprinter.hxx
     label: "Testing Uniprinter..."
 
-  - name: CRABS_CLOCK
+  - name: _CrabsClock
     module: Crabs
     file: 05.Clock.hxx
-    label: "Testing clock and UUID generation..."
+    label: "Testing Clock and UUID generation..."
 
-  - name: CRABS_ARRAY
+  - name: _CrabsArray
     module: Crabs
     file: 06.Array.hxx
-    label: "Testing array..."
+    label: "Testing Array..."
 
-  - name: CRABS_STACK
+  - name: _CrabsStack
     module: Crabs
     file: 07.Stack.hxx
-    label: "Testing stack..."
+    label: "Testing Stack..."
 
-  - name: CRABS_STRING
+  - name: _CrabsString
     module: Crabs
     file: 08.String.hxx
-    label: "Testing string..."
+    label: "Testing String..."
 
-  - name: CRABS_REGEX
+  - name: _CrabsRegEx
     module: Crabs
     file: 09.Regex.hxx
-    label: "Testing regex..."
+    label: "Testing RegEx..."
 
-  - name: CRABS_LOOM
+  - name: _CrabsLoom
     module: Crabs
     file: 10.Loom.hxx
-    label: "Testing loom..."
+    label: "Testing Loom..."
 
-  - name: CRABS_LIST
+  - name: _CrabsList
     module: Crabs
     file: 11.List.hxx
-    label: "Testing list..."
+    label: "Testing List..."
 
-  - name: CRABS_BOOK
+  - name: _CrabsBook
     module: Crabs
     file: 12.Book.hxx
-    label: "Testing book..."
+    label: "Testing Book..."
 
-  - name: CRABS_MAP
+  - name: _CrabsMap
     module: Crabs
     file: 13.Map.hxx
-    label: "Testing map..."
+    label: "Testing Map..."
 
-  - name: CRABS_TABLE
+  - name: _CrabsTable
     module: Crabs
     file: 14.Table.hxx
-    label: "Testing table..."
+    label: "Testing Table..."
 
-  - name: CRABS_DIC
+  - name: _CrabsDictionary
     module: Crabs
     file: 15.Dic.hxx
-    label: "Testing dic..."
+    label: "Testing Dic..."
 
-  - name: CRABS_OP
+  - name: _CrabsOp
     module: Crabs
     file: 16.CrabsOp.hxx
     label: "Testing CrabsOp..."
 
-  - name: CRABS_ROOM
+  - name: _CrabsRoom
     module: Crabs
     file: 17.Room.hxx
     label: "Testing Room..."
 
-  - name: CRABS_MATHCORE
+  - name: _CrabsMathCore
     module: Crabs
     file: 18.MathCore.hxx
     label: "Testing MathCore..."
 
-  - name: CRABS_RANDOM
+  - name: _CrabsRandom
     module: Crabs
     file: 19.Random.hxx
     label: "Testing RNG..."
 
-  - name: CRABS_FILE
+  - name: _CrabsFile
     module: Crabs
     file: 20.File.hxx
-    label: "Testing file..."
+    label: "Testing File..."
 
-  - name: CRABS_PROMISE
+  - name: _CrabsPromise
     module: Crabs
     file: 21.Promise.hxx
     label: "Testing Promise..."
 
-  - name: CRABS_SCRIPT
+  - name: _CrabsScript
     module: Crabs
     file: 22.Script.hxx
     label: "Testing Script..."
 
-  - name: CRABS_RELEASE
+  - name: _CrabsRelease
     module: Crabs
     file: 23.Release.hxx
-    label: "Release: runs the full sown tree..."
+    label: "Release: runs the Release Seams testsWe'r..."
 
 # ---------------------------------------------------------------------------
 # Do not edit _Seams.h, _Config.h, _Main.hxx, or the seam .hxx files' gating
 # by hand. Edit this YAML and re-run:
-#   python3 Hatch/SyncSeams.py __Seams.yaml
+#   python3 Hatch/SyncSeams.py _Seams.yaml
 # ---------------------------------------------------------------------------

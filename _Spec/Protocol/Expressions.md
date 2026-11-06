@@ -14,7 +14,7 @@ Once a valid Expression has been received, a room may then **Evaluate** that exp
                        out_params[] = { 1, NILL, kNIL };
     static const Op kOp= { “Example-Function_with_hypens_and_underscores”,
                           rxHeader, txHeader,
-                          “Description”, '(', ')', ' ', "-_", nullptr };
+                          “Description”, '(', ')', ' ', "-_", _NilP };
                                           ^    ^    ^    ^
                                           |    |    |    |
                 Pop One Operation --------+    |    |    |

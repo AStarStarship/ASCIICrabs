@@ -1,20 +1,22 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsClockHXX
+#define _CrabsClockHXX
 #include "Clock.hpp"
-#if SEAM >= CRABS_CLOCK
+#if _Seam >= _CrabsClock
 #include <ctime>
 #include "Uniprinter.hpp"
 #include "Random.h"
 #include "Crabs.h"
-#if SEAM == CRABS_CLOCK
+#if _Seam == _CrabsClock
 #include "_Debug.h"
 #else
 #include "_Release.h"
 #endif
-using namespace ::_;
 namespace _ {
 
 ISC ClockEpoch() {
-#if SEAM < CRABS_OP
+#if _Seam < _CrabsOp
   return AClockEpochYearInit;
 #else
   //@todo fix me!
@@ -233,9 +235,9 @@ IUD GenerateEvergreenSourceID() {
 @return Hot UUID as IUD */
 IUD CreateHotUUID(ISC seconds, ISC ticks, IUD source_id) {
   // Validate inputs
-  D_ASSERT(seconds >= 0 && seconds < (ISD(1) << 27));
-  D_ASSERT(ticks >= 0 && ticks < 192);  // Max 192 ticks per second
-  D_ASSERT(source_id < (IUD(1) << 28));
+  _DAssert(seconds >= 0 && seconds < (ISD(1) << 27));
+  _DAssert(ticks >= 0 && ticks < 192);  // Max 192 ticks per second
+  _DAssert(source_id < (IUD(1) << 28));
   
   IUD hot_uuid = 0;
   
@@ -260,8 +262,8 @@ IUD CreateHotUUID(ISC seconds, ISC ticks, IUD source_id) {
 @return Evergreen UUID as IUD */
 IUD CreateEvergreenUUID(ISC seconds, IUD source_id) {
   // Validate inputs
-  D_ASSERT(seconds >= 0 && seconds < (ISD(1) << 27));
-  D_ASSERT(source_id < (IUD(1) << 34));
+  _DAssert(seconds >= 0 && seconds < (ISD(1) << 27));
+  _DAssert(source_id < (IUD(1) << 34));
   
   IUD Evergreen = 0;
   
@@ -411,34 +413,34 @@ CHA ClockDayOfWeekInitial(ISN day_number) {
 }
 
 ISN ClockCompare(const AClock& date_a, const AClock& date_b) {
-  D_COUT("\n    Expecting Date:" << date_a << " and found:" << date_b);
+  _DROut("\n    Expecting Date:" << date_a << " and found:" << date_b);
 
   if (date_a.year != date_b.year) {
-    D_COUT("\n    year.a:" << date_a.year + ClockEpoch()
+    _DROut("\n    year.a:" << date_a.year + ClockEpoch()
                            << " != year.b:" << date_b.year + ClockEpoch());
     return 1;
   }
   if (date_a.month != date_b.month) {
-    D_COUT("\n    month.a:" << date_a.month
+    _DROut("\n    month.a:" << date_a.month
                             << " != month.b:" << date_b.month + 1 << " ");
     return 2;
   }
   if (date_a.day != date_b.day) {
-    D_COUT("\n    day.a:" << date_a.day << " != day.b:" << date_b.day << " ");
+    _DROut("\n    day.a:" << date_a.day << " != day.b:" << date_b.day << " ");
     return 3;
   }
   if (date_a.hour != date_b.hour) {
-    D_COUT("\n    hour.a:" << date_a.hour << " != hour.b:" << date_b.hour
+    _DROut("\n    hour.a:" << date_a.hour << " != hour.b:" << date_b.hour
                            << " ");
     return 4;
   }
   if (date_a.minute != date_b.minute) {
-    D_COUT("\n    minute.a:" << date_a.minute
+    _DROut("\n    minute.a:" << date_a.minute
                              << " != minute.b:" << date_b.minute);
     return 5;
   }
   if (date_a.second != date_b.second) {
-    D_COUT("\n    second.a:" << date_a.second
+    _DROut("\n    second.a:" << date_a.second
                              << " != second.b:" << date_b.second);
     return 6;
   }
@@ -450,43 +452,43 @@ ISN ClockCompare(ISC time_a, ISC time_b) {
   ClockInit(a, time_a);
   ClockInit(b, time_b);
   ISN result = ClockCompare(a, b);
-  D_COUT("\n  Comparing time_a:" << time_a << " to time_b:" << time_b
+  _DROut("\n  Comparing time_a:" << time_a << " to time_b:" << time_b
                                  << " with result:" << result);
   return result;
 }
 
 ISN ClockCompare(const AClock& clock, ISN year, ISN month, ISN day,
                  ISN hour = 0, ISN minute = 0, ISN second = 0) {
-  D_COUT("\n    Expecting " << year << '/"' << month << '/"' << day << '@'
+  _DROut("\n    Expecting " << year << '/"' << month << '/"' << day << '@'
                             << hour << ':' << minute << ':' << second
                             << " and found " << clock);
 
   if (year - ClockEpoch() != clock.year) {
-    D_COUT("\n    Expecting year:" << year << " but found:"
+    _DROut("\n    Expecting year:" << year << " but found:"
                                    << clock.year + ClockEpoch() << '.');
     return 1;
   }
   if (month != clock.month) {
-    D_COUT("\n    Expecting month:" << month << " but found:" << clock.month
+    _DROut("\n    Expecting month:" << month << " but found:" << clock.month
                                     << '.');
     return 2;
   }
   if (day != clock.day) {
-    D_COUT("\n    Expecting day:" << day << " but found:" << clock.day << '.');
+    _DROut("\n    Expecting day:" << day << " but found:" << clock.day << '.');
     return 3;
   }
   if (hour != clock.hour) {
-    D_COUT("\n    Expecting hour:" << hour << " but found:" << clock.hour
+    _DROut("\n    Expecting hour:" << hour << " but found:" << clock.hour
                                    << '.');
     return 4;
   }
   if (minute != clock.minute) {
-    D_COUT("\n    Expecting minute:" << minute << " but found:" << clock.minute
+    _DROut("\n    Expecting minute:" << minute << " but found:" << clock.minute
                                      << '.');
     return 5;
   }
   if (second != clock.second) {
-    D_COUT("\n    Expecting second:" << second << " but found:" << clock.second
+    _DROut("\n    Expecting second:" << second << " but found:" << clock.second
                                      << '.');
     return 6;
   }
@@ -503,7 +505,7 @@ inline void ClockZeroTime(AClock& local_time) {
 }
 
 inline TMC TimeMake(AClock& time) { 
-  return TMC(mktime(TPtr<tm>(&time)));
+  return TMC(mktime(TRef<tm>(&time)));
 }
 
 inline const ISA* ClockDaysMonth() {
@@ -540,7 +542,6 @@ inline TMD ClockTimeTMD(ISN year, ISN month, ISN day, ISN hour, ISN minute,
   return TClockTimestamp<ISC>(year, month, day, hour, minute, second);
 }
 
-#if USING_STA == YES_0
 inline CHA* SPrint(CHA* origin, CHA* stop, const AClock& clock) {
   return TSPrint<CHA>(origin, stop, clock);
 }
@@ -581,9 +582,6 @@ inline const CHA* SScanTime(const CHA* string, TMD& t) {
   return TSScan<CHA, CHC, TMD>(string, t);
 }
 
-#endif
-#if USING_STB == YES_0
-
 CHB* SPrint(CHB* origin, CHB* stop, const AClock& clock) {
   return TSPrint<CHB>(origin, stop, clock);
 }
@@ -621,11 +619,11 @@ inline const CHB* SScan(const CHB* string, AClock& clock) {
 }
 
 inline const CHB* SScan(const CHB* string, SSD& result) {
-  return NILP;// TSScan<CHB>(string, result);
+  return _NilP;// TSScan<CHB>(string, result);
 }
 
 inline const CHB* SScan(const CHB* string, SSE& result) {
-  return NILP;// TSScan<CHB>(string, result);
+  return _NilP;// TSScan<CHB>(string, result);
 }
 
 inline const CHB* SScan(const CHB* string, TMT& result) {
@@ -643,9 +641,6 @@ inline const CHB* ScanTime(const CHB* string, ISC& result) {
 inline const CHB* ScanTime(const CHB* string, ISD& result) {
   return TSScan<CHB, CHC, ISD>(string, result);
 }
-#endif
-
-#if USING_STC == YES_0
 
 inline CHC* SPrint(CHC* origin, CHC* stop, AClock& clock) {
   return TSPrint<CHC>(origin, stop, clock);
@@ -675,8 +670,8 @@ inline const CHC* ScanTime(const CHC* string, ISD& result) {
   return TSScan<CHC, CHC, ISD>(string, result);
 }
 
-#endif
-
 }  //< namespace _
 
-#endif  //< #if SEAM >= CRABS_CLOCK
+#endif  //< #if _Seam >= _CrabsClock
+
+#endif  //< _CrabsClockHXX

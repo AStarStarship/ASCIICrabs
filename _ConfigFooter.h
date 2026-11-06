@@ -1,147 +1,143 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef _CONFIG_FOOTER_H
-#define _CONFIG_FOOTER_H
+#ifndef _ConfigFooterH
+#define _ConfigFooterH
 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // The below macros can be override in the _Config.h file.
 
-#ifndef SEAM
-#define SEAM CRABS_RELEASE
-#endif
-
-#if CRABS_MAX_PARAMS < 0
-#error MAX_ERRORS must be greater than 0
+#if _CrabsParamsMax < 0
+#error _CrabsErrorsMax must be greater than 0
 #else
-#ifndef CRABS_ROOM_NAME_LENGTH_MAX
-#define CRABS_ROOM_NAME_LENGTH_MAX 32
+#ifndef _CrabsRoomNameLengthMax
+#define _CrabsRoomNameLengthMax 32
 #endif
 enum {
   CrabsParamsMax = 420,  //< Max items in a BSQ in a Crabs expression.
-	CrabsRoomNameLengthMax = CRABS_ROOM_NAME_LENGTH_MAX
+	CrabsRoomNameLengthMax = _CrabsRoomNameLengthMax
 };
 #endif
 
-#undef CRABS_ROOM_NAME_LENGTH_MAX
+#undef _CrabsRoomNameLengthMax
 
-#ifndef CRABS_MAX_WALLS
-#define CRABS_MAX_WALLS 32767
+#ifndef _CrabsWallsMax
+#define _CrabsWallsMax 32767
 #endif
-#ifndef CRABS_MAX_ERRORS
-#define CRABS_MAX_ERRORS 32767
+#ifndef _CrabsMaxErrors
+#define _CrabsMaxErrors 32767
 #endif
-#ifndef CRABS_MAX_PARAMS
-#define CRABS_MAX_PARAMS 32767
+#ifndef _CrabsParamsMax
+#define _CrabsParamsMax 32767
 #endif
-#ifndef CRABS_COM_TIMEOUT_TICKS
-#define CRABS_COM_TIMEOUT_TICKS 32767
+#ifndef _CrabsComTimeoutTicks
+#define _CrabsComTimeoutTicks 32767
 #else
-#if CRABS_COM_TIMEOUT_TICKS < 0
-#error MAX_ERRORS must be greater than 0!
+#if _CrabsComTimeoutTicks < 0
+#error _CrabsErrorsMax must be greater than 0!
 #endif
 #endif
-#ifndef CRABS_MAX_ADDRESS_LENGTH
-#define CRABS_MAX_ADDRESS_LENGTH 32767
+#ifndef _CrabsAddressLengthMax
+#define _CrabsAddressLengthMax 32767
 #endif
-#ifndef CRABS_OP_MAX_NAME_LENGTH
-#define CRABS_OP_MAX_NAME_LENGTH 32767
+#ifndef _CrabsOpNameLengthMax
+#define _CrabsOpNameLengthMax 32767
 #endif
-#ifndef CRABS_OP_MAX_DECRABSION_LENGTH
-#define CRABS_OP_MAX_DECRABSION_LENGTH 32767
+#ifndef _CrabsOpDescriptionLengthMax
+#define _CrabsOpDescriptionLengthMax 32767
 #endif
-#ifndef CRABS_TEXT_LENGTH
-#define CRABS_TEXT_LENGTH 32767
+#ifndef _CrabsTextLength
+#define _CrabsTextLength 32767
 #endif
-#ifndef CRABS_BOOFER_SIZE_RX
-#define CRABS_BOOFER_SIZE_RX 32767
+#ifndef _CrabsBufferSizeRX
+#define _CrabsBufferSizeRX 32767
 #endif
-#ifndef CRABS_BOOFER_SIZE_TX
-#define CRABS_BOOFER_SIZE_TX 32767
+#ifndef _CrabsBufferSizeTX
+#define _CrabsBufferSizeTX 32767
 #endif
-#ifndef CRABS_WINDOW_SIZE_MIN
-#define CRABS_WINDOW_SIZE_MIN 512
+#ifndef _CrabsWindowSizeMin
+#define _CrabsWindowSizeMin 512
 #endif
-#ifndef CRABS_CPU_CACHE_LINE_SIZE
-#define CRABS_CPU_CACHE_LINE_SIZE 64
+#ifndef _CPUCacheLineSize
+#define _CPUCacheLineSize 64
 #endif
-#ifndef CRABS_BOOFER_COUNT_DEFAULT
-#define CRABS_BOOFER_COUNT_DEFAULT 1024
+#ifndef _CrabsBufferCountDefault
+#define _CrabsBufferCountDefault 1024
 #else
-#if CRABS_BOOFER_COUNT_DEFAULT < 1
-#define CRABS_BOOFER_COUNT_DEFAULT 512
+#if _CrabsBufferCountDefault < 1
+#define _CrabsBufferCountDefault 512
 #endif
 #endif
-#ifndef CRABS_STACK_COUNT_MAX_DEFAULT
-#define CRABS_STACK_COUNT_MAX_DEFAULT 32
+#ifndef _CrabsStackCountMaxDefault
+#define _CrabsStackCountMaxDefault 32
 #endif
-#ifndef CRABS_FLOOR_SIZE
-#define CRABS_FLOOR_SIZE 1024
+#ifndef _CrabsFloorSize
+#define _CrabsFloorSize 1024
 #endif
-#ifndef CRABS_STACK_COUNT_MAX_DEFAULT
-#define CRABS_STACK_COUNT_MAX_DEFAULT 16
+#ifndef _CrabsStackCountMaxDefault
+#define _CrabsStackCountMaxDefault 16
 #endif
-#ifndef CRABS_OBJ_SIZE_DEFAULT
-#define CRABS_OBJ_SIZE_DEFAULT 256
+#ifndef _CrabsObjectSizeDefault
+#define _CrabsObjectSizeDefault 256
 #endif
-#ifndef CRABS_TOKEN_COUNT
-#define CRABS_TOKEN_COUNT 32
+#ifndef _CrabsTokenCount
+#define _CrabsTokenCount 32
 #endif
-#ifndef CRABS_STRING_COUNT_DEFAULT
-#define CRABS_STRING_COUNT_DEFAULT 28
+#ifndef _CrabsStringCountDefault
+#define _CrabsStringCountDefault 28
 #endif
-#ifndef CRABS_CIN_boofer_SIZE
-#define CRABS_CIN_boofer_SIZE 81
+#ifndef _CrabsRefInBufferSize
+#define _CrabsRefInBufferSize 81
 #endif
-#ifndef CRABS_UNICODE_VERSION_MAJOR
-#define CRABS_UNICODE_VERSION_MAJOR 12
+#ifndef _CrabsUnicodeVersionMajor
+#define _CrabsUnicodeVersionMajor 12
 #endif
-#ifndef CRABS_UNICODE_VERSION_MINOR
-#define CRABS_UNICODE_VERSION_MINOR 1
+#ifndef _CrabsUnicodeVersionMinor
+#define _CrabsUnicodeVersionMinor 1
 #endif
-#ifndef CRABS_UNICODE_ASSIGNED_CODE_POINTS
-#define CRABS_UNICODE_ASSIGNED_CODE_POINTS 277576
+#ifndef _CrabsUnicodeAssignedCodePoints
+#define _CrabsUnicodeAssignedCodePoints 277576
 #endif
-#ifndef CRABS_CONSOLE_WIDTH
-#define CRABS_CONSOLE_WIDTH 80
+#ifndef _RefOutWidth
+#define _RefOutWidth 80
 #endif
-#ifndef CRABS_DTA_WIDTH
-#define CRABS_DTA_WIDTH 0
+#ifndef _CrabsDataWidth
+#define _CrabsDataWidth 0
 #endif
-#ifndef CLOCK_EPOCH_YEAR  
-#define CLOCK_EPOCH_YEAR 1970
+#ifndef _ClockEpochYearBase  
+#define _ClockEpochYearBase 1970
 #endif
-#ifndef SLOT_SIZE_MIN
-#define SLOT_SIZE_MIN CRABS_CPU_CACHE_LINE_SIZE
+#ifndef _CrabsSlotSizeMin
+#define _CrabsSlotSizeMin _CPUCacheLineSize
 #endif
 
-#ifndef CRABS_ACTX_HANDLER_INIT
-#define CRABS_ACTX_HANDLER_INIT ACTXHandlerDefault
+#ifndef _CrabsContextHandlerInitialize
+#define _CrabsContextHandlerInitialize ACTXHandlerDefault
 #endif
 
 // End overridable `_Config.h` parameters.
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#if CRABS_PLATFORM == OS_WINDOWS
-#define APP_EXIT_SUCCESS 0
-#define APP_EXIT_FAILURE 1
+#if _CrabsPlatform == _OSWindows
+#define _ApplicationExitSuccess 0
+#define _ApplicationExitFailure 1
 enum {
   URIPathLengthMax = 1023,
   URLFilenameLengthMax = 255,
   AFilePathDelimitir = '\\',  //< The file path delimiter char.
   FilenamePad = 2,            //< extra chars for the "\\*" mask.
 };
-#elif CRABS_PLATFORM == OS_LINUX
-#define APP_EXIT_SUCCESS 0
-#define APP_EXIT_FAILURE 1
+#elif _CrabsPlatform == _OSLinux
+#define _ApplicationExitSuccess 0
+#define _ApplicationExitFailure 1
 enum {
   URIPathLengthMax = 4047,
   URLFilenameLengthMax = 255,
   AFilePathDelimitir = '/',  //< The file path delimiter char.
   FilenamePad = 0,
 };
-#elif CRABS_PLATFORM == OS_APPLE
-#define APP_EXIT_SUCCESS 0
-#define APP_EXIT_FAILURE 1
+#elif _CrabsPlatform == _OSApple
+#define _ApplicationExitSuccess 0
+#define _ApplicationExitFailure 1
 enum {
   URIPathLengthMax = 1023,
   URLFilenameLengthMax = 255,
@@ -149,79 +145,62 @@ enum {
   FilenamePad = 0,
 };
 #else
-#define APP_EXIT_SUCCESS 0
-#define APP_EXIT_FAILURE 1
+#define _ApplicationExitSuccess 0
+#define _ApplicationExitFailure 1
 enum {
   URIPathLengthMax = 1023,
   URLFilenameLengthMax = 255,
   AFilePathDelimitir = '/',  //< The file path delimiter char.
   FilenamePad = 0,
 };
-#endif
-
-#if CRABS_BYT == 0
-typedef IUA BYT;  //< Byte type for boofering.
-#else
-typedef ISA BYT;  //< Byte type for boofering.
 #endif
 
 // 128-bit integer support for GCC/Clang on x86_64
 // Only define if not already defined (e.g., by _ConfigHeader.h)
 // Note: ISE/IUE may be typedef'd in Header, so we use a macro guard
-#if defined(__GNUC__) && !defined(CRABS_ISE_DEFINED) && !defined(CRABS_IUE_DEFINED)
+#if defined(__GNUC__) && !defined(CRABS_ISE_DEFINED) && !defined(_CrabsUsing16ByteTypes)
 typedef __int128 ISE;
 typedef unsigned __int128 IUE;
 #define CRABS_ISE_DEFINED
-#define CRABS_IUE_DEFINED
+#define _CrabsUsing16ByteTypes
 #define HAS_128_BIT_INT
 #endif
 
-#if SEAM < CRABS_CORE
-#undef USING_STB
-#undef USING_STC
-#define USING_STB NO_0
-#define USING_STC NO_0
-#endif
-
-#if SEAM < CRABS_FTOS
-#undef USING_FPC
-#undef USING_FPD
-#define USING_FPC NO_0
-#define USING_FPD NO_0
-#endif
-
-#if USING_FP == 4
+// FPW = the native floating point type (FPC=4-byte, FPD=8-byte). Branch on
+// sizeof rather than _FPNative, which is the *type name* (a typedef), not an
+// integer width — `#if _FPNative == 8` was always false, so FPW was undefined.
+#if _CPUSize == _CPU16Bit
 typedef FPC FPW;
-#elif USING_FP == 8
+#else
 typedef FPD FPW;
 #endif
 
-#if CPU_SIZE == CPU_2_BYTE
-#define CPU_IS_LESS_THAN_32_BIT 1
-#define CPU_IS_LESS_THAN_64_BIT 1
-#define CPU_IS_GREATER_THAN_16_BIT 0
-#define CPU_IS_GREATER_THAN_32_BIT 0
-#elif CPU_SIZE == CPU_4_BYTE
-#define CPU_IS_LESS_THAN_32_BIT 0
-#define CPU_IS_LESS_THAN_64_BIT 1
-#define CPU_IS_GREATER_THAN_16_BIT 1
-#define CPU_IS_GREATER_THAN_32_BIT 0
-#elif CPU_SIZE == CPU_8_BYTE
-#define CPU_IS_LESS_THAN_32_BIT 0
-#define CPU_IS_LESS_THAN_64_BIT 0
-#define CPU_IS_GREATER_THAN_16_BIT 1
-#define CPU_IS_GREATER_THAN_32_BIT 1
+#if _CPUSize == _CPU16Bit
+#define _CPUIsLessThan32Bit 1
+#define _CPUIsLessThan64Bit 1
+#define _CPUIsGreaterThan16Bit 0
+#define _CPUIsGreaterThan32Bit 0
+#elif _CPUSize == _CPU32Bit
+#define _CPUIsLessThan32Bit 0
+#define _CPUIsLessThan64Bit 1
+#define _CPUIsGreaterThan16Bit 1
+#define _CPUIsGreaterThan32Bit 0
+#elif _CPUSize == _CPU8Byte
+#define _CPUIsLessThan32Bit 0
+#define _CPUIsLessThan64Bit 0
+#define _CPUIsGreaterThan16Bit 1
+#define _CPUIsGreaterThan32Bit 1
 #endif
 
-#if USING_STR == STRING_TYPE_A
+#if _LargestSTR == _StringTypeA
 typedef CHA CHR;
 typedef CHC CHD;
 typedef CHA* STR;
-#elif USING_STR == STRING_TYPE_B
+#elif _LargestSTR == _StringTypeB
 typedef CHB CHR;
 typedef CHB* STR;
 typedef CHC CHD;
-#elif USING_STR == STRING_TYPE_C
+#elif _LargestSTR == _StringTypeC
 typedef CHC CHR;
 typedef CHC* STR;
 typedef CHC CHD;
@@ -231,15 +210,15 @@ typedef CHA CHD;
 typedef CHA* STR;
 #endif
 
-#if DEFAULT_INT_SIZE == ATYPE_8BIT || DEFAULT_INT_SIZE == ATYPE_16BIT
+#if _DefaultIntSize == _AType1Byte || _DefaultIntSize == _AType2Byte
 typedef ISB ISR;
 typedef IUB IUR;
 typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
-#elif DEFAULT_INT_SIZE == ATYPE_32BIT
+#elif _DefaultIntSize == _AType4Byte
 typedef ISC ISR;
 typedef IUC IUR;
 typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
-#elif DEFAULT_INT_SIZE == ATYPE_64BIT
+#elif _DefaultIntSize == ATYPE_64BIT
 typedef ISD ISR;
 typedef IUD IUR;
 typedef double FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
@@ -250,37 +229,33 @@ typedef double FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
 // Forward-declared here to keep the config chain intact.
 namespace _ { class ISQ; class IUQ; }
 
-typedef uint64_t TMS;  //< Seconds-since-epoch timestamp (4,8 bytes).
+typedef IUD TMS;  //< Seconds-since-epoch timestamp (4,8 bytes).
 
 
 //< The Largest char, ASCII or Unicode.
-#if LARGEST_CHAR == STRING_TYPE_A
+#if _LargestChar == _StringTypeA
 typedef CHA CHL;
 #else
 typedef CHC CHL;
 #endif
 
-#if CPU_SIZE == CPU_8_BYTE
+#if _CPUSize == _CPU8Byte
 typedef ISB ISM;  //< Half of ISN type
 typedef IUB UIL;  //< Half of IUN type
 typedef ISW ISX;  //< Signed double-word int.
 typedef IUW IUX;  //< Unsigned double-word int.
 typedef ISW ISV;  //< Signed half-word int.
 typedef IUW IUV;  //< Unsigned half-word int.
-#if COMPILER_SUPPORTS_16_BYTE_INTEGERS
-#define LARGEST_POD_TYPE 16
-#else
-#define LARGEST_POD_TYPE 8
-#endif
-#elif CPU_SIZE == CPU_4_BYTE
+#define _LargestPODType 16
+#elif _CPUSize == _CPU32Bit
 typedef ISC ISX;  //< Signed double-word int.
 typedef IUC IUX;  //< Unsigned double-word int.
 typedef ISB ISM;  //< Signed half-word int.
 typedef ISB ISV;  //< Signed half-word int.
 typedef IUB UIL;  //< Unsigned half-word int.
 typedef IUB IUV;  //< Unsigned half-word int.
-#define LARGEST_POD_TYPE 8
-#elif CPU_SIZE == CPU_2_BYTE
+#define _LargestPODType 8
+#elif _CPUSize == _CPU16Bit
 typedef ISB ISO;  //< Signed double-word int.
 typedef ISB ISX;  //< Signed double-word int.
 typedef IUB IUO;  //< Unsigned double-word int.
@@ -290,10 +265,10 @@ typedef ISA ISM;  //< Signed half-word int.
 typedef IUA IUV;  //< Unsigned half-word int.
 typedef IUA UIL;  //< Unsigned half-word int.
 #else
-#define LARGEST_POD_TYPE 4
+#define _LargestPODType 4
 #endif
 
-#ifdef TME_32_BIT
+#ifdef _CrabsTME4Byte
 typedef TMC TME;
 #else
 typedef TMD TME;
@@ -301,17 +276,17 @@ typedef TMD TME;
 
 namespace _ {
 // Default character type.
-#if USING_STR == STRING_TYPE_A
+#if _LargestSTR == _StringTypeA
 enum {
   // Default String type is UTF-8.
   STR_ = (_ARY << (ATypePODBits - 1)) | _CHA,
 };
-#elif USING_STR == STRING_TYPE_B
+#elif _LargestSTR == _StringTypeB
 enum {
   // Default String type is UTF-8.
   STR_ = (_ARY << (TypePODBitCount - 1)) | _CHB,
 };
-#elif USING_STR == STRING_TYPE_C
+#elif _LargestSTR == _StringTypeC
 enum {
   // Default String type is UTF-8.
   STR_ = (_ARY << (TypePODBitCount - 1)) | _CHC,
@@ -325,49 +300,49 @@ enum {
   _STR = 1,     //< ASCII, UTF-8, UTF-16, or UTF-32 string.
 };
 
-#if ETE_STOP > 19 && ETE_STOP < 32
-#if CT5_STOP > CT4_STOP
+#if _ETEStop > 19 && _ETEStop < 32
+#if _CT5Stop > _CT4Stop
 #error CT5 is invalid.
 #endif
 #define USING_CT5 1
 typedef IUE CT5;
 enum {
-  _CT5 = CT5_STOP
+  _CT5 = _CT5Stop
 };
-#undefine CT5_STOP
-#undefine CT5_STOP
+#undefine _CT5Stop
+#undefine _CT5Stop
 #else
 enum {
   _ECE = 19
 };
 #endif
 
-#if ETD_STOP != ETE_STOP
-#if CT4_STOP > CT5_STOP
+#if _ETDStop != _ETEStop
+#if _CT4Stop > _CT5Stop
 #error CT4 is invalid.
 #endif
 #define USING_CT4 1
 typedef IUD CT4;
 enum {
-  _CT4 = CT4_STOP
+  _CT4 = _CT4Stop
 };
-#undefine CT4_STOP
+#undefine _CT4Stop
 #else
 enum {
   _ECD = _ECE
 };
 #endif
 
-#if ETC_STOP != ETD_STOP
-#if CT3_STOP > CT4_STOP
+#if ETCStop != _ETDStop
+#if _CT3Stop > _CT4Stop
 #error CT3 is invalid.
 #endif
-#define USING_CT3 1
+#define _UsingCT3 1
 typedef IUC CT3;
 enum {
-  _CT3 = CT3_STOP
+  _CT3 = _CT3Stop
 };
-#undefine CT3_STOP
+#undefine _CT3Stop
 #else
 enum {
   _ECC = _ECD,
@@ -378,16 +353,16 @@ enum {
 };
 #endif
 
-#if ECB_STOP != ETC_STOP
-#if ECB_STOP > CT3_STOP
+#if _ETBStop != ETCStop
+#if _ETBStop > _CT3Stop
 #error CT2 is invalid.
 #endif
-#define USING_CT2 1
+#define _UsingCT2 1
 typedef IUB CT2;
 enum {
-  _CT2 = ECB_STOP
+  _CT2 = _ETBStop
 };
-#undefine ECB_STOP
+#undefine _ETBStop
 #else
 enum {
   _ECB = _ECC
@@ -397,41 +372,41 @@ enum {
   _ECA = 31
 };
 
-#define PRIME_LARGEST_IUB 65521
-#define PRIME_LARGEST_UI4 4294967291
-#define PRIME_LARGEST_UI8 18446744073709551557
+#define _PrimeLargestIUB 65521
+#define _PrimeLargestIUC 4294967291
+#define _PrimeLargestIUD 18446744073709551557
 
-#define SIZEOF_ARRAY(type) (ISW(&type + 1) - ISW(&type))
+#define _SizeOfArray(type) (ISW(&type + 1) - ISW(&type))
 
 enum {
-  ACRBytes = CRABS_ROOM_BYTES,          //< Size of the Chinese Room in bytes.
-  CRSlotSizeMin = SLOT_SIZE_MIN,        //< Min size of a Slot.
-  AClockEpochYearInit = CLOCK_EPOCH_YEAR,   //< Timestamp epoch year, default: 1970.
-  ACPUCacheLineSize = CRABS_CPU_CACHE_LINE_SIZE,    //< CPU Cache line size.
-  CRMaxFloorsCount = CRABS_MAX_WALLS, //< Size of the Room Floor (socket).
-  CRErrorTotal = CRABS_MAX_ERRORS, //< Max errors before blowing up.
-  CRParamTotal = CRABS_MAX_PARAMS, //< Max number_ of parameters.
-  CRTimeoutMicroseconds = CRABS_COM_TIMEOUT_TICKS,  //< Sub-second ticks.
+  ACRBytes = _CrabsRoomBytes,          //< Size of the Chinese Room in bytes.
+  CRSlotSizeMin = _CrabsSlotSizeMin,        //< Min size of a Slot.
+  AClockEpochYearInit = _ClockEpochYearBase,   //< Timestamp epoch year, default: 1970.
+  ACPUCacheLineSize = _CPUCacheLineSize,    //< CPU Cache line size.
+  CRMaxFloorsCount = _CrabsWallsMax, //< Size of the Room Floor (socket).
+  CRErrorTotal = _CrabsMaxErrors, //< Max errors before blowing up.
+  CRParamTotal = _CrabsParamsMax, //< Max number_ of parameters.
+  CRTimeoutMicroseconds = _CrabsComTimeoutTicks,  //< Sub-second ticks.
   CRAddressLengthMax =
-      CRABS_MAX_ADDRESS_LENGTH,  //< Max address (_ADR) length.
-  CrabsOpNameLengthMax = CRABS_OP_MAX_NAME_LENGTH,
+      _CrabsAddressLengthMax,  //< Max address (_ADR) length.
+  CrabsOpNameLengthMax = _CrabsOpNameLengthMax,
   // Max length of a Op description .
-  CrabsOpDescriptionLengthMax = CRABS_OP_MAX_DECRABSION_LENGTH,
+  CrabsOpDescriptionLengthMax = _CrabsOpDescriptionLengthMax,
   // Max length of a Text.
-  ACharCount = CRABS_TEXT_LENGTH,
+  ACharCount = _CrabsTextLength,
 
   // Size of the Display Print Slot.
-  ASlotBooferSizeRx = CRABS_BOOFER_SIZE_RX,
+  ASlotBufferSizeRx = _CrabsBufferSizeRX,
 
-  // Size of the KeyboardInBoofer.
-  ASlotBooferSizeTx = CRABS_BOOFER_SIZE_TX,
+  // Size of the KeyboardInBuffer.
+  ASlotBufferSizeTx = _CrabsBufferSizeTX,
 
-  AWindowSizeMin = CRABS_WINDOW_SIZE_MIN,
+  AWindowSizeMin = _CrabsWindowSizeMin,
 
-  ABooferSizeDefault = CRABS_BOOFER_COUNT_DEFAULT,
-  AFloorSize = CRABS_FLOOR_SIZE,  //< Size, or initial size, of the Floor.
-  AStackTotalDefault = CRABS_STACK_COUNT_MAX_DEFAULT,
-  AObjSizeDefault = CRABS_OBJ_SIZE_DEFAULT,
+  ABufferSizeDefault = _CrabsBufferCountDefault,
+  AFloorSize = _CrabsFloorSize,  //< Size, or initial size, of the Floor.
+  AStackTotalDefault = _CrabsStackCountMaxDefault,
+  AObjSizeDefault = _CrabsObjectSizeDefault,
 
   // Extra reserved memory at the stop of TBOut.
   ABOutOverflowSize = 32,
@@ -439,15 +414,15 @@ enum {
   APrintC0Offset = 176,  //< Value add to values 0-32 when printing.
   ATokenLongest  = 31,   //< Max length of a token plus one.
   AMinStackSize  = 1,    //< Min Crabs stack size.
-  ABooferSizeDefaultWords =
-      ABooferSizeDefault / sizeof(ISW) + ABooferSizeDefault % sizeof(ISW) ? 1
+  ABufferSizeDefaultWords =
+      ABufferSizeDefault / sizeof(ISW) + ABufferSizeDefault % sizeof(ISW) ? 1
                                                                           : 0,
-  ASTRCount = CRABS_STRING_COUNT_DEFAULT,
-  AConsoleWidth = CRABS_CONSOLE_WIDTH,
-  CInBooferSize =
-      CRABS_CIN_boofer_SIZE,         //< Preallocated CIn boofer char count.
+  ASTRCount = _CrabsStringCountDefault,
+  AConsoleWidth = _RefOutWidth,
+  RInBufferSize =
+      _CrabsRefInBufferSize,         //< Preallocated RIn buffer char count.
   AKeyEnter = 0,                       //< The keyboard value for enter.
-  ATypeLargestPOD = LARGEST_POD_TYPE,  //< The largest POD type.
+  ATypeLargestPOD = _LargestPODType,  //< The largest POD type.
 };
 
 
@@ -460,26 +435,26 @@ enum {
 };
 }  //< namespace _
 
-#undef CRABS_ROOM_BYTES
-#undef MAX_ERRORS
-#undef MAX_NUM_PARAMS
-#undef MAX_STRING_LENGTH
-#undef COM_TIMEOUT_TICKS
-#undef CRABS_LOG_SIZE
-#undef OPERATION_MAX_NAME_LENGTH
-#undef OPERATION_MAX_DECRABSION_LENGTH
-#undef CRABS_TEXT_LENGTH
-#undef CRABS_BOOFER_SIZE_RX
-#undef CRABS_BOOFER_SIZE_TX
-#undef CRABS_WINDOW_SIZE_MIN
-#undef CRABS_BOOFER_COUNT_DEFAULT
-#undef CRABS_STACK_COUNT_MAX_DEFAULT
-#undef CRABS_FLOOR_SIZE
-#undef CRABS_STACK_COUNT_MAX_DEFAULT
-#undef CRABS_OBJ_SIZE_DEFAULT
-#undef CRABS_TOKEN_COUNT
-#undef CRABS_CPU_CACHE_LINE_SIZE
-#undef CRABS_STRING_COUNT_DEFAULT
+#undef _CrabsRoomBytes
+#undef _ErrorsMax
+#undef _ParamCountMax
+#undef _StringLengthMax
+#undef _ComTimeoutTicks
+#undef _CrabsLogSize
+#undef _OperationNameLengthMax
+#undef _OperationDescriptionLengthMax
+#undef _CrabsTextLength
+#undef _CrabsBufferSizeRX
+#undef _CrabsBufferSizeTX
+#undef _CrabsWindowSizeMin
+#undef _CrabsBufferCountDefault
+#undef _CrabsStackCountMaxDefault
+#undef _CrabsFloorSize
+#undef _CrabsStackCountMaxDefault
+#undef _CrabsObjectSizeDefault
+#undef _CrabsTokenCount
+#undef _CPUCacheLineSize
+#undef _CrabsStringCountDefault
 
-#endif  // _CONFIG_FOOTER_H
+#endif  //< _ConfigFooterH
 

@@ -1,8 +1,14 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_RNG_DECL
-#define CRABS_RNG_DECL
+#ifndef _CrabsRandomH
+#define _CrabsRandomH
 #include <_Config.h>
+// std headers go in the global namespace, never inside `namespace _` —
+// the std headers reference ::std / ::__builtin symbols unqualified, and
+// nesting them in `_` makes the compiler resolve `std` to `_::std`.
+#include <random>
+#include <cstdlib>
+#include <cmath>
 namespace _ {
 
 /* Gets a random generator device seed. */
@@ -108,4 +114,4 @@ void RandomBits(ISC& result, ISC bit_count);
 void RandomBits(ISD& result, ISD bit_count);
 
 }  //< namespace _
-#endif
+#endif  //< _CrabsRandomH

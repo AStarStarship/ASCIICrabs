@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_LANGUAGE_DECL
-#define CRABS_LANGUAGE_DECL
+#ifndef _CrabsLanguageH
+#define _CrabsLanguageH
 #include <_Config.h>
-#if SEAM >= CRABS_DIC
+#if _Seam >= _CrabsDictionary
 namespace _ {
 namespace language {
 
@@ -27,4 +27,4 @@ struct Language {
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsLanguageH

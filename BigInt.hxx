@@ -1,4 +1,7 @@
 // Copyright AStarship <https://astarship.net>.
+#pragma once
+#ifndef _CrabsBigIntHXX
+#define _CrabsBigIntHXX
 //
 // Arbitrary-precision integer implementation.
 // Base = 10^9 (fits in 30 bits; two digits × 30 bits = 60 bits < 64-bit IUD).
@@ -13,6 +16,7 @@
 //   - length_: member variable tracking how many digits are in use.
 
 #include "BigInt.h"
+#if _Seam >= _CrabsUniprinter
 
 namespace _ {
 
@@ -28,8 +32,8 @@ namespace _ {
 // Helper: allocate an Autoject buffer for `count` digits.
 // Returns the origin, or an error pointer on failure.
 static inline IUW* AujAlloc(RAMFactory ram, ISW count) {
-  IUW* origin = ram(NILP, 0);
-  origin = ram(NILP, sizeof(ISW) + sizeof(IUD) * count);
+  IUW* origin = ram(_NilP, 0);
+  origin = ram(_NilP, sizeof(ISW) + sizeof(IUD) * count);
   return origin;
 }
 
@@ -174,7 +178,7 @@ IUQ& IUQ::operator=(const IUQ& other) {
 
 IUQ::~IUQ() {
   aobj_.origin = aobj_.ram(aobj_.origin, RAMFactoryDelete);
-  aobj_.ram = NILP;
+  aobj_.ram = _NilP;
 }
 
 BOL IUQ::IsError() const {
@@ -182,20 +186,20 @@ BOL IUQ::IsError() const {
 }
 
 IUD* IUQ::DigitsRaw() {
-  return TPtr<IUD>(aobj_.origin) + 1;
+  return TRef<IUD>(aobj_.origin) + 1;
 }
 
 const IUD* IUQ::DigitsRaw() const {
-  return TPtr<IUD>(aobj_.origin) + 1;
+  return TRef<IUD>(aobj_.origin) + 1;
 }
 
 ISW IUQ::DigitsCapacity() {
-  ISW bytes = *TPtr<ISW>(aobj_.origin);
+  ISW bytes = *TRef<ISW>(aobj_.origin);
   return (bytes - sizeof(ISW)) / sizeof(IUD);
 }
 
 ISW IUQ::DigitsCapacity() const {
-  ISW bytes = *TPtr<ISW>(aobj_.origin);
+  ISW bytes = *TRef<ISW>(aobj_.origin);
   return (bytes - sizeof(ISW)) / sizeof(IUD);
 }
 
@@ -737,3 +741,6 @@ DTW TypeOf(const ISQ&) { return 14; }
 
 //< @endingroup BigInt
 }  // namespace _
+#endif  //< _Seam >= _CrabsUniprinter
+
+#endif  //< _CrabsBigIntHXX

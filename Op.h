@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_OP_DECL
-#define CRABS_OP_DECL
+#ifndef _CrabsOpH
+#define _CrabsOpH
 #include <_Config.h>
-#if SEAM >= CRABS_OP
+#if _Seam >= _CrabsOp
 #include "AType.h"
 #include "AType.hpp"
 namespace _ {
@@ -20,16 +20,16 @@ result, and optional description of a data set.
 @code
 static const Op This = { "Key",
     Params<1, 2>::Header, Params<1, 2>::Header,
-    "Description", '}', ';', ' ', NILP, "-", NILP };
+    "Description", '}', ';', ' ', _NilP, "-", _NilP };
 
 static const Op OpExample =   { "Key2",
     NumOps (0), FirstOp ('A'),
-    "Description", '}', ';', ' ', NILP, "-", NILP };
+    "Description", '}', ';', ' ', _NilP, "-", _NilP };
 @endcode */
 
 const Op* OpError(ERC error);
 
 }  //< namespace _
 
-#endif
-#endif
+#endif  //< _Seam >= _CrabsOp
+#endif  //< _CrabsOpH

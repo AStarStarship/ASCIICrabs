@@ -1,10 +1,10 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
 #include "Clock.h"
-#if SEAM >= CRABS_CLOCK
+#if _Seam >= _CrabsClock
 #ifndef CRABS_CLOCK_HPP
 #define CRABS_CLOCK_HPP
-#if SEAM == CRABS_COUT
+#if _Seam == _CrabsCore
 #include "_Debug.h"
 #else
 #include "_Release.h"
@@ -147,39 +147,39 @@ CHS* Print(CHS* cursor, CHS* stop, TME& t) {
   return SPrint(cursor, stop, t.ticks);
 }*/
 
-#if USING_STR
+#if _LargestSTR
 
 template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* cursor, CHS* stop, const AClock& clock, 
     TMC epoch = ClockEpoch()) {
   // The way the utf functions are setup, we return a nil-term CHA so we
   // don't have to check to write a single CHA in this
-  A_ASSERT(cursor);
-  A_ASSERT(cursor < stop);
+  _AAssert(cursor);
+  _AAssert(cursor < stop);
 
   cursor = SPrint(cursor, stop, ISC(clock.year) - epoch);
   if (IsError(cursor)) 
-    return NILP;
+    return _NilP;
   *cursor++ = '-';
   cursor = SPrint(cursor, stop, clock.month + 1);
   if (IsError(cursor))
-    return NILP;
+    return _NilP;
   *cursor++ = '-';
   cursor = SPrint(cursor, stop, clock.day);
   if (IsError(cursor))
-    return NILP;
+    return _NilP;
   *cursor++ = '@';
   cursor = SPrint(cursor, stop, clock.hour);
   if (IsError(cursor))
-    return NILP;
+    return _NilP;
   *cursor++ = ':';
   cursor = SPrint(cursor, stop, clock.minute);
   if (IsError(cursor))
-    return NILP;
+    return _NilP;
   *cursor++ = ':';
   cursor = SPrint(cursor, stop, clock.second);
   if (IsError(cursor))
-    return NILP;
+    return _NilP;
   return cursor;
 }
 
@@ -201,15 +201,15 @@ template<typename CHS = CHR, typename CHT = CHD>
 CHS* TSPrint(CHS* cursor, CHS* stop, const TMT& t) {
   // The way the utf functions are setup, we return a nil-term CHA so we
   // don't have to check to write a single CHA in this
-  A_ASSERT(cursor);
-  A_ASSERT(cursor < stop);
+  _AAssert(cursor);
+  _AAssert(cursor < stop);
 
   AClock clock;
   ClockInit(clock, ISD(t.seconds));
   cursor = SPrint(cursor, stop, clock);
   *cursor++ = ':';
   cursor = SPrint(cursor, stop, t.ticks);
-  if (IsError(cursor)) return NILP;
+  if (IsError(cursor)) return _NilP;
   return cursor;
 }
 
@@ -223,30 +223,30 @@ Printer& TSPrint(Printer& o, TMT& t) {
 /* Scans a time in seconds from the given string. */
 template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
-  if (element == NILP)
-    return NILP;
+  if (element == _NilP)
+    return _NilP;
 
-  D_COUT("\n\n    Scanning time:\"" << element << '\"');
+  _DROut("\n\n    Scanning time:\"" << element << '\"');
   ISC h = 0,   //< Hour.
       m = 0,   //< Minute.
       s = 0;   //< Second.
   if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(++element, h))) {
-    D_COUT("\nInvalid hour:" << h);
-    return NILP;
+    _DROut("\nInvalid hour:" << h);
+    return _NilP;
   }
   element = TStringSkipNumbers<CHS>(element);
   if (h < 0) {
-    D_COUT("\nHours:" << h << " can't be negative.");
-    return NILP;
+    _DROut("\nHours:" << h << " can't be negative.");
+    return _NilP;
   }
   if (h > 23) {
-    D_COUT("\nHours:" << h << " can't be > 23.");
-    return NILP;
+    _DROut("\nHours:" << h << " can't be > 23.");
+    return _NilP;
   }
-  D_COUT(h);
+  _DROut(h);
   CHS c = *element++;
   if (!c || TIsWhitespace<CHS>(c)) {  // Case @HH
-    D_COUT(" HH ");
+    _DROut(" HH ");
     // Then it's a single number_, so create a ISC for the current
     // user-time hour..
     hour = h;
@@ -254,119 +254,119 @@ const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
   }
   c = TToLower<CHS>(c);
   if (c == 'a') {  //
-    D_COUT("\nCase @HHAm\n HHam ");
+    _DROut("\nCase @HHAm\n HHam ");
     c = *element++;
     if (TToLower<CHS>(c) == 'm') c = *element++;
     if (c && !TIsWhitespace<CHS>(c)) {
-      D_COUT("\nInvalid am format.");
-      return NILP;
+      _DROut("\nInvalid am format.");
+      return _NilP;
     }
-    D_COUT(" @HHAM ");
+    _DROut(" @HHAM ");
     hour = h;
     return element;
   }
   if (c == 'p') {
-    D_COUT(" Case @HHpm ");
+    _DROut(" Case @HHpm ");
     c = *element++;
     if (TToLower<CHS>(c) == 'm') c = *element++;
     if (c && !TIsWhitespace<CHS>(c)) {
-      D_COUT("\ninvalid pm format.");
-      return NILP;
+      _DROut("\ninvalid pm format.");
+      return _NilP;
     }
-    D_COUT("\nCase @HHPM " << h + 12 << ":00:00");
+    _DROut("\nCase @HHPM " << h + 12 << ":00:00");
     hour = h + 12;
     return element;
   }
   if (c != ':') {
-    D_COUT("\nExpecting ':'.");
-    return NILP;
+    _DROut("\nExpecting ':'.");
+    return _NilP;
   }
 
-  D_COUT(
+  _DROut(
       "\nCases HH:MM, HH::MMam, HH::MMpm, HH:MM:SS, HH:MM:SSam, and "
       "HH:MM:SSpm");
 
-  if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, m))) return NILP;
+  if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, m))) return _NilP;
   element = TStringSkipNumbers<CHS>(element);
   if (m < 0) {
-    D_COUT("\nMinutes:" << m << " can't be negative!");
-    return NILP;
+    _DROut("\nMinutes:" << m << " can't be negative!");
+    return _NilP;
   }
   if (m >= 60) {
-    D_COUT("\nMinutes:" << m << " can't be >= 60!");
-    return NILP;  //< 60 minutes in an hour.
+    _DROut("\nMinutes:" << m << " can't be >= 60!");
+    return _NilP;  //< 60 minutes in an hour.
   }
-  D_COUT(':' << m);
+  _DROut(':' << m);
 
   element = TStringSkipNumbers<CHS>(element);
   c = *element++;
   if (!c || TIsWhitespace<CHS>(c)) {
-    D_COUT(" HH:MM ");
+    _DROut(" HH:MM ");
     hour = h;
     minute = m;
     return element;
   }
   c = TToLower<CHS>(c);
   if (c == 'a') {
-    D_COUT(" HH:MMam ");
+    _DROut(" HH:MMam ");
     c = *element++;
     if (TToLower<CHS>(c) == 'm') {  // The 'm' is optional.
       c = *element++;
     }
     if (c && !TIsWhitespace<CHS>(c)) {  // The space is not.
-      D_COUT("Invalid am in HH::MM AM");
-      return NILP;
+      _DROut("Invalid am in HH::MM AM");
+      return _NilP;
     }
     hour = h;
     minute = m;
     return element;
   }
   if (c == 'p') {  //< Case HH:MM PM
-    D_COUT(" HH:MMpm ");
+    _DROut(" HH:MMpm ");
     c = *element++;
     if (TToLower<CHS>(c) == 'm') {  //< The 'm' is optional.
       c = *element++;
     }
     if (c && !TIsWhitespace<CHS>(c)) {  //< The space is not.
-      D_COUT("Invalid am in HH::MM PM");
-      return NILP;
+      _DROut("Invalid am in HH::MM PM");
+      return _NilP;
     }
     hour = h + 12;
     minute = m;
     return element;
   }
-  if (c != ':') return NILP;
+  if (c != ':') return _NilP;
 
-  D_COUT("\n    Cases HH:MM:SS, HH:MM:SSam, and HH:MM:SSpm");
+  _DROut("\n    Cases HH:MM:SS, HH:MM:SSam, and HH:MM:SSpm");
 
-  if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, s))) return NILP;
+  if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, s))) return _NilP;
   if (s < 0) {
-    D_COUT("\nSeconds:" << s << " can't be negative!");
-    return NILP;
+    _DROut("\nSeconds:" << s << " can't be negative!");
+    return _NilP;
   }
   if (s > 60) {
-    D_COUT("\nSeconds:" << s << " can't be >= 60!");
-    return NILP;
+    _DROut("\nSeconds:" << s << " can't be >= 60!");
+    return _NilP;
   }
-  D_COUT(':' << s);
+  _DROut(':' << s);
   element = TStringSkipNumbers<CHS>(element);
   c = TToLower<CHS>(*element);
   if (!c || TIsWhitespace<CHS>(c)) {
-    D_COUT(" HH:MM:SS ");
+    _DROut(" HH:MM:SS ");
     hour = h;
     minute = m;
     second = s;
     return element;
   }
   if (c == 'a') {
-    D_COUT(" HH:MM:SSam ");
+    _DROut(" HH:MM:SSam ");
     c = *element++;
     if (TToLower<CHS>(c) == 'm') {  //< The 'm' is optional.
       c = *element++;
     }
     if (!c || !TIsWhitespace<CHS>(c)) {  //< The space is not.
-      D_COUT("\nInvalid am in HH::MM:SS AM");
-      return NILP;
+      _DROut("\nInvalid am in HH::MM:SS AM");
+      return _NilP;
     }
     hour = h;
     minute = m;
@@ -374,17 +374,17 @@ const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
     return element;
   }
   if (c != 'p') {
-    D_COUT("\nExpecting a PM but found:" << c);
-    return NILP;  // Format error!
+    _DROut("\nExpecting a PM but found:" << c);
+    return _NilP;  // Format error!
   }
-  D_COUT(" HH:MM:SSpm ");
+  _DROut(" HH:MM:SSpm ");
   c = TToLower<CHS>(*element++);
   if (c == 'm') {  //< The 'm' is optional.
     c = *element++;
   }
   if (!c || !TIsWhitespace<CHS>(c)) {  //< The space is not.
-    D_COUT("\nInvalid am in HH::MM:SS PM");
-    return NILP;
+    _DROut("\nInvalid am in HH::MM:SS PM");
+    return _NilP;
   }
   hour = h + 12;
   minute = m;
@@ -395,8 +395,8 @@ const CHS* TSScan(const CHS* element, ISC& hour, ISC& minute, ISC& second) {
 /* Scans the given string for a timestamp. */
 template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* element, AClock& clock) {
-  D_ASSERT(element);
-  D_COUT("\n    Scanning AClock:\"" << element << "\n    Scanning: ");
+  _DAssert(element);
+  _DROut("\n    Scanning AClock:\"" << element << "\n    Scanning: ");
   element = TSSkipAll<CHS>(element, '0');
   CHS c = *element;  //< The current CHS.
   const CHS* stop;  //< Might not need
@@ -407,8 +407,8 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
   if (c == '@') {
     element = TSScan<CHS, CHT>(element, hour, minute, second);
     if (IsError(element)) {
-      D_COUT("\nCase @ invalid time");
-      return NILP;
+      _DROut("\nCase @ invalid time");
+      return _NilP;
     }
     clock.hour = hour;
     clock.minute = minute;
@@ -419,7 +419,7 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
   if (c == '#') {
     element = TSScan<CHS, CHT>(element, hour, minute, second);
     if (IsError(element)) {
-      D_COUT("\nCase @ invalid time");
+      _DROut("\nCase @ invalid time");
     }
     clock.hour += hour;
     clock.minute += minute;
@@ -435,24 +435,24 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
 
   // SScan value1
   if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, value1))) {
-    D_COUT("SScan error at value1");
-    return NILP;
+    _DROut("SScan error at value1");
+    return _NilP;
   }
   if (value1 < 0) {
-    D_COUT("Dates can't be negative.");
-    return NILP;
+    _DROut("Dates can't be negative.");
+    return _NilP;
   }
   element = TSDecimalEnd<CHS>(element);
   if (IsError(element)) 
-    return NILP;
+    return _NilP;
   CHT delimiter = *element++;
-  D_COUT(value1);
+  _DROut(value1);
   if (delimiter == '@') {
-    D_COUT(" HH@ ");
+    _DROut(" HH@ ");
 
     if (IsError(element = TSScan<CHS, CHT>(element, hour, minute, second))) {
-      D_COUT("\nInvalid time DD@");
-      return NILP;
+      _DROut("\nInvalid time DD@");
+      return _NilP;
     }
     clock.day = value1;
 
@@ -461,26 +461,26 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
   // SScan value2.
   element = TSSkipAll<CHS>(element, '0');
   if (IsError(TSScanSigned<ISC, IUC, CHS, CHT>(element, value2))) {
-    D_COUT("\n    Failed scanning value2 of date.");
-    return NILP;
+    _DROut("\n    Failed scanning value2 of date.");
+    return _NilP;
   }
   if (value2 < 0) {
-    D_COUT("Day can't be negative.");
-    return NILP;  //< Invalid month and day.
+    _DROut("Day can't be negative.");
+    return _NilP;  //< Invalid month and day.
   }
-  D_COUT(value2);
+  _DROut(value2);
   element = TSDecimalEnd<CHS>(element);
   c = *element;
   if (c != delimiter) {
-    D_COUT("\n    Cases MM/DD and MM/YYyy");
+    _DROut("\n    Cases MM/DD and MM/YYyy");
     if (c == '@') {
       if (IsError(element = TSScan<CHS, CHT>(element, hour, minute, second))) {
-        D_COUT(" invalid time ");
-        return NILP;
+        _DROut(" invalid time ");
+        return _NilP;
       }
     }
     if (!c || TIsWhitespace<CHS>(c)) {
-      D_COUT("\n    Format is MM/DD and year is " << clock.year + ClockEpoch());
+      _DROut("\n    Format is MM/DD and year is " << clock.year + ClockEpoch());
       // is_last_year = ((value1 >= std_tm.mon) &&
       //    (value2 >= std_tm.mday)) ? 0:1;
       clock.year += is_last_year;
@@ -496,18 +496,18 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
     c = TToLower<CHS>(c);
     if ((value1 < 12) && (value2 > 0) &&
         (value2 <= ClockMonthDayCount(value1))) {
-      D_COUT(" MM/DD ");
+      _DROut(" MM/DD ");
       if (value1 > 11) {
-        D_COUT("\nInvalid MM/DD@ month");
-        return NILP;
+        _DROut("\nInvalid MM/DD@ month");
+        return _NilP;
       }
       // We need to find out what year it is.
       AClock clock;
       ClockInit(clock);
 
       if (value2 > ClockMonthDayCount(clock.year - ClockEpoch(), value1)) {
-        D_COUT("\nInvalid MM/DD@ day");
-        return NILP;
+        _DROut("\nInvalid MM/DD@ day");
+        return _NilP;
       }
       clock.month = value1 - 1;
       clock.day = value2;
@@ -515,25 +515,25 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
       clock.minute = minute;
       clock.second = second;
       if (IsError(element = TSScan(element, hour, minute, second))) {
-        D_COUT("\nInvalid MM/DD@");
-        return NILP;
+        _DROut("\nInvalid MM/DD@");
+        return _NilP;
       }
 
       return element + 1;
     }
     if ((value1 < 12) && (value2 > ClockMonthDayCount(value1))) {
-      D_COUT(" MM/YYyy");
+      _DROut(" MM/YYyy");
       clock.month = value1 - 1;
       clock.year = value2;
       if (IsError(element = TSScan<CHS, CHT>(element, hour, minute, second))) {
-        D_COUT("\nInvalid MM / YYYY@ time");
-        return NILP;
+        _DROut("\nInvalid MM / YYYY@ time");
+        return _NilP;
       }
 
       return element + 1;
     }
-    D_COUT("\nInvalid MM/DD or MM/YYyy format");
-    return NILP;
+    _DROut("\nInvalid MM/DD or MM/YYyy format");
+    return _NilP;
   }
 
   // Formats MM/DD/YYyy and YYyy/MM/DD
@@ -541,44 +541,44 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
   c = *element;
   // Then there are 3 values and 2 delimiters.
   if (!IsDigit(c) || !TSScanSigned<ISC, IUC, CHS, CHT>(element, value3)) {
-    D_COUT("\n    SlotRead error reading value3 of date." << CHS(c) << ": ");
-    return NILP;  //< Invalid format!
+    _DROut("\n    SlotRead error reading value3 of date." << CHS(c) << ": ");
+    return _NilP;  //< Invalid format!
   }
   element = TSDecimalEnd<CHS>(element);
-  D_COUT(c << value3);
+  _DROut(c << value3);
   // Now we need to check what format it is in.
 
   c = *element;
   if (c == '@') {
     if (IsError(stop = TSScan<CHS, CHT>(element, hour, minute, second))) {
-      D_COUT("Invalid YYyy/MM/DD@ time.");
-      return NILP;
+      _DROut("Invalid YYyy/MM/DD@ time.");
+      return _NilP;
     }
   }
   clock.hour = hour;
   clock.minute = minute;
   clock.second = second;
   if (TIsWhitespace<CHS>(*(++element))) {
-    D_COUT("No date found.");
-    return NILP;
+    _DROut("No date found.");
+    return _NilP;
   }
   if (value1 > 11) {  //<
-    D_COUT("\n    Case YYyy/MM/DD");
+    _DROut("\n    Case YYyy/MM/DD");
     if (value2 == 0 || value2 > 12) {
-      D_COUT("Invalid number of months");
-      return NILP;
+      _DROut("Invalid number of months");
+      return _NilP;
     }
 
     if (value2 > ClockMonthDayCount(value2, value1)) {
-      D_COUT("Invalid number of days");
-      return NILP;
+      _DROut("Invalid number of days");
+      return _NilP;
     }  // 17/05/06
 
     if (value1 < 100) {
-      D_COUT("\n    Case YY/MM/DD");
+      _DROut("\n    Case YY/MM/DD");
       value1 += 2000 - ClockEpoch();
     } else {
-      D_COUT("\n    Case YYYY/MM/DD");
+      _DROut("\n    Case YYYY/MM/DD");
       value1 -= ClockEpoch();
     }
 
@@ -588,23 +588,23 @@ const CHS* TSScan(const CHS* element, AClock& clock) {
 
     return element + 1;
   }
-  D_COUT("\n    Cases MM/DD/YY and MM/DD/YYYY");
+  _DROut("\n    Cases MM/DD/YY and MM/DD/YYYY");
 
   if (value1 > 11) {
-    D_COUT("\nInvalid month.");
-    return NILP;
+    _DROut("\nInvalid month.");
+    return _NilP;
   }
   if (value2 > ClockMonthDayCount(value1, value3)) {
-    D_COUT("\nInvalid day.");
-    return NILP;
+    _DROut("\nInvalid day.");
+    return _NilP;
   }
   clock.month = value1 - 1;
   clock.day = value2;
   if (value3 < 100) {
-    D_COUT("\n    Case MM/DD/YY");
+    _DROut("\n    Case MM/DD/YY");
     clock.year = value3 + (2000 - ClockEpoch());
   } else {
-    D_COUT("\n    Case MM/DD/YYYY");
+    _DROut("\n    Case MM/DD/YYYY");
     clock.year = value3 - ClockEpoch();
   }
   return element + 1;
@@ -614,7 +614,7 @@ template<typename CHS, typename CHT, typename IS>
 const CHS* TSScan(const CHS* origin, IUC& result) {
   AClock clock = {};
   const CHS* stop = TSScan<CHS, CHT>(origin, clock);
-  D_ASSERT(stop);
+  _DAssert(stop);
   result = ClockToTimestamp(clock);
   return stop;
 }
@@ -623,10 +623,10 @@ template<typename CHS, typename CHT, typename IS>
 const CHS* TSScan(const CHS* origin, TMC& result) {
   AClock clock = {};
   const CHS* stop = TSScan<CHS, CHT>(origin, clock);
-  #ifdef D_THIS
-  TClockPrint<COut>(StdOut(), clock);
+  #ifdef _DThis
+  TClockPrint<ROut>(RefOut(), clock);
   #endif
-  D_ASSERT(stop);
+  _DAssert(stop);
   result = ClockToTimestamp(clock);
   return stop;
 }
@@ -635,7 +635,7 @@ template<typename CHS, typename CHT, typename IS>
 const CHS* TSScan(const CHS* origin, TMD& result) {
   AClock clock = {};
   const CHS* stop = TSScan<CHS, CHT>(origin, clock);
-  D_ASSERT(stop);
+  _DAssert(stop);
   result = TMD(ClockToTimestamp(clock));
   return stop;
 }
@@ -643,14 +643,14 @@ const CHS* TSScan(const CHS* origin, TMD& result) {
 template<typename CHS = CHR, typename CHT = CHD>
 const CHS* TSScan(const CHS* origin, TMT& result) {
   origin = TSScan<CHS, CHT, ISC>(origin, result.seconds);
-  if (IsError(origin)) return NILP;
+  if (IsError(origin)) return _NilP;
   if (*origin++ != ':') {
     result.ticks = 0;
     return origin - 1;
   }
   return TSScanUnsigned<IUC, CHS, CHT>(origin, result.ticks);
 }
-#endif  // #if USING_STR
+#endif  //< #if _LargestSTR
 
 template<typename IS>
 IS TClockSet(AClock* clock, IS t) {
@@ -696,17 +696,14 @@ struct TClock {
 };
 
 }  //< namespace _
-#if USING_CONSOLE == YES_0
-
-inline ::_::COut& operator<<(::_::COut& o, const ::_::AClock& item) {
+inline ::_::ROut& operator<<(::_::ROut& o, const ::_::AClock& item) {
   return ::_::TClockPrint(o, item);
 }
 
 template<typename IS>
-::_::COut& operator<<(::_::COut& o, ::_::TClock<IS> item) {
+::_::ROut& operator<<(::_::ROut& o, ::_::TClock<IS> item) {
   return o << item.clock;
 }
 #endif
 
-#endif
 #endif

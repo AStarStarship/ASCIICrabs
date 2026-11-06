@@ -1,9 +1,9 @@
 // Copyright AStarship <https://astarship.net>.
 #pragma once
-#ifndef CRABS_MATHCORE_HPP
-#define CRABS_MATHCORE_HPP
+#ifndef _CrabsMatrixHPP
+#define _CrabsMatrixHPP
 #include <_Config.h>
-#if SEAM >= CRABS_MATHCORE
+#if _Seam >= _CrabsMatrix
 #include "Stack.hpp"
 namespace _ {
 
@@ -28,7 +28,7 @@ inline ISZ TMatrixArraySizeMax(ISZ dimensions_total) {
 /* Prints the TMatrix to the UTF. */
 template<typename Printer, MTX_A>
 Printer& TMatrixPrint(Printer& o, TMatrix<MTX_P>* matrix) {
-  A_ASSERT(matrix);
+  _AAssert(matrix);
   ISZ size = matrix->bytes, 
       dimension_size  = matrix->dimensions.total,
       dimension_count = matrix->dimensions.count;
@@ -55,7 +55,7 @@ Printer& TMatrixPrint(Printer& o, TMatrix<MTX_P>* matrix) {
 /* Returns the required size of the given array. */
 template<MTX_A>
 ISZ TMatrixElementCount(const ISZ* dimensions) {
-  D_ASSERT(dimensions);
+  _DAssert(dimensions);
   ISZ dimension_count = *dimensions++, 
       element_count   = *dimensions++;
   while (--dimension_count > 0) {
@@ -72,9 +72,9 @@ ISZ TMatrixElementCount(const ISZ* dimensions) {
 @return -1 if the dimension_count or dimensions are < 0, >=0 otherwise. */
 template<MTX_A>
 ISZ TMatrixSize(const ISZ* dimensions) {
-  D_ASSERT(dimensions);
+  _DAssert(dimensions);
   ISZ dimension_count = *dimensions++;
-  D_ASSERT(dimension_count >= 0);
+  _DAssert(dimension_count >= 0);
   if (dimension_count <= 0)
     return -1;
   ISZ element_count = *dimensions++;
@@ -92,10 +92,10 @@ ISZ TMatrixSize(const ISZ* dimensions) {
 @return -1 if the dimension_count or dimensions are < 0, >=0 otherwise. */
 template<MTX_A>
 ISZ TMatrixSize(const ISZ* dimensions, const ISZ* delta) {
-  D_ASSERT(dimensions);
+  _DAssert(dimensions);
   ISZ dimension_count = *dimensions++;
   if (dimension_count != *delta++) return -1;
-  D_ASSERT(dimension_count >= 0);
+  _DAssert(dimension_count >= 0);
   if (dimension_count <= 0) return 0;
   ISZ element_count = *dimensions++ + *delta++;
   while (--dimension_count > 0) {
@@ -110,7 +110,7 @@ ISZ TMatrixSize(const ISZ* dimensions, const ISZ* delta) {
 /* Returns the required size of the given array. */
 template<MTX_A>
 ISZ TMatrixSize(const TMatrix<MTX_P>* matrix) {
-  D_ASSERT(matrix);
+  _DAssert(matrix);
   return ISZ(sizeof(TMatrix<MTX_P>)) + matrix->bytes * sizeof(T) + 
          matrix->dimensions->total * sizeof(ISZ);
 }
@@ -132,12 +132,12 @@ ISZ TMatrixSize(ISZ dimension_total, ISZ element_count) {
 @param socket An stack of bytes large enough to fit the stack. */
 template<MTX_A>
 TMatrix<MTX_P>* TMatrixInit(const ISZ* dimensions) {
-  A_ASSERT(dimensions);
+  _AAssert(dimensions);
   ISZ dimension_count = *dimensions;
-  if (dimension_count < 0) return NILP;
+  if (dimension_count < 0) return _NilP;
   ISZ size = (ISZ)sizeof(TStack<SCK_P>) + dimension_count * sizeof(T);
   IUW* socket = new IUW[size >> ACPUBytesLog2];
-  TStack<SCK_P>* stack = TPtr<TStack<SCK_P>>(socket);
+  TStack<SCK_P>* stack = TRef<TStack<SCK_P>>(socket);
   stack->size_array = 0;
   stack->size_stack = size;
   stack->total = dimension_count;
@@ -150,12 +150,12 @@ TMatrix<MTX_P>* TMatrixInit(const ISZ* dimensions) {
 @return Pointer to the first element in the array. */
 template<MTX_A>
 inline T* TMatrixStart(TMatrix<MTX_P>* obj) {
-  return TPtr<T>(TStackBegin<ISZ, ISZ>(&obj->dimensions) + obj->bytes);
+  return TRef<T>(TStackBegin<ISZ, ISZ>(&obj->dimensions) + obj->bytes);
 }
 
 template<MTX_A>
 inline TMatrix<MTX_P>* TMatrixPtr(IUW* origin) {
-  return TPtr<TMatrix<MTX_P>>(origin);
+  return TRef<TMatrix<MTX_P>>(origin);
 }
 
 template<MTX_A>
@@ -176,18 +176,18 @@ template<MTX_A>
 inline IUW* TMatrixCopy(TMatrix<MTX_P>* destination, const TMatrix<MTX_P>* source) {
   ISZ size_destination = TMatrixSize<MTX_P>(destination),
       size_source      = TMatrixSize<MTX_P>(source);
-  if (size_destination < size_source) return NILP;
+  if (size_destination < size_source) return _NilP;
   /* I'm not sure if I even want to try to copy the dimensions and array blocks
   separately because in practice the dimensions stack size will never be very 
   much.
   ArrayCopy(destination, TStackTop<T, ISZ>(destination->dimensions), 
             source     , TStackTop<T, ISZ>(source->dimensions));
   ArrayCopy(TMatrixStart<MTX_P>(destination), 
-            TPtr<CHA>(destination) + SizeDestination, 
+            TRef<CHA>(destination) + SizeDestination, 
             TMatrixStart<MTX_P>(source), 
-            TPtr<CHA>(source) + SizeSource); */
-  ArrayCopy(destination, TPtr<CHA>(destination) + size_destination, 
-            source, TPtr<CHA>(source) + size_source);
+            TRef<CHA>(source) + SizeSource); */
+  ArrayCopy(destination, TRef<CHA>(destination) + size_destination, 
+            source, TRef<CHA>(source) + size_source);
   return destination;
 }
 
@@ -290,9 +290,9 @@ struct TDimC {
 @return The dot product sum(a[i]*b[i]). */
 template<typename T>
 T TMatrixDotProduct(const T* a, const T* b, ISW n) {
-  D_ASSERT(a);
-  D_ASSERT(b);
-  D_ASSERT(n > 0);
+  _DAssert(a);
+  _DAssert(b);
+  _DAssert(n > 0);
   T result = T(0);
   for (ISW i = 0; i < n; ++i)
     result += a[i] * b[i];
@@ -306,10 +306,10 @@ T TMatrixDotProduct(const T* a, const T* b, ISW n) {
 @param n Number of elements. */
 template<typename T>
 void TMatrixAdd(T* result, const T* a, const T* b, ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(a);
-  D_ASSERT(b);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(a);
+  _DAssert(b);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = a[i] + b[i];
 }
@@ -321,10 +321,10 @@ void TMatrixAdd(T* result, const T* a, const T* b, ISW n) {
 @param n Number of elements. */
 template<typename T>
 void TMatrixSubtract(T* result, const T* a, const T* b, ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(a);
-  D_ASSERT(b);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(a);
+  _DAssert(b);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = a[i] - b[i];
 }
@@ -336,10 +336,10 @@ void TMatrixSubtract(T* result, const T* a, const T* b, ISW n) {
 @param n Number of elements. */
 template<typename T>
 void TMatrixMultiplyElementwise(T* result, const T* a, const T* b, ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(a);
-  D_ASSERT(b);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(a);
+  _DAssert(b);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = a[i] * b[i];
 }
@@ -351,9 +351,9 @@ void TMatrixMultiplyElementwise(T* result, const T* a, const T* b, ISW n) {
 @param n Number of elements. */
 template<typename T>
 void TMatrixScalarMultiply(T* result, const T* a, T scalar, ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(a);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(a);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = a[i] * scalar;
 }
@@ -365,10 +365,10 @@ void TMatrixScalarMultiply(T* result, const T* a, T scalar, ISW n) {
 @param cols Number of columns in the source matrix. */
 template<typename T>
 void TMatrixTranspose(T* result, const T* source, ISW rows, ISW cols) {
-  D_ASSERT(result);
-  D_ASSERT(source);
-  D_ASSERT(rows > 0);
-  D_ASSERT(cols > 0);
+  _DAssert(result);
+  _DAssert(source);
+  _DAssert(rows > 0);
+  _DAssert(cols > 0);
   for (ISW r = 0; r < rows; ++r)
     for (ISW c = 0; c < cols; ++c)
       result[c * rows + r] = source[r * cols + c];
@@ -386,12 +386,12 @@ All matrices are row-major.
 template<typename T>
 void TMatrixMultiply(T* c, const T* a, const T* b,
                      ISW rows_a, ISW cols_a, ISW cols_b) {
-  D_ASSERT(c);
-  D_ASSERT(a);
-  D_ASSERT(b);
-  D_ASSERT(rows_a > 0);
-  D_ASSERT(cols_a > 0);
-  D_ASSERT(cols_b > 0);
+  _DAssert(c);
+  _DAssert(a);
+  _DAssert(b);
+  _DAssert(rows_a > 0);
+  _DAssert(cols_a > 0);
+  _DAssert(cols_b > 0);
   for (ISW i = 0; i < rows_a; ++i) {
     for (ISW j = 0; j < cols_b; ++j) {
       T sum = T(0);
@@ -407,8 +407,8 @@ void TMatrixMultiply(T* c, const T* a, const T* b,
 @param n Number of elements. */
 template<typename T>
 void TMatrixReLU(T* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     if (x[i] < T(0)) x[i] = T(0);
 }
@@ -419,9 +419,9 @@ void TMatrixReLU(T* x, ISW n) {
 @param n Number of elements. */
 template<typename T>
 void TMatrixReLUDerivative(T* result, const T* x, ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(x);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = (x[i] > T(0)) ? T(1) : T(0);
 }
@@ -430,8 +430,8 @@ void TMatrixReLUDerivative(T* result, const T* x, ISW n) {
 @param x Pointer to the array.
 @param n Number of elements. */
 inline void TMatrixSigmoid(FPD* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     x[i] = 1.0 / (1.0 + exp(-x[i]));
 }
@@ -440,8 +440,8 @@ inline void TMatrixSigmoid(FPD* x, ISW n) {
 @param x Pointer to the array.
 @param n Number of elements. */
 inline void TMatrixSigmoid(FPC* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     x[i] = 1.0f / (1.0f + expf(-x[i]));
 }
@@ -453,9 +453,9 @@ where s[i] is the already-computed sigmoid output.
 @param n Number of elements. */
 inline void TMatrixSigmoidDerivative(FPD* result, const FPD* sigmoid_output,
                                      ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(sigmoid_output);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(sigmoid_output);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = sigmoid_output[i] * (1.0 - sigmoid_output[i]);
 }
@@ -466,9 +466,9 @@ inline void TMatrixSigmoidDerivative(FPD* result, const FPD* sigmoid_output,
 @param n Number of elements. */
 inline void TMatrixSigmoidDerivative(FPC* result, const FPC* sigmoid_output,
                                      ISW n) {
-  D_ASSERT(result);
-  D_ASSERT(sigmoid_output);
-  D_ASSERT(n > 0);
+  _DAssert(result);
+  _DAssert(sigmoid_output);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     result[i] = sigmoid_output[i] * (1.0f - sigmoid_output[i]);
 }
@@ -478,8 +478,8 @@ Uses the max-shift trick for numerical stability.
 @param x Pointer to the array.
 @param n Number of elements. */
 inline void TMatrixSoftmax(FPD* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   // Find max for numerical stability.
   FPD max_val = x[0];
   for (ISW i = 1; i < n; ++i)
@@ -497,8 +497,8 @@ inline void TMatrixSoftmax(FPD* x, ISW n) {
 @param x Pointer to the array.
 @param n Number of elements. */
 inline void TMatrixSoftmax(FPC* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   FPC max_val = x[0];
   for (ISW i = 1; i < n; ++i)
     if (x[i] > max_val) max_val = x[i];
@@ -517,9 +517,9 @@ inline void TMatrixSoftmax(FPC* x, ISW n) {
 @param n Number of elements.
 @return The mean squared error. */
 inline FPD TMatrixMSE(const FPD* predicted, const FPD* target, ISW n) {
-  D_ASSERT(predicted);
-  D_ASSERT(target);
-  D_ASSERT(n > 0);
+  _DAssert(predicted);
+  _DAssert(target);
+  _DAssert(n > 0);
   FPD sum = 0.0;
   for (ISW i = 0; i < n; ++i) {
     FPD diff = predicted[i] - target[i];
@@ -534,9 +534,9 @@ inline FPD TMatrixMSE(const FPD* predicted, const FPD* target, ISW n) {
 @param n Number of elements.
 @return The mean squared error. */
 inline FPC TMatrixMSE(const FPC* predicted, const FPC* target, ISW n) {
-  D_ASSERT(predicted);
-  D_ASSERT(target);
-  D_ASSERT(n > 0);
+  _DAssert(predicted);
+  _DAssert(target);
+  _DAssert(n > 0);
   FPC sum = 0.0f;
   for (ISW i = 0; i < n; ++i) {
     FPC diff = predicted[i] - target[i];
@@ -553,10 +553,10 @@ matrix is (rows x cols), bias is (cols).
 @param cols Number of columns. */
 template<typename T>
 void TMatrixAddBias(T* matrix, const T* bias, ISW rows, ISW cols) {
-  D_ASSERT(matrix);
-  D_ASSERT(bias);
-  D_ASSERT(rows > 0);
-  D_ASSERT(cols > 0);
+  _DAssert(matrix);
+  _DAssert(bias);
+  _DAssert(rows > 0);
+  _DAssert(cols > 0);
   for (ISW r = 0; r < rows; ++r)
     for (ISW c = 0; c < cols; ++c)
       matrix[r * cols + c] += bias[c];
@@ -568,8 +568,8 @@ void TMatrixAddBias(T* matrix, const T* bias, ISW rows, ISW cols) {
 @param value The fill value. */
 template<typename T>
 void TMatrixFill(T* x, ISW n, T value) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   for (ISW i = 0; i < n; ++i)
     x[i] = value;
 }
@@ -580,8 +580,8 @@ void TMatrixFill(T* x, ISW n, T value) {
 @return The sum of all elements. */
 template<typename T>
 T TMatrixSum(const T* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   T result = T(0);
   for (ISW i = 0; i < n; ++i)
     result += x[i];
@@ -594,8 +594,8 @@ T TMatrixSum(const T* x, ISW n) {
 @return Index of the largest element. */
 template<typename T>
 ISW TMatrixArgMax(const T* x, ISW n) {
-  D_ASSERT(x);
-  D_ASSERT(n > 0);
+  _DAssert(x);
+  _DAssert(n > 0);
   ISW max_index = 0;
   T max_val = x[0];
   for (ISW i = 1; i < n; ++i) {
@@ -622,27 +622,27 @@ class AMatrix {
 
   /* Initializes an array of n elements of the given type. 
   @param max_elements The max number_ of elements in the array socket. */
-  AMatrix(ISZ x, const T* elements = NILP) : obj_(TMatrixSize<MTX_P>(1, x)) {
-    D_ASSERT(x >= 0);
+  AMatrix(ISZ x, const T* elements = _NilP) : obj_(TMatrixSize<MTX_P>(1, x)) {
+    _DAssert(x >= 0);
   }
 
   /* Initializes an array of n elements of the given type.
   @param max_elements The max number_ of elements in the array socket. */
-  AMatrix(ISZ x, ISZ y, const T* elements = NILP)
+  AMatrix(ISZ x, ISZ y, const T* elements = _NilP)
       : obj_(TMatrixSize<MTX_P>(2, x * y)) {
-    D_ASSERT(x >= 0 && y >= 0);
+    _DAssert(x >= 0 && y >= 0);
   }
 
   /* Initializes an array of n elements of the given type.
   @param max_elements The max number_ of elements in the array socket. */
-  AMatrix(ISZ x, ISZ y, ISZ z, const T* elements = NILP)
+  AMatrix(ISZ x, ISZ y, ISZ z, const T* elements = _NilP)
       : obj_(TMatrixSize<MTX_P>(3, x * y * z)) {
-    D_ASSERT(x >= 0 && y >= 0 && z >= 0);
+    _DAssert(x >= 0 && y >= 0 && z >= 0);
   }
 
   /* Initializes an array of n elements of the given type.
   @param max_elements The max number_ of elements in the array socket. */
-  AMatrix(ISZ w, ISZ x, ISZ y, ISZ z, const T* elements = NILP)
+  AMatrix(ISZ w, ISZ x, ISZ y, ISZ z, const T* elements = _NilP)
       : obj_(TMatrixSize<MTX_P>(4, w * x * y * z)) {}
 
   /* Initializes an array of n elements of the given type.
@@ -670,23 +670,23 @@ class AMatrix {
     ISZ dimension_count = *a_dimensions;
     if (IsError(dimensions_delta) || dimension_count == 0) {
       ISZ bytes = TMatrixSize<T, ISZ, ISY, IUY>(matrix);
-      if (bytes < 0) return NILP;
-      IUW* origin_new = ajt.ram(NILP, bytes);
-      if (IsError(origin_new)) return NILP;
+      if (bytes < 0) return _NilP;
+      IUW* origin_new = ajt.ram(_NilP, bytes);
+      if (IsError(origin_new)) return _NilP;
       IUW* origin = ajt.origin;
       ISZ bytes_copy = TMatrixSize<T, ISZ, ISY, IUY>(&matrix->dimensions.count);
-      ArrayCopy(origin_new, TPtr<CHA>(origin_new) + bytes_copy,
-        origin, TPtr<CHA>(origin) + bytes_copy);
-      return TPtr<TMatrix<T, ISZ, ISY, IUY>>(origin_new);
+      ArrayCopy(origin_new, TRef<CHA>(origin_new) + bytes_copy,
+        origin, TRef<CHA>(origin) + bytes_copy);
+      return TRef<TMatrix<T, ISZ, ISY, IUY>>(origin_new);
     }
     ISZ dimensions_delta_count = *dimensions_delta++;
     if (dimension_count != dimensions_delta_count) return -1;
     if (dimension_count == 1) {
-      return NILP;
+      return _NilP;
     }
     ISZ bytes = TMatrixSize<MTX_P>(dimensions_delta);
-    if (bytes < 0) return NILP;
-    IUW* origin_new = ajt.ram(NILP, bytes);
+    if (bytes < 0) return _NilP;
+    IUW* origin_new = ajt.ram(_NilP, bytes);
     const ISZ* b_dimensions = 0,
       * a_cursor = a_dimensions,
       * b_cursor = dimensions_delta_count;
@@ -694,12 +694,12 @@ class AMatrix {
     dimensions_delta += dimension_count;
     T* ary = TMatrixStart<MTX_P>(matrix);
     ISZ dimensions_new[dimension_count] = { 0 };
-    ISZ* dimensions_new_ptr = dimensions_new;
+    ISZ* dimensions_new_ref = dimensions_new;
     ISZ dimensions_counter = dimension_count;
     ISZ dimension_last;
     while (dimensions_counter-- > 0) {
       dimension_last = *++a_cursor + *++b_cursor;
-      *dimensions_new_ptr++ = dimension_last;
+      *dimensions_new_ref++ = dimension_last;
     }
     while (a_cursor > a_dimensions)
       return TMatrixPtr<ISZ>(origin_new);
@@ -707,7 +707,7 @@ class AMatrix {
 
   /* Clones the other object; up-sizing the socket only if required. */
   inline TMatrix<MTX_P>* Copy(AMatrix<MTX_P>& other) {
-    return NILP;// TMatrixCopy<MTX_P>(obj_.This(), other.This());
+    return _NilP;// TMatrixCopy<MTX_P>(obj_.This(), other.This());
   }
 
   template<typename T_, typename ISZ_, typename ISY_, typename IUY_>
@@ -715,9 +715,9 @@ class AMatrix {
 		//Autoject& ajt = AJT();
   //  auto matrix = Clone<ISZ>(dimensions_delta);
   //  if (IsError(matrix)) return matrix;
-  //  ajt.origin = TPtr<IUW>(matrix);
+  //  ajt.origin = TRef<IUW>(matrix);
   //  return matrix;
-    return NILP;
+    return _NilP;
   }
 
   /* Gets the number_ of dimensions. */
@@ -736,13 +736,13 @@ class AMatrix {
   inline Autoject& AJT() { return obj_.AJT(); }
 
   /* Returns the Autoject::origin cased as a TMap<ISZ>. */
-  inline TMatrix<MTX_P>* This() { return TPtr<TMatrix<MTX_P>>(AJT().origin);
+  inline TMatrix<MTX_P>* This() { return TRef<TMatrix<MTX_P>>(AJT().origin);
   }
 
   /* Returns the Auto-Array. */
   inline AArray<IUA, ISZ, DIM::CBytes, BOF>& Array() { return obj_; }
 
-  template<typename Printer = COut>
+  template<typename Printer = ROut>
   inline Printer& PrintTo(Printer& o) {
     return TMatrixPrint<Printer, MTX_P>(o, This());
   }
@@ -756,4 +756,4 @@ class AMatrix {
 
 }  //< namespace _
 #endif
-#endif
+#endif  //< _CrabsMatrixHPP
