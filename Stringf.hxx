@@ -3,6 +3,7 @@
 #ifndef _CrabsStringfHXX
 #define _CrabsStringfHXX
 #include "Binary.hpp"
+#include "Puff.hpp"
 #include "Stringf.hpp"
 /* The string primitives are thin, contiguou wrappers over
    the house TSScan/SScan scanner family. Consumers see only the _:: wrappers. */
@@ -76,95 +77,6 @@ inline ISN StringLength(IUA value) {
 inline ISN StringLength(ISA value) {
   if (value < 0) return StringLength(IUA(-value)) + 1;
   return StringLength(IUA(value));
-}
-
-inline const CHA* SScan(const CHA* start, CHA& value) {
-  if (IsError(start)) {
-    value = 0;
-    return start;
-  }
-  value = *start++;
-  return start;
-}
-inline CHA* SScan(CHA* start, CHA& value) {
-  return const_cast<CHA*>(SScan(const_cast<const CHA*>(start), value));
-}
-
-inline const CHA* SScan(const CHA* start, CHC& value) {
-  if (IsError(start)) {
-    value = 0;
-    return start;
-  }
-  // | Byte 1   | Byte 2   | Byte 3   | Byte 4   | UTF-32 Result         |
-  // |:--------:|:--------:|:--------:|:--------:|:---------------------:|
-  // | 0aaaaaaa |          |          |          | 00000000000000aaaaaaa |
-  // | 110aaaaa | 10bbbbbb |          |          | 0000000000aaaaabbbbbb |
-  // | 1110aaaa | 10bbbbbb | 10cccccc |          | 00000aaaabbbbbbcccccc |
-  // | 11110aaa | 10bbbbbb | 10cccccc | 10dddddd | aaabbbbbbccccccdddddd |
-  CHA c = *start++;
-  if (c >> 7 == 0) {
-    value = c;
-  } else if (c >> 5 == 6) {
-    value = (c & 0x1f) << 6;
-		c = *start++;
-    if (c >> 6 != 2) {
-      ExitFail:
-      value = 0;
-      return _NilP;
-    }
-		value |= c & 0x3f;
-  } else if (c >> 4 == 14) {
-    value = (c & 0xf) << 12;
-    c = *start++;
-    if (c >> 6 != 2) goto ExitFail;
-    value |= (c & 0x3f) << 6;
-    c = *start++;
-    if (c >> 6 != 2) goto ExitFail;
-    value |= c & 0x3f;
-  } else if (c >> 3 == 30) {
-    value = (c & 0x7) << 18;
-    c = *start++;
-    if (c >> 6 != 2) goto ExitFail;
-    value |= (c & 0x3f) << 12;
-    c = *start++;
-    if (c >> 6 != 2) goto ExitFail;
-    value |= (c & 0x3f) << 6;
-    c = *start++;
-    if (c >> 6 != 2) goto ExitFail;
-    value |= c & 0x3f;
-  }
-  return start;
-}
-inline CHA* SScan(CHA* start, CHC& value) {
-  const CHA* element = const_cast<const CHA*>(start);
-  return const_cast<CHA*>(SScan(element, value));
-}
-
-inline const CHB* SScan(const CHB* start, CHC& value) {
-	if (IsError(start)) {
-		value = 0;
-		return start;
-	}
-  // | Bytes {4N, 4N+ 1} | Bytes {4N + 2, 4N+ 3} |    UTF-32 Result     |
-  // |:-----------------:|:---------------------:|:--------------------:|
-  // | 000000aaaaaaaaaa  |                       | 0000000000aaaaaaaaaa |
-  // | 110110yyyyyyyyyy  |   110111xxxxxxxxxx    | yyyyyyyyyyxxxxxxxxxx |
-	CHB c = *start++;
-  if (c >> 10 == 0) {
-    value = c;
-	} else if (c >> 10 == 54) {
-    value = (c & 0x3ff) << 10;
-    c = *start++;
-    if (c >> 10 != 55) {
-      value = 0;
-			return _NilP;
-    }
-    value |= c & 0x3ff;
-  }
-  return start;
-}
-inline CHB* SScan(CHB* start, CHC& value) {
-  return const_cast<CHB*>(SScan(const_cast<const CHB*>(start), value));
 }
 
 inline const CHA* SScan(const CHA* start, FPC& value) {
@@ -996,7 +908,7 @@ IUW Valuef::ToWord() { return value.Value(); }
 
 Hexf::Hexf(const void* origin, ISW size) : element(origin, size) {}
 #if _CPUEndian == _CPUEndianLittle
-Hexf::Hexf(const void* value) : element(IUW(value), -ISW(sizeof(const void*))) {}
+Hexf::Hexf(const void* value) : element(IUD(value), -ISW(sizeof(const void*))) {}
 Hexf::Hexf(CHA value) : element(value, -ISW(sizeof(ISA))) {}
 Hexf::Hexf(ISA value) : element(value, -ISW(sizeof(ISA))) {}
 Hexf::Hexf(IUA value) : element(value, -ISW(sizeof(IUA))) {}
@@ -1015,7 +927,7 @@ Hexf::Hexf(FPD value) : element(value, -ISW(sizeof(FPD))) {}
 
 Binaryf::Binaryf(const void* origin, ISW size) : element(origin, size) {}
 Binaryf::Binaryf(const void* value)
-    : element(IUW(value), -ISW(sizeof(const void*))) {}
+    : element(IUD(value), -ISW(sizeof(const void*))) {}
 Binaryf::Binaryf(ISA value) : element(value, -ISW(sizeof(ISA))) {}
 Binaryf::Binaryf(IUA value) : element(value, -ISW(sizeof(IUA))) {}
 Binaryf::Binaryf(ISB value) : element(value, -ISW(sizeof(ISB))) {}

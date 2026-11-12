@@ -420,19 +420,19 @@ ATypeValue::ATypeValue(IUA value) : type_(_IUA), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(ISB value) : type_(_ISB), value_(IUW(value)), vmsb_(0) {}
 ATypeValue::ATypeValue(IUB value) : type_(_IUB), value_(IUW(value)), vmsb_(0) {}
 #if _CPUSize == _CPU16Bit
-AValue::AValue(ISC value) : type_(_ISC) {
+ATypeValue::ATypeValue(ISC value) : type_(_ISC) {
   // @todo I don't know if this is going to be needed. In my mind the compiler
   // will push the word_ onto the program stack because of the *reintpret_cast.
   // This might however get optimized into just storing value. Dissassemble me!
-  *TRef<ISC>(&word_) = value;
+  *TRef<ISC>(&value_) = value;
 }
 #else
 ATypeValue::ATypeValue(ISC value) : type_(_ISC), value_(IUW(value)), vmsb_(0) {}
 #endif
 
 #if _CPUSize == _CPU16Bit
-AValue::AValue(IUC value) : type_(_IUC) {
-  *TRef<IUC>(&word_) = value;
+ATypeValue::ATypeValue(IUC value) : type_(_IUC) {
+  *TRef<IUC>(&value_) = value;
 }
 #else
 ATypeValue::ATypeValue(IUC value) : type_(_IUC), value_(IUW(value)), vmsb_(0) {}
@@ -441,14 +441,14 @@ ATypeValue::ATypeValue(IUC value) : type_(_IUC), value_(IUW(value)), vmsb_(0) {}
 #if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(ISD value) : type_(_ISD), value_(IUW(value)), vmsb_(0) {}
 #else
-AValue::AValue(ISD value) : type_(_ISD) { *TRef<ISD>(&word_) = value; }
+ATypeValue::ATypeValue(ISD value) : type_(_ISD) { *TRef<ISD>(&value_) = value; }
 #endif
 
 #if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(IUD value) : type_(_IUD), value_(IUW(value)), vmsb_(0) {}
 #else
-AValue::AValue(IUD value) : type_(_IUD) {
-  *TRef<IUD>(&word_) = value;
+ATypeValue::ATypeValue(IUD value) : type_(_IUD) {
+  *TRef<IUD>(&value_) = value;
 }
 
 #endif
@@ -456,14 +456,14 @@ AValue::AValue(IUD value) : type_(_IUD) {
 ATypeValue::ATypeValue(FPC value)
     : type_(_FPC), value_(ToUnsigned(value)), vmsb_(0) {}
 #else
-AValue::AValue(FPC value) : type_(_FPC) { *TRef<FPC>(&word_) = value; }
+ATypeValue::ATypeValue(FPC value) : type_(_FPC) { *TRef<FPC>(&value_) = value; }
 #endif
 
 #if _CPUSize == _CPU8Byte
 ATypeValue::ATypeValue(FPD value)
     : type_(_FPD), value_(ToUnsigned(value)), vmsb_(0) {}
 #else
-AValue::AValue(FPD value) : type_(_FPD) { *TRef<FPD>(&word_) = value; }
+ATypeValue::ATypeValue(FPD value) : type_(_FPD) { *TRef<FPD>(&value_) = value; }
 #endif
 
 ATypeValue::ATypeValue(void* value) : 
@@ -534,7 +534,7 @@ IUC ATypeValue::ToIUC() {
   // @todo Inspect dissassembly to check if we even need the #if #else here.
   // I have a feeling the compiler will optmize away memory copies I think
   // I'm avoiding.
-  return *TRef<IUC>(&word_);
+  return *TRef<IUC>(&value_);
 #else
   return IUC(value_);
 #endif
@@ -546,7 +546,7 @@ IUD ATypeValue::ToUID() {
   // @todo Inspect dissassembly to check if we even need the #if #else here.
   // I have a feeling the compiler will optmize away memory copies I think
   // I'm avoiding.
-  return *TRef<IUD>(&word_);
+  return *TRef<IUD>(&value_);
 #endif
 }
 

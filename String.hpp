@@ -13,7 +13,7 @@
 #include "_Release.h"
 #endif
 
-#define STR_A typename T=CHR, typename CHT = CHD, typename ISZ=ISW, typename ISY=ISZ
+#define STR_A typename T=CHR, typename CHT = CHD, typename ISZ = ISS, typename ISY=ISZ
 #define STR_P T, CHT, ISZ, ISY
 #define STR TString<T, CHT, ISZ, ISY>
 

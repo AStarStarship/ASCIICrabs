@@ -76,8 +76,8 @@ static const CHA* Promise(const CHA* args) {
   }
   _DROut("\n.then() handler attached");
   
-  CHA onRejectedKey[] = "onReject";
-  op = CrabsCatchPromise(crabs, promiseSlot2, onRejectedKey);
+  CHA on_rejected_key[] = "onReject";
+  op = CrabsCatchPromise(crabs, promiseSlot2, on_rejected_key);
   if (op) {
     _DROut("Error: Failed to attach catch handler");
     return _NilP; //<  return op; //< ???

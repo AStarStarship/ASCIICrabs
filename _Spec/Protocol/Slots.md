@@ -20,12 +20,12 @@ A B-Input, BIn, is a type of Slot for incoming Messages that uses offsets from t
 ### BIn C Data Structure
 
 ```C++
-typedef unsigned int UIT;
+typedef unsigned int IUT;
 struct BIn {
-    UIT          size,   //< The size of the buffer.
+    IUT          size,   //< The size of the buffer.
                     start;  //< The starting index of the ring buffer data.
-    volatile UIT stop;   //< The stopping index of the ring buffer data.
-    UIT          read;   //< The read variable.
+    volatile IUT stop;   //< The stopping index of the ring buffer data.
+    IUT          read;   //< The read variable.
 };
 ```
 
@@ -53,10 +53,10 @@ A B-Output Slot, BOut, almost works similarly to the BIn except the BOut reserve
 
 ```C++
 struct API BOut {
-    UIN          size;  //< Size of the B-Output.
-    volatile UIT start; //< Starting index of the ring-buffer data.
+    IUT          size;  //< Size of the B-Output.
+    volatile IUT start; //< Starting index of the ring-buffer data.
     IUC          stop,  //< Stopping index of the ring-buffer data.
-                    read;  //< Address that the BOut device is reading from.
+                 read;  //< Address that the BOut device is reading from.
 };
 ```
 

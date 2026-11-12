@@ -106,9 +106,9 @@ Crabs* CrabsInit(IUW* socket, ISC buffer_bytes, ISC stack_total, Operand* root,
   return crabs;
 }
 
-// BOL CrabsIsDynamic (Crabs* crabs) {
-//    return crabs->type % 2 == 1;
-// }
+inline Operand** CrabsStack(Crabs* crabs) {
+  return (Operand**)IUW(&crabs->root);
+}
 
 inline IUA* CrabsEndAddress(Crabs* crabs) { return BInEnd(CrabsBIn(crabs)); }
 

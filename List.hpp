@@ -50,6 +50,35 @@ inline BOL TListIsValid(ISZ bytes, ISZ top, ISY total, ISY count) {
     TListTopIsValid<LST_P>(bytes, top, total);
 }
 
+/* A saved List top and count, taken before a scratch allocation burst and
+handed back to TListRestore at the end of it. A List has no free list, so
+this is how a caller reuses one arena for many short lived blocks: the
+allocations after the mark are simply forgotten. */
+template<typename ISZ = ISS, typename ISY = ISR>
+struct TListMark {
+  ISZ top;     //< value of list->top at the mark.
+  ISY count;   //< value of list->map.count at the mark.
+};
+
+/* Records the current top and count so TListRestore can roll back to it. */
+template<LST_A>
+inline TListMark<ISZ, ISY> TListSetMark(const LST* list) {
+  TListMark<ISZ, ISY> mark;
+  mark.top = list->top;
+  mark.count = ISY(list->map.count);
+  return mark;
+}
+
+/* Rolls the List back to a mark: every block allocated after it is dropped
+in one step. Values below the mark are untouched. */
+template<LST_A>
+inline void TListRestore(LST* list, TListMark<ISZ, ISY> mark) {
+  if (mark.top < 0 || mark.top > list->bytes) return;
+  if (mark.count < 0 || mark.count > ISY(list->map.total)) return;
+  list->top = mark.top;
+  list->map.count = mark.count;
+}
+
 /* The maximum theoretical amount of freespace in a List. */
 template<LST_A>
 inline ISZ TListSizeFreeMax(ISZ bytes, ISY total) {
@@ -760,7 +789,7 @@ class AList {
   inline ISY Insert(ISD value, ISY index = PSH) {
     #if _CPUSize == _CPU8Byte
     return InsertTV(AJT(), _ISD, IUW(value), index);
-    #elif _CPUSize == 4_BYTE
+    #elif _CPUSize == _CPU32Bit
     return InsertTV(AJT(), _ISD, IUW(value), index, IUW(value >> 32));
     #else
     return InsertTV(AJT(), _ISD, &value, index);
@@ -844,14 +873,14 @@ class AList {
    @todo Verify compile size of this function isolated and in the AArray class. */
    static ISY InsertTV(Autoject& obj, DT type, IUW value, ISY index = PSH, 
                        IUW value_msb = 0) {
-     ISY result = TListInsert<LST_P>(TRef<LST>(obj.origin), type, IUW(value), 
-                                     index);
+     ISY result = TListInsert<LST_P>(TRef<LST>(obj.origin), type, IUW(value),
+                                     index, value_msb);
      while (result < 0) {
        if (!Grow(obj)) {
          return -AErrorBufferOverflow;
        }
-       result = TListInsert<LST_P>(TRef<LST>(obj.origin), type, IUW(value), 
-                                   index);
+       result = TListInsert<LST_P>(TRef<LST>(obj.origin), type, IUW(value),
+                                   index, value_msb);
        if (result < 0) {
          _DROut("\n\n\nFailed to insert into list:" << result << ' ' <<
            ASCIIErrorSTA(result));

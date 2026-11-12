@@ -46,7 +46,7 @@ inline HSH THashPrime(const CHS* element) {
   return hash;
 }
 
-template<typename HSH = IUN, typename ISZ = ISR, typename CHS, typename CHY>
+template<typename HSH = IUN, typename ISZ = ISS, typename CHS, typename CHY>
 inline CHS* THashPrimePrint_NC(CHS* start, CHS* stop, const CHY* item, HSH& hash, 
     ISZ& length) {
   CHY c = *item++;
@@ -62,7 +62,7 @@ inline CHS* THashPrimePrint_NC(CHS* start, CHS* stop, const CHY* item, HSH& hash
   *start = 0;
   return start;
 }
-template<typename HSH = IUN, typename ISZ = ISR, typename CHS, typename CHY>
+template<typename HSH = IUN, typename ISZ = ISS, typename CHS, typename CHY>
 inline CHS* THashPrimePrint(CHS* start, CHS* stop, const CHY* item, HSH& hash,
   ISZ& length) {
   D_CHECK_PTR_RETURN(start);
@@ -103,7 +103,7 @@ inline IUB HashIUBD(IUD value, IUB hash) {
 
 /* Finds the first hash between start up to stop that is not sorted assending.
 @return Positive index of the first unsorted hash if one exists, else -1. */
-template<typename ISY = ISR, typename HSH = IUW>
+template<typename ISY = ISS, typename HSH = IUW>
 ISY THashFindFirstUnsorted(const HSH* start, const HSH* stop) {
   HSH hash = *start++;
   ISY i = 0;

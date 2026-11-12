@@ -352,12 +352,16 @@ inline void ClockEpochUpdate() {
   // RoomUnlock();
 }
 
-TMD ClockNow() {
+inline TMD ClockNow() {
   time_t t;
   time(&t);
   // 64-bit seconds timestamp has no epoch
   //if (t > ClockEpoch()) ClockEpochUpdate();
   return TMD(t);
+}
+
+inline FPD ClockNowFPD() {
+  return FPD(ClockNow());
 }
 
 TMC ClockToTimestamp(AClock& clock) {

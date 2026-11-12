@@ -52,7 +52,7 @@ Printer& TCrabsPrint(Printer& o, Crabs* crabs) {
     << Hexf(crabs->operand) << "\nheader     : ";
   TBSeqPrint<Printer>(o, crabs->header_start);
   o << Linef('-', 80);
-  TCrabsPrintStack(o, crabs);
+  TCrabsPrintStack<Printer>(o, crabs);
   o << Linef('-', 80);
   TBInPrintVars<Printer>(o, CrabsBIn(crabs));
   TBOutPrintVars<Printer>(o, CrabsBOut(crabs));

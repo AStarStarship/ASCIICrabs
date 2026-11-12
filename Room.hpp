@@ -11,9 +11,10 @@
 #include "List.hpp"
 #include "Dic.hpp"
 #include "Op.hpp"
-#define ROM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, \
+#define ROM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISS, \
   typename ISY = ISR, typename DT = DTB, typename HSH = IUN
 #define ROM_P CHS, CHT, ISZ, ISY, DT, HSH
+#define ROM_D CHR, CHD, ISS, ISR, DTB, IUN
 #define ROM TRoom<ROM_P>
 /* @defgroup Room
 Chinese Room
@@ -255,7 +256,10 @@ class TRoom : public Operand {
 
   /* Processes a request from another Room.
       @return Returns false upon success and true if there is an error. */
-  CRRequest HandleNextRequest(CRRequest r) { return 0; }
+  /* TODO: dispatch r to the slot objects in this room's doors.
+      @param r The request to process.
+      @return The request state after processing. */
+  CRRequest HandleNextRequest(CRRequest r) { (void)r; return CRRequestOpenDoor; }
 
   /* Clears the log. */
   void ClearLog() {}
@@ -301,7 +305,7 @@ class TRoom : public Operand {
   IUW GetBytes() {
     IUW count = FloorSize;
     for (ISN i = 0; i < wall_count_; ++i) {
-      count += walls_[i]->GetSizeBytes();
+      count += TWallGetSizeBytes(walls_[i]);
     }
     return count;
   }

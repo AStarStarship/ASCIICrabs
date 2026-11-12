@@ -325,14 +325,6 @@ inline ISD AlignUp(ISD value, ISD align_mask = ACPUWordMask) {
 inline IUD AlignUp(IUD value, IUD align_mask = ACPUWordMask) {
   return value + (IUD(-ISD(value)) & align_mask);
 }
-#if _CPUSize == 4
-inline ISW AlignUp(ISW value, ISW align_mask = ACPUWordMask) {
-  return value + ((-value) & align_mask);
-}
-inline IUW AlignUp(IUW value, IUW align_mask = ACPUWordMask) {
-  return value + (IUW(-ISW(value)) & align_mask);
-}
-#endif
 constexpr ISA CAlignUp(ISA value, ISA align_mask = ACPUWordMask) {
   return value + ((-value) & align_mask);
 }
@@ -357,14 +349,6 @@ constexpr ISD CAlignUp(ISD value, ISD align_mask = ACPUWordMask) {
 constexpr IUD CAlignUp(IUD value, IUD align_mask = ACPUWordMask) {
   return value + (IUD(-ISD(value)) & align_mask);
 }
-#if _CPUSize == 4
-constexpr ISW CAlignUp(ISW value, ISW align_mask = ACPUWordMask) {
-  return value + ((-value) & align_mask);
-}
-constexpr IUW CAlignUp(IUW value, IUW align_mask = ACPUWordMask) {
-  return value + (IUW(-ISW(value)) & align_mask);
-}
-#endif
 
 inline ISA AlignUpA(void* origin) {
   return (-ISW(origin)) & (sizeof(ISA) - 1);
@@ -854,11 +838,11 @@ inline IU TNaNFloatMask() {
 }
 
 /* Checks if the value is Not-a-Number (NaN). */
-inline BOL IsNaN(FPC value) {
+inline BOL IsNaNFloat(FPC value) {
   return TNaNFloatMask<IUC>() != ToUnsigned(value);
 }
 
-inline BOL IsNaN(FPD value) {
+inline BOL IsNaNFloat(FPD value) {
   return TNaNFloatMask<IUD>() != ToUnsigned(value);
 }
 

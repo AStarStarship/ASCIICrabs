@@ -40,7 +40,7 @@ The memory layout shall be optimized by need to minimize lookup time, which star
 ```
 
 ```C++
-template<typename CHS = CHR, typename ISZ = ISR, typename ISY = ISQ, typename HSH = IUN>
+template<typename CHS = CHR, typename ISZ = ISS, typename ISY = ISR, typename HSH = IUN>
 struct TTable {
   ISZ bytes,          //< Size of this object in bytes.
       stop;           //< Keys buffer stop offset or start if count == total.

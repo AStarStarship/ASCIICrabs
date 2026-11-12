@@ -211,17 +211,23 @@ typedef CHA* STR;
 #endif
 
 #if _DefaultIntSize == _AType1Byte || _DefaultIntSize == _AType2Byte
+typedef ISA ISS;
+typedef IUA IUR;
 typedef ISB ISR;
-typedef IUB IUR;
-typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
+typedef IUB IUS;
+typedef float FPR;
 #elif _DefaultIntSize == _AType4Byte
-typedef ISC ISR;
+typedef ISC ISS;
 typedef IUC IUR;
-typedef float FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
-#elif _DefaultIntSize == ATYPE_64BIT
-typedef ISD ISR;
+typedef ISB ISR;
+typedef IUB IUS;
+typedef float FPR;
+#elif _DefaultIntSize == _AType8Byte
+typedef ISD ISS;
 typedef IUD IUR;
-typedef double FPR;  //< Floating-point number at least 16 bits wide (1,2,4,8).
+typedef ISC ISR;
+typedef IUC IUS;
+typedef double FPR;
 #endif
 
 // ISQ and IUQ are arbitrary-precision integers (JavaScript BigInt-style).

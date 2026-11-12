@@ -9,8 +9,8 @@ Once a valid Expression has been received, a room may then **Evaluate** that exp
 ## Hyphenated Script Expression Example
 
 ```Crabs
-/* typedef IUA UIT;
-   static const UIT in_params[]  = { 1, kUI4, kUI8 },
+/* typedef IUA IUT;
+   static const IUT in_params[]  = { 1, kUI4, kUI8 },
                        out_params[] = { 1, NILL, kNIL };
     static const Op kOp= { “Example-Function_with_hypens_and_underscores”,
                           rxHeader, txHeader,
@@ -38,7 +38,7 @@ Example-Function_with_hypens_and_underscores {
 ```C
 struct Op {
     const char   * name;          //< Op name.
-    const UIT * in,               //< Input BSQ params or OpFirst.
+    const IUT * in,               //< Input BSQ params or OpFirst.
                  * out;           //< Output BSQ params or OpLast.
     const char   * description;   //< Op description.
     wchar_t        pop,           //< Index of the Pop Operation.
@@ -52,7 +52,7 @@ struct Op {
 ### C++ Header Examples
 
 ```C++
-static const UIT rx_header_without_strings[] = { 2, kUI1, kSI2 },   
+static const IUT rx_header_without_strings[] = { 2, kUI1, kSI2 },   
                     rx_header_with_strings[]    = { 2, kUI1, kSTR, 32 },
                     //< We need to specify the max string length.
                     rx_header_with_array[]      = { 2, kUI1, Array (kUI1, 32) },

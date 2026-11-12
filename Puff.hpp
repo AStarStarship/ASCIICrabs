@@ -111,7 +111,8 @@ inline void SPrintCharPair(CHC* cursor, IUB decimal_pair) {
 /* Prints 8 decimals to the given socket with given LUT.*/
 template<typename CHS = CHR>
 CHS* TSPrint8Decimals(CHS* cursor, IUC value, const IUB* lut) {
-  _DROut("\n    Printing 8 decimals:" << value);
+  _DROut("\n    Printing 8 decimals:");
+  _DROut(value);
   IUB pow_10_ui2 = 10000, digits6and5 = IUB(value / pow_10_ui2),
     digits2and1 = value - pow_10_ui2 * digits6and5;
   pow_10_ui2 = 100;
@@ -329,13 +330,21 @@ CHS* TSPrintUnsigned(CHS* cursor, CHS* stop, IU value) {
         delta = 16;
         value = msd / comparator;
         middle_sd = ToIUC(msd - value * comparator);
-        _DROut("\n    Printing " << value << '_' << middle_sd << '_' << lsd);
+        _DROut("\n    Printing ");
+        _DROut(value);
+        _DROut('_');
+        _DROut(middle_sd);
+        _DROut('_');
+        _DROut(lsd);
       }
       else {
         value = msd;
         middle_sd = 0;
         delta = 8;
-        _DROut("\n    Printing " << value << '_' << lsd);
+        _DROut("\n    Printing ");
+        _DROut(value);
+        _DROut('_');
+        _DROut(lsd);
       }
       if (value == 0) {
         _DROut("\n    Length:8");
@@ -705,14 +714,27 @@ public:
 
 #ifdef _DThis
   static void PrintDebugInfo() {
-    _DROut("\nSize:" << Size << " SizeBits:" << SizeBits << " MSbIndex:"
-      << MSb << " StringLengthMax:" << StringLengthMax
-      << "\nExponentSizeBits:" << ExponentSizeBits
-      << " CoefficientSize:" << CoefficientSize
-      << " MantissaSize:" << MantissaSize
-      << "\nExponentMaskUnshifted:" << ExponentMaskUnshifted
-      << " ExponentBias:" << ExponentBias
-      << " ExponentMin ():" << ExponentMin << "\n\n");
+    _DROut("\nSize:");
+    _DROut(Size);
+    _DROut(" SizeBits:");
+    _DROut(SizeBits);
+    _DROut(" MSbIndex:");
+    _DROut(MSb);
+    _DROut(" StringLengthMax:");
+    _DROut(StringLengthMax);
+    _DROut("\nExponentSizeBits:");
+    _DROut(ExponentSizeBits);
+    _DROut(" CoefficientSize:");
+    _DROut(CoefficientSize);
+    _DROut(" MantissaSize:");
+    _DROut(MantissaSize);
+    _DROut("\nExponentMaskUnshifted:");
+    _DROut(ExponentMaskUnshifted);
+    _DROut(" ExponentBias:");
+    _DROut(ExponentBias);
+    _DROut(" ExponentMin ():");
+    _DROut(ExponentMin);
+    _DROut("\n\n");
   }
 #endif
 

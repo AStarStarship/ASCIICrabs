@@ -137,7 +137,7 @@ ROut& ROut::Print(ISC item) {
 #else
   enum { Size = 24 };
   CHA socket[Size];
-  TSPrintSigned<ISD, IUD, CHA>(socket, Size, ISD(value));
+  TSPrintSigned<ISD, IUD, CHA>(socket, Size, ISD(item));
   Print(socket);
 #endif
 #endif

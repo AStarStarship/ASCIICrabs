@@ -104,8 +104,17 @@ void* TBSeqWrite_NC(void* begin, void* end, DTB type, IUW value,
    Write8Bytes:
     if (freespace < 8) return _NilP;
     auto pointer = TRef<IUD>(begin);
+#if _CPUSize == _CPU32Bit
+    if (MD) {
+      IUC* src = TRef<IUC>(value);
+      *pointer++ = (IUD)(IUD(src[0]) | (IUD(src[1]) << 32));
+    } else {
+      *pointer++ = (IUD)(IUD(value) | (IUD(value_msb) << 32));
+    }
+#else
     *pointer++ = MD ? *TRef<IUD>(value)
                 : IUD(value);
+#endif
     return pointer;
   }
   if (type <= _SSE) {

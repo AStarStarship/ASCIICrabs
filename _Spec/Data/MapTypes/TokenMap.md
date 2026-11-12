@@ -7,7 +7,7 @@ A Token Map (TKM) is a input text tokenizer.
 The TKM uses the Table memory layout with some extra variables.
 
 ```C++
-template<typename CHT = CHR, typename ISZ = ISR, typename ISY = ISQ, typename HSH = IUN>
+template<typename CHT = CHR, typename ISZ = ISS, typename ISY = ISR, typename HSH = IUN>
 struct TTable {
   ISZ bytes,          //< Size of this object in bytes.
       stop;           //< Keys buffer stop offset or start if count == total.

@@ -5,8 +5,11 @@
 ## 1. Build, Lint, and Test Commands
 
 ### Build
-- **Compile:** `g++ -g -o Crabs _Seams/_Main.hxx`
+- **Compile:** `g++ -g -o Crabs _Seams/_Seams.cpp` (single translation unit)
 - **Output Binary:** `Crabs` (Windows: `Crabs.exe`)
+- The single-TU entry is **`_Seams/_Seams.cpp`** (it defines the seam table,
+  then includes `_Config.h` + the package + all seam test files). There is no
+  `_Main.hxx` — an older name that no longer exists.
 
 ### Test (canonical: `_Seams/CMakeLists.txt`)
 The project uses a custom seam tree testing framework located in `_Seams/`.
@@ -15,24 +18,37 @@ separate build tree from it and build the `Crabs` target; do not hand-roll the
 `g++` line for the test binary, the CMake target wires up the single-TU rule
 correctly (one generated `.cpp` wrapper = one `.exe`).
 
-To run a specific seam, select it with the seam macro on the command line
-(default seam is `_CrabsRelease` for a full release-tree run):
-`-DCMAKE_CXX_FLAGS="-D_SEAM=<n>"` (the seam table is defined in
-`_Seams.cpp`, before `_Config.h` is included).
+**Selecting the seam:** the active seam is set in **`_Seams/_Config.h`** via
+`#define _Seam _Crabs<Name>` (e.g. `_CrabsRelease`, `_CrabsCore`). Do **NOT**
+edit `_Seams/_Seams.cpp` to change the seam or the `TTestTree` — change the
+`_Seam` macro in `_Config.h` instead. The full release tree (seam 24,
+`_CrabsRelease`) is where every seam test function exists, so the canonical
+`TTestTree<...>` in `_Seams.cpp` compiles cleanly there. Lower seams are
+debug-only slices; if a lower seam can't link a `TTestTree` entry, that's
+expected — build at `_CrabsRelease` for the real run.
 
 Example (out-of-source build tree, reusable across runs):
 ```
 cmake -S _Seams -B build/crabs
 cmake --build build/crabs
-./build/crabs/Crabs            # run the full seam tree
-./build/crabs/Crabs 06         # run seam 06 (Array)
+./build/crabs/Crabs            # run the full seam tree (Release)
 ```
 
 - **Run All Tests:** `./Crabs` (Runs the compiled executable)
-- **Run Specific Seam:** Tests are organized in a tree structure. To debug a specific area, you may need to modify `_Seams/_Main.hxx` or set breakpoints in `Test.hpp` as described in `README.md`.
+- **Verify clean at runtime (catches infinite recursion / overflow the plain
+  build hides):** build with ASan and run:
+  ```
+  g++ -std=gnu++23 -x c++ -g -fsanitize=address -fno-omit-frame-pointer \
+    -I _Seams -I . -o /tmp/crabs-asan _Seams/_Seams.cpp
+  ASAN_OPTIONS=detect_leaks=0 /tmp/crabs-asan
+  ```
+  A `stack-overflow` backtrace = a function calling itself (directly or via
+  `operator<<`/`Print` cycles). This is how ROut's `Print`/`operator<<` mutual
+  recursion was caught.
 - **Debugging:**
-  - Breakpoints: `Test.hpp` contains a `TBRK` function intended for one breakpoints.
-  - Setup: Copy `_Seams` directory to workspace if needed (per `README.md`).
+  - Breakpoints: `Test.hpp` contains a `TBRK` function intended for one breakpoint.
+  - No gdb on the box by default; ASan + the compiler's `-E` preprocessed dump
+    are the primary diagnostics.
 
 ### Lint / Standards
 - **Style Check:** There is no automated linter configured (e.g., clang-format) visible in the root.
@@ -49,7 +65,9 @@ All Crabs code shall use Chimera C++ formatting where all immutable members are 
     - `CHR`, `CHA` -> char (ASCII)
     - `IUW` -> Unsigned Integer Word (machine word size)
     - `DTW` -> Data Type Word
-- **Minimal Standard Library:** The project aims to replace the C++ std library. Avoid `#include <string>`, `<vector>`, `<iostream>` unless explicitly allowed or wrapping legacy code. Use project-specific containers (`Array`, `List`, `Stack`, `String`) instead.
+- **Minimal Standard Library:** The project aims to replace the C++ std library. **Do not add `#include <string>`, `<vector>`, `<iostream>`, `<errno.h>`, `<unistd.h>`, or any other C++/C stdlib header** unless a file already depends on it and the task is to fix that file in place. Use project-specific containers (`Array`, `List`, `Stack`, `String`) instead.
+  - **Sanctioned exception:** `Random.hxx` includes `<random>`, `<cstdlib>`, `<cmath>` — these MUST stay before the `namespace _ {` line (stdlib headers inside `namespace _` poison `_::std` / `_::__gnu_cxx`). Do not move them inside the namespace.
+  - `fputc`/`stdout` (and `<cstdio>` transitively) are available in the TU and are the sanctioned leaf for `ROut` console output (see ROut pitfalls below).
 - **Crabs Module Format:** Follow the module structure: `.h` (Contains the decl), `.hpp` (Contains all code that uses templates), `.hxx` (contains the impl usually found in .ccp files because we use only one translation unit to compile as fast as possible).
 
 ### Naming Conventions
@@ -86,12 +104,13 @@ This naming convention is called Chimera case due to the mix of snake_case and C
 - **Debugging:** Use `TBRK()` for breakpoints. Use `RefOut()` (wrapped) for logging if strictly necessary, but prefer the "Seam" test structure.
 
 ### Specific Types (from `AType.h` and `_Spec/Data`)
-- 'CHA', 'CHB', 'CHC', 'CHR` are char, char16_t, char32_t, and the default/OS character type. Prefer CHR unless otherwise specified.
+- 'CHA', 'CHB', 'CHC', 'CHR' are char, char16_t, char32_t, and the default/OS character type. Prefer CHR unless otherwise specified. `CHN` = `wchar_t` (which is `char32_t`/CHC on a 4-byte-wchar platform) — do NOT assume `CHN` is 8-bit.
 - `DTW`, `DTB`: Data Type Word/Byte.
 - `IUW`, `IUE`, `IUD`: Integer Unsigned Word/128-bit/64-bit.
 - `ISW`, `ISE`: Integer Signed Word/128-bit.
 - `FPC`, `FPD`, `FPE`: Floating Point types.
 - `PTR`: Pointer macros or wrappers may exist.
+- **`IUE`/`ISE` are the native 128-bit types on GCC/Clang** (`unsigned __int128` / `__int128`, typedef'd in `_ConfigFooter.h` when `HAS_128_BIT_INT` is set). On MSVC they are the `{lsb, msb}` structs in `AType.h`. The struct definitions are gated `#if !defined(HAS_128_BIT_INT)` — do not re-add them unconditionally, or they shadow the native typedef inside `namespace _` and break 128-bit arithmetic (e.g. Ryu's `IUE * IUD`).
 
 ### Classes
 - **Constructors:** Do no work in constructors that can fail. Use `Init()` if needed.
@@ -113,6 +132,45 @@ This naming convention is called Chimera case due to the mix of snake_case and C
 - **Verify before Implement:** Always read `_StyleGuide` files if unsure about a naming or structural convention.
 - **Mimic Context:** The codebase uses heavily customized types. Do NOT introduce standard `int`, `char`, `float` without checking if a project specific type (`ISN`, `CHR`, `FPC`) should be used instead.
 - **Seam Tests:** When adding functionality, look for the corresponding "Seam" (test file) in `_Seams/` and add a test case there.
+- **Minimal changes:** If you don't have to do it, don't. Remove before you add. No drive-by refactors or renames — the user does bulk renames himself (e.g. the `boofer`→`buffer` rename) and will YOLO find-replace them.
+- **Don't touch git.** Agents only edit files. The user commits via `git add --all` + YOLO merge himself. Read-only git (`status`/`log`/`diff`/`show`) is fine; no writes.
+- **Don't edit `_Seams/_Seams.cpp`** to change the seam or the `TTestTree`. Change the `_Seam` macro in `_Seams/_Config.h` instead.
+
+## 5. Hard-Won Pitfalls (autocomplete-refactor damage, 2026-11)
+These classes of bug were introduced by AI autocomplete tab-insertion during a
+large refactor and cost many hours. Check for them when editing:
+- **Include-guard collisions:** A `.hpp` must use its OWN guard (`_Crabs<Name>HPP`),
+  never its sibling `.hxx`'s guard (`_Crabs<Name>HXX`). `Puff.hpp` used
+  `_CrabsPuffHXX` (Puff.hxx's guard), so when Puff.hpp was included before
+  Puff.hxx the impl file's body was silently skipped → link errors on
+  `BinaryLUTDecimals` etc.
+- **Stray `#else` / dropped `}` / mis-nested `#if`:** autocomplete inserts stray
+  `#else` (pairs with the include guard, not a real `#if` → drops a whole code
+  branch, e.g. Random.hxx's public `Random()` API), drops a function-body `}`
+  (makes the enclosing `namespace _` look unmatched → hundreds of "definition
+  not in namespace enclosing" errors), and corrupts constructor init lists
+  (e.g. `element(format, count)` where it should be `element(value, count)`).
+  **Diagnose with a real brace tokenizer on `g++ -E` output, not a regex** —
+  regex checkers lie on string/char literals. The compiler's "expected '}' at
+  end of input ... to match this '{'" note points at the real culprit.
+- **`namespace _` opened inside a seam gate must close in the same gate.**
+  Puff/Slot/BOut/Random all had `namespace _ {` outside `#if _Seam >= X` but
+  the close inside it → unclosed at lower seams.
+- **ROut print recursion:** `ROut::Print(CHA/CHB/CHC)` must be the LEAF
+  (`fputc` to stdout) — do NOT write `_ROut << item` inside a `Print` body, or
+  it cycles `Print` → `operator<<` → `Print` → ∞ (stack overflow at runtime,
+  invisible to the plain build, caught by ASan). Integer/float `Print`
+  overloads convert to a `CHA buffer[]` and call `Print(const CHA*)`, which is
+  the acyclic path.
+- **Cross-seam type dependency:** if a lower-seam file needs a type from a
+  higher-seam-gated header (e.g. BigInt needs Autoject, which is
+  `_CrabsUniprinter`-gated), gate the consumer on that seam — don't pull the
+  type down.
+- **Float print is `_CrabsFToS` (seam 3); float stop-pointer is
+  `_CrabsUniprinter` (seam 4).** Core-seam code touching either must be
+  seam-gated.
+- **`#endif` comments are LIES** — trace real `#if` nesting with a stack, don't
+  trust the label.
 
 ## Code Style — Chimera+ (AStarship Standard)
 

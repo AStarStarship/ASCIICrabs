@@ -12,38 +12,6 @@
 #endif
 namespace _ {
 
-/* A sparse array map of Sorted Domain Values to Codomain Mappings (i.e. pointer
-offsets).
-@see ASCII Data Type Specification.
-@link file://./_Spec/Data/MapTypes/Map.md
-
-@code
-         Map Memory Layout
-+-------------------------------+
-|_____   Buffer       ISZ       |
-|_____ ^ Y_n        Codomain    |
-|      | Y_0        Mappings    |
-+-------------------------------+
-|_____   Buffer                 |
-|_____ ^ X_n     Sorted Domain  |
-|      | X_0         Values     |
-+-------------------------------+  ^ Up in addresses.
-|          TMap Header          |  |
-+-------------------------------+ 0x0
-@endcode
-*/
-#undef  MAP_A
-#define MAP_A typename D = ISR, typename ISZ = ISN
-#undef  MAP_P
-#define MAP_P D, ISZ
-#define MAP TMap<MAP_P>
-
-template<MAP_A>
-struct TMap {
-  ISZ total,  //< Maximum number of elements in the map.
-      count;  //< Element count.
-};
-
 template<MAP_A>
 struct TMapBuf {
   D   domain_value;   //< 
