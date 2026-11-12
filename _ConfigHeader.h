@@ -36,7 +36,7 @@
 #define _AType1Byte    0  //< Code 0-3 maps to A-D for 8-bit ASCII size-width.
 #define _AType2Byte   1  //< Code 0-3 maps to A-D for 16-bit ASCII size-width.
 #define _AType4Byte   2  //< Code 0-3 maps to A-D for 32-bit ASCII size-width.
-#define ATYPE_64BIT   3  //< Code 0-3 maps to A-D for 64-bit ASCII size-width.
+#define _AType8Byte   3  //< Code 0-3 maps to A-D for 64-bit ASCII size-width.
 
 #define PLATFORM_BARE_METAL 1
 #define PLATFORM_MBED_BARE_METAL 2
@@ -99,9 +99,17 @@ typedef uint32_t IUC;
 typedef int64_t ISD;
 typedef uint64_t IUD;
 typedef int ISN;
-typedef intptr_t ISW;
+#if defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ == 2)
+typedef ISB ISW;  //< Word = the fixed-width type of the same size, so ISW is
+typedef IUB IUW;  //< type-identical to ISB/IUB and ISW overloads stay unique.
+#elif defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ == 4)
+typedef ISC ISW;  //< 32-bit word aliases ISC (type-identical).
+typedef IUC IUW;  //< 32-bit word aliases IUC (type-identical).
+#else
+typedef ISD ISW;  //< 64-bit word aliases ISD (type-identical to int64_t).
+typedef IUD IUW;  //< 64-bit word aliases IUD (type-identical to uint64_t).
+#endif
 typedef unsigned int IUN;
-typedef uintptr_t IUW;
 typedef short ISM;
 typedef unsigned short IUM;
 typedef int16_t ISG;

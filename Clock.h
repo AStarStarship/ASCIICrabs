@@ -239,6 +239,9 @@ AClock* ClockInit(AClock& clock);
 /* Gets the current 64-bit timestamp. */
 TMD ClockNow();
 
+/* Gets the current 64-bit timestamp as a floating-point value. */
+inline FPD ClockNowFPD();
+
 /* Creates a timestamp from the given seconds Clock. */
 TMC ClockToTimestamp(AClock& clock);
 

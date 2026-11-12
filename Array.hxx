@@ -16,7 +16,7 @@ inline IUW FillWord(CHA fill_char) {
 #if _CPUEndian == _CPUEndianLittle
 #if _CPUSize == _CPU8Byte
   return value | (value << 8) | (value << 16) | (value << 24) | (value << 32) |
-    (value << 48) | (value << 56);
+    (value << 40) | (value << 48) | (value << 56);
 #elif _CPUSize == _CPU32Bit
   return value | (value << 8) | (value << 16) | (value << 24);
 #else

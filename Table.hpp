@@ -13,57 +13,7 @@
 #else
 #include "_Release.h"
 #endif
-#define TBL_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, \
-  typename ISY = ISQ, typename HSH = IUN
-#define TBL_P CHS, CHT, ISZ, ISY, HSH
-#define TBL TTable<CHS, CHT, ISZ, ISY, HSH>
 namespace _ {
-
-/* A dense key-index map.
-@see ASCII Data Type Specification for DRY documentation.
-@link ./Spec/Data/MapTypes/Table.md
-@code
-         Table Memory Layout
-+--------------------------------------+
-|_ISY_   pile_size (negative)          |
-|_____ | Collision 0          ISB      |
-|_____ v Collision N          pile     |
-|_____   Collision N+ 1                |
-|_____   pie_end                       |
-+--------------------------------------+
-|_____   Buffer Stop                   |
-|_____   Buffer                        |
-|_____   Buffer Start                  |
-+--------------------------------------+
-|_____ ^ Key N                 CHC     |
-|_____ | Key 0                Keys     |
-+--------------------------------------+
-|_____   Buffer                ISY     |
-|_____ ^ Unsorted Index N    sort_map  |
-|      | Unsorted Index 0              |
-+--------------------------------------+
-|_____   Buffer                ISY     |
-|_____ ^ Collision Index N   pile_map  |
-|      | Collision Index 0             |
-+--------------------------------------+
-|_____   Buffer                ISZ     |
-|_____ ^ Key Offset N        keys_map  |
-|      | Key Offset 0                  |
-+--------------------------------------+
-|_____   Buffer                HSH     |
-|_____ ^ Sorted Hash N       hash_map  |
-|      | Sorted Hash 0                 |
-+--------------------------------------+  ^ Up in addresses.
-|            TTable Header             |  |
-+--------------------------------------+ 0x0
-@endcode
-*/
-template<TBL_A>
-struct TTable {
-  ISZ bytes,          //< Size of this object in bytes.
-      stop;           //< Keys buffer stop offset or start if count == total.
-  TStack<ISZ, ISZ, ISY> map;  //< A Stack of offset mappings to strings.
-};
 
 enum {
   TableSizeMin = 64,  //< Min size of a Table

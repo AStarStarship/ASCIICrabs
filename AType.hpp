@@ -21,6 +21,7 @@ Please see the ASCII Data Specification for DRY documentation.
 */
 #define ARY_A typename T = CHA, typename ISZ = ISN
 #define ARY_P T, ISZ
+#define ARY_D ISR
 #define ARY TArray<ARY_P>
 #define AARY AArray<ARY_P>
 
@@ -50,10 +51,10 @@ Please see the ASCII Data Specification for DRY documentation.
 +---------------+ 0xN
 @endcode
 */
-#define SCK_A typename T=ISW, typename ISZ=ISW, typename ISY=ISZ
+#define SCK_A typename T=ISW, typename ISZ = ISS, typename ISY = ISZ
 #define SCK_P T, ISZ, ISY
+#define SCK_D ISS, ISR
 #define SCK TStack<SCK_P>
-//@todo Change SCP_A to typename ISZ=ISW, typename ISY=ISZ
 template<SCK_A>
 struct TStack {
   ISZ total,  //< Size of the Array in elements.
@@ -111,10 +112,10 @@ struct TMatrix {
 +============================+ 0xN Base address
 @endcode
 */
-#define LST_A typename ISZ = ISC, typename ISY = ISB, typename DT = DTB
+#define LST_A typename ISZ = ISS, typename ISY = ISR, typename DT = DTB
 #define LST_P ISZ, ISY, DT
+#define LST_D ISS, ISR, DTB
 #define LST TList<LST_P>
-
 template<LST_A>
 struct TList {
   ISZ bytes,        //< Size of the List in bytes.
@@ -144,8 +145,9 @@ Please see the ASCII Data Specification for DRY documentation.
 @todo Look into adding variable for average UTF-8 and UTF-16 character length.
 @todo Change keys_offset delta from table to keys_map.
 */
-#define LOM_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, typename ISY = ISQ
+#define LOM_A typename CHS = CHR, typename CHT = CHC, typename ISZ = ISS, typename ISY = ISR
 #define LOM_P CHS, CHT, ISZ, ISY
+#define LOM_D CHR, CHC, ISS, ISR
 #define LOM TLoom<LOM_P>
 
 /* An array of Strings. */
@@ -156,14 +158,40 @@ struct TLoom {
   TStack<ISZ, ISZ, ISY> map;  //< A Stack of offset mappings to strings.
 };
 
+#undef  MAP_A
+#define MAP_A typename D = ISW, typename ISZ = ISN
+#undef  MAP_P
+#define MAP_P D, ISZ
+#define MAP TMap<MAP_P>
+/* A sparse array map of Sorted Domain Values to Codomain Mappings (i.e. pointer
+offsets).
+@see ASCII Data Type Specification.
+@link file://./_Spec/Data/MapTypes/Map.md
+
+@code
+         Map Memory Layout
++-------------------------------+
+|_____   Buffer       ISZ       |
+|_____ ^ Y_n        Codomain    |
+|      | Y_0        Mappings    |
++-------------------------------+
+|_____   Buffer                 |
+|_____ ^ X_n     Sorted Domain  |
+|      | X_0         Values     |
++-------------------------------+  ^ Up in addresses.
+|          TMap Header          |  |
++-------------------------------+ 0x0
+@endcode
+*/
+template<MAP_A>
+struct TMap {
+  ISZ total,  //< Maximum number of elements in the map.
+      count;  //< Element count.
+};
+
 // The Book/Dic value lists use the plain List macro (LST_P = ISZ, ISY, DT) —
 // do NOT manually re-enter the List template params here; a 5-arg Book-style
 // list was accidentally pasted and broke TList<LST_P> (wrong arg count).
-#undef  BOK_P
-#define BOK_P CHS, CHT, ISZ, ISY, DT
-#undef  BOK_A
-#define BOK_A typename CHS = CHR, typename CHT = CHD, typename ISZ = ISN,\
-  typename ISY = ISM, typename DT = DTB
 
 /* @defgroup Book
 @brief A contiguous memory Associative List composed of a Loom and list.
@@ -195,11 +223,66 @@ the keys.
 |          TList Struct              |  |
 +====================================+  + 0xN
 @endcode */
+#undef  BOK_P
+#define BOK_P CHS, CHT, ISZ, ISY, DT
+#define BOK_D CHR, CHC, ISS, ISR, DTB
+#define BOK_A typename CHS = CHR, typename CHT = CHC, typename ISZ = ISN,\
+  typename ISY = ISM, typename DT = DTB
 template<BOK_A>
 struct TBook {
   TList<LST_P> values;  //< A list of values with a Loom of keys in index 0.
 };
 
+#define TBL_A typename CHS = CHR, typename CHT = CHC, typename ISZ = ISS, \
+  typename ISY = ISR, typename HSH = IUN
+#define TBL_P CHS, CHT, ISZ, ISY, HSH
+#define TBL_D CHR, CHC, ISS, ISR, IUN
+#define TBL TTable<TBL_P>
+/* A dense key-index map.
+@see ASCII Data Type Specification for DRY documentation.
+@link ./Spec/Data/MapTypes/Table.md
+@code
+         Table Memory Layout
++--------------------------------------+
+|_ISY_   pile_size (negative)          |
+|_____ | Collision 0          ISB      |
+|_____ v Collision N          pile     |
+|_____   Collision N+ 1                |
+|_____   pie_end                       |
++--------------------------------------+
+|_____   Buffer Stop                   |
+|_____   Buffer                        |
+|_____   Buffer Start                  |
++--------------------------------------+
+|_____ ^ Key N                 CHC     |
+|_____ | Key 0                Keys     |
++--------------------------------------+
+|_____   Buffer                ISY     |
+|_____ ^ Unsorted Index N    sort_map  |
+|      | Unsorted Index 0              |
++--------------------------------------+
+|_____   Buffer                ISY     |
+|_____ ^ Collision Index N   pile_map  |
+|      | Collision Index 0             |
++--------------------------------------+
+|_____   Buffer                ISZ     |
+|_____ ^ Key Offset N        keys_map  |
+|      | Key Offset 0                  |
++--------------------------------------+
+|_____   Buffer                HSH     |
+|_____ ^ Sorted Hash N       hash_map  |
+|      | Sorted Hash 0                 |
++--------------------------------------+  ^ Up in addresses.
+|            TTable Header             |  |
++--------------------------------------+ 0x0
+@endcode
+*/
+template<TBL_A>
+struct TTable {
+  ISZ bytes,          //< Size of this object in bytes.
+      stop;           //< Keys buffer stop offset or start if count == total.
+  TStack<ISZ, ISZ, ISY> map;  //< A Stack of offset mappings to strings.
+};
 
 /* @defgroup Dic
 @brief A contiguous memory Associative List created from a List and a Table.
@@ -213,8 +296,9 @@ struct TBook {
 +-----------------+ 0xN
 @endcode */
 #define DIC_A typename CHS = CHR, typename CHT = CHR, typename ISZ = ISR,\
-  typename ISY = ISQ, typename DT = DTB, typename HSH = IUN
+  typename ISY = ISR, typename DT = DTB, typename HSH = IUN
 #define DIC_P CHS, CHT, ISZ, ISY, DT, HSH
+#define DIC_D CHR, CHR, ISR, ISR, DTB, IUN
 #define DIC TDic<DIC_P>
 template<DIC_A>
 struct TDic {
@@ -294,9 +378,10 @@ connection to multiple systems over a WiFi connection.
 */
 #define DOR_P typename ISZ = ISN
 #define DOR_A ISZ
+#define DOR_D ISS
 template<DOR_P>
 struct TDoor {
-  ISN  bytes_,          //< Door size in bytes.
+  ISZ  bytes_,          //< Door size in bytes.
        scan_total_;     //< Max bytes to pull through the slot at once.
   IUW* begin_;          //< Pointer to dynamic socket.
   TStack<Slot, ISZ, ISZ>* slots_;  //< Slots in the door.
@@ -321,14 +406,15 @@ needed a new Wall may be created and destroyed dynamically.
 |    Header    |
 +--------------+
 @endcode */
-#define WAL_A typename T = ISW, typename ISZ = ISN, typename ISY = ISN
-#define WAL_P T, ISZ, ISY
+#define WAL_A LST_A
+#define WAL_P LST_P
+#define WAL_D LST_D
 #define WAL TWall<WAL_P>
 template<WAL_A>
 struct TWall {
   IUD ctx_; //< Plain Context Type remap word.
-  TStack<TDoor<ISZ>, ISZ, ISY> doors_;  //< The doors in the room.
-	BOL is_dynamic_;	//< Whether this wall was dynamically allocated or not.
+  BOL is_dynamic_;  //< Whether the arena block was heap allocated.
+  LST* list_;  //< Byte-arena block; the TList sits at its base.
 };
 /* Utility class for givings names to params.
 ```C++
@@ -671,7 +757,7 @@ constexpr DTB CATypePOD(IUA value) { return _IUA; }
 constexpr DTB CATypePOD(ISA value) { return _ISA; }
 constexpr DTB CATypePOD(CHA value) { return _CHA; }
 
-//constexpr DTB CAType(FPB value) { return _FPB; }
+//constexpr DTB CATypePOD(FPB value) { return _FPB; }
 constexpr DTB CATypePOD(IUB value) { return _IUB; }
 constexpr DTB CATypePOD(ISB value) { return _ISB; }
 constexpr DTB CATypePOD(CHB value) { return _CHB; }
@@ -684,17 +770,17 @@ constexpr DTB CATypePOD(CHC value) { return _CHC; }
 constexpr DTB CATypePOD(FPD value) { return _FPD; }
 constexpr DTB CATypePOD(IUD value) { return _IUD; }
 constexpr DTB CATypePOD(ISD value) { return _ISD; }
-//constexpr DTB CAType(TMD value) { return _TMD; }
+//constexpr DTB CATypePOD(TMD value) { return _TMD; }
 
-//constexpr DTB CAType(FPE value) { return _FPE; }
-//constexpr DTB CAType(IUE value) { return _IUE; }
-//constexpr DTB CAType(ISE value) { return _ISE; }
-//constexpr DTB CAType(TME value) { return _TME; }
+//constexpr DTB CATypePOD(FPE value) { return _FPE; }
+//constexpr DTB CATypePOD(IUE value) { return _IUE; }
+//constexpr DTB CATypePOD(ISE value) { return _ISE; }
+//constexpr DTB CATypePOD(TME value) { return _TME; }
 
 template<typename T>
 constexpr DTB CATypePOD() {
   T foo = 0;
-  return CAType(foo);
+  return CATypePOD(foo);
 }
 
 /* Extracts the Vector type. */

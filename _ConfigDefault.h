@@ -9,10 +9,16 @@
 #define _CrabsUsing4ByteTypes
 #define _CrabsUsing8ByteTypes
 
+#if defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ == 2)
+#define _CPUSize _CPU16Bit
+#elif defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ == 4)
+#define _CPUSize _CPU32Bit
+#else
 #define _CPUSize _CPU8Byte
+#endif
 #define _CPUEndian _CPUEndianLittle
 
-#define _DefaultIntSize _AType4Byte
+#define _DefaultIntSize _CPUSize
 
 #define _LargestChar _StringTypeA
 #define _LargestSTR _StringTypeA

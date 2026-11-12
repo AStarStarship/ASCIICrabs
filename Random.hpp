@@ -16,7 +16,7 @@ inline FP TUniform01() {
 }
 
 /* Box-Muller Gaussian: random normal(mean, std_dev). FP = FPC or FPD.
-   Uses in-house FPDSquareRoot/FPDLog (Math.h) — no <cmath>, no <random>. */
+   Uses in-house SquareRoot/Log_e (Math.h) — no <cmath>, no <random>. */
 template<typename FP>
 inline FP TRandomSignedProbility(FP mean, FP std_dev) {
   static FP spare;
@@ -32,7 +32,7 @@ inline FP TRandomSignedProbility(FP mean, FP std_dev) {
       v = FP(2.0) * TUniform01<FP>() - FP(1.0);
       s = u * u + v * v;
     } while (s >= FP(1.0) || s == FP(0.0));
-    s = FP(FPDSquareRoot(FPD(-FPD(2.0) * FPDLog(FPD(s)) / FPD(s))));
+    s = FP(SquareRoot(FPD(-FPD(2.0) * Log_e(FPD(s)) / FPD(s))));
     spare = v * s;
     has_spare = true;
     return mean + std_dev * u * s;

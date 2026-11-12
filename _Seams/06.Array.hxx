@@ -28,6 +28,25 @@ static const CHA* Array(const CHA* args) {
 #if _Seam >= _CrabsArray
   _ATestBegin;
 
+  /* ArrayFill regression: FillWord skipped (value << 40), so with a non-zero
+     fill byte the 6th byte of every 64-bit word kept its old value. This
+     walks the aligned body and both unaligned edges and also checks that the
+     fill does not touch the bytes outside [begin, begin + count). */
+  _DROut(Headingf("Testing ArrayFill..."));
+  {
+    IUA buffer[3 * ACPUBytes + 3] = {};
+    const IUA fill_byte = IUA(0xA5);
+    IUA* begin = buffer + 3;
+    const ISW count = ISW(2 * ACPUBytes + 1);
+    ArrayFill(begin, count, CHA(fill_byte));
+    for (ISW i = 0; i < count; ++i)
+      _AAssert(begin[i] == fill_byte);
+    for (ISW i = 0; i < 3; ++i)
+      _AAssert(buffer[i] == 0);
+    for (ISW i = 3 + count; i < ISW(sizeof(buffer)); ++i)
+      _AAssert(buffer[i] == 0);
+  }
+
   _DROut(Headingf("Testing RAMCompare with offset sequential arrays..."));
 
   enum {

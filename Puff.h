@@ -48,27 +48,9 @@ const void* BinaryPow10Exponents();
 ASCII. */
 ISC FPCDigitsMax();
 
-/* Checks if the given value is not NaN or +/- Infinity. */
-BOL IsFinite(FPC value);
-
-/* Checks if the given value is not NaN or +/- Infinity. */
-BOL IsInfinite(FPC value);
-
-/* Returns the ceiling of the given value to the next highest up integer. */
-FPC Ceiling(FPC value);
-
 /* Gets the maximum number_ of digits required to represent a FPD as in
 ASCII. */
 ISC FPDDigitsMax();
-
-/* Checks if the given value is not NaN or +/- Infinity. */
-BOL IsFinite(FPD value);
-
-/* Returns the ceiling of the given value to the next highest up integer. */
-BOL IsInfinite(FPD value);
-
-/* Returns the ceiling of the given value to the next highest up integer. */
-FPD Ceiling(FPD value);
 
 #endif
 }  //< namespace _

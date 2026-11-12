@@ -9,8 +9,8 @@
 namespace CRTest {
 using namespace ::_;
 
-template<typename CHS = CHR, typename CHT = CHD, typename ISZ = ISR, 
-  typename ISY = ISQ, typename DT = DTB, typename HSH = IUN>
+template<typename CHS = CHR, typename CHT = CHD, typename ISZ = ISS, 
+  typename ISY = ISR, typename DT = DTB, typename HSH = IUN>
 static void TestDictionary() {
   enum {
     Size = 512 * sizeof(ISZ),

@@ -100,14 +100,11 @@ TBOut<ISC>* CrabsBOut(Crabs* crabs);
 @param root The root-scope device.
 @param unpacked_buffer The word-aligned expression socket.
 @param unpacked_size   Size of the unpacked socket. */
-Crabs* CrabsInit(IUW* socket, ISC buffer_size, ISC stack_count,
-                            Operand* root, IUW* unpacked_buffer,
-                            IUW unpacked_size, IUD ctxt);
+Crabs* CrabsInit(IUW* socket, ISC buffer_size, ISC stack_count, Operand* root, 
+  IUW* unpacked_buffer, IUW unpacked_size, IUD ctxt);
 
 /* Gets the base address of the device stack. */
-inline Operand** CrabsStack(Crabs* crabs) {
-  return TRef<Operand*>(&crabs->root);
-}
+inline Operand** CrabsStack(Crabs* crabs);
 
 /* Returns true if the Stack uses dynamic memory. */
 // BOL CrabsIsDynamic (Crabs* crabs);
@@ -177,8 +174,6 @@ inline const Op* CrabsArgs(Crabs* crabs, const DTB* params, void** args);
 @param args Pointers to the B-Sequence args. */
 inline const Op* CrabsResult(Crabs* crabs, const Op& op, void** args,
     IUD pc_ctx);
-//    inline const Op* CrabsResult(Crabs * crabs, const Op & op, void** args,
-//        IUD pc_ctx) {
 
 /* Writes the result to the Crabs.
 @return NIL upon  @todo something or other, I don't know. WTF is this?
@@ -188,9 +183,6 @@ inline const Op* CrabsResult(Crabs* crabs, const Op& op, void** args,
 inline const Op* CrabsResult(Crabs* crabs, const Op* op, void** args,
     IUD pc_ctx);
 
-//inline const Op* CrabsResult(Crabs* crabs, const Op* op, void** args,
-//    IUD pc_ctx) {
-//
 /* Writes the result to the Crabs.
 @param crabs The resulting expression.
 @param op   The Operation with result B-Sequence header.
@@ -235,14 +227,16 @@ const Op* CrabsRejectPromise(Crabs* crabs, Slot* promise_slot, void* error);
 @param promise_slot The promise Slot.
 @param onFulfilledKey The key for the fulfillment callback operand.
 @return Returns nil upon success or an Error Op upon failure. */
-const Op* CrabsThenPromise(Crabs* crabs, Slot* promise_slot, CHA* onFulfilledKey);
+const Op* CrabsThenPromise(Crabs* crabs, Slot* promise_slot, 
+    CHA* onFulfilledKey);
 
 /* Attaches a rejection handler to a promise (.catch()).
 @param crabs The Crabs machine.
 @param promise_slot The promise Slot.
-@param onRejectedKey The key for the rejection callback operand.
+@param on_rejected_key The key for the rejection callback operand.
 @return Returns nil upon success or an Error Op upon failure. */
-const Op* CrabsCatchPromise(Crabs* crabs, Slot* promise_slot, CHA* onRejectedKey);
+const Op* CrabsCatchPromise(Crabs* crabs, Slot* promise_slot, 
+    CHA* on_rejected_key);
 
 /* Reads a promise from a TBIn socket.
 @param bin The TBIn socket to read from.
@@ -255,7 +249,6 @@ IUW CrabsReadPromiseState(TBIn<ISC>* bin);
 @return Returns nil upon success or an Error Op upon failure. */
 const Op* CrabsWritePromiseResult(TBOut<ISC>* bout, Slot* promise_slot);
 
-}  //< namespace _
-
+}       //< namespace _
 #endif  //< #if _Seam >= _CrabsCrabs
 #endif  //< _CrabsCrabsH

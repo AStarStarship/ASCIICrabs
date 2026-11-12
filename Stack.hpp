@@ -350,7 +350,7 @@ element at the given index.
 template<SCK_A>
 void TStackRemove(T* elements, ISW element_number, ISW element_count) {
   return TArrayRemove<T>(elements + element_number,
-                              elements + element_count);
+                              elements + element_count, ISC(1));
 }
 
 /* Removes an element from the given array.

@@ -11,9 +11,10 @@
 Chinese Room Wall
 A block of dynamic memory in a Chinese Room. Walls provide
 heap space when the Floor (static memory) is exhausted.
-Each Wall contains a stack of Door pointers. The Wall is
-just a memory block - the CPU doesn't care if it's on the
-stack or heap; it's a contiguous address range.
+A Wall is like a Room in structure, but always heap-resident.
+Its root is a List: fastest index-based lookup + stack pushing,
+no hashtable by default. Hashtables and Doors are added to the
+root List when that helps.
 @{ */
 
 namespace _ {
@@ -23,47 +24,47 @@ enum {
 };
 
 template<WAL_A>
-TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, ISW bytes = WallBytesMin) {
+TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, ISW bytes = WallBytesMin,
+                        ISY total = 16) {
   wall->is_dynamic_ = true;
-  bytes = bytes < WallBytesMin ? ISC(WallBytesMin) : bytes;
+  bytes = bytes < WallBytesMin ? ISW(WallBytesMin) : bytes;
   ISW size_words = (bytes >> ACPUBytesLog2) + 3;
-  IUW *socket = new IUW[size_words];
-  wall->doors_ = TStackInit<TDoor<ISZ>, ISZ, ISY>(socket, bytes);
+  IUW* socket = new IUW[size_words];
+  LST* root = TRef<LST>(socket);
+  root->bytes = ISZ(bytes);
+  wall->list_ = TListInit<LST_P>(root, total);
   return wall;
 }
 
-/* Constructs a wall from the given block of words. */
+/* Builds a Wall over a given preallocated block. */
 template<WAL_A>
-TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, IUW* socket, ISW bytes) {
+TWall<WAL_P>* TWallInit(TWall<WAL_P>* wall, IUW* socket, ISW bytes,
+                        ISY total) {
   wall->is_dynamic_ = false;
-  TStackInit(TRef<TStack<TDoor<ISZ>, ISZ, ISY>>(socket), bytes);
+  LST* root = TRef<LST>(socket);
+  root->bytes = ISZ(bytes);
+  wall->list_ = TListInit<LST_P>(root, total);
   return wall;
 }
 
-/* Gets the size of the wall in bytes. */
+/* The Wall's root List: TListAlloc into it; TListValue to read back. */
 template<WAL_A>
-ISW TWallGetSizeBytes(TWall<WAL_P>* wall) {
-  return wall->doors_.GetSizeBytes();
+LST* TWallRoot(TWall<WAL_P>* wall) { return wall->list_; }
+
+/* The Wall's size in bytes. */
+template<WAL_A>
+ISW TWallGetSizeBytes(TWall<WAL_P>* wall) { return wall->list_->bytes; }
+
+/* Frees a Wall that bought its own block and leaves it empty. A Wall built
+over a caller's socket is left alone: that memory is not the Wall's to give
+back. */
+template<WAL_A>
+void TWallRelease(TWall<WAL_P>* wall) {
+  if (wall == _NilP || !wall->is_dynamic_ || wall->list_ == _NilP) return;
+  delete[] TRef<IUW>(wall->list_);
+  wall->list_ = _NilP;
+  wall->is_dynamic_ = false;
 }
-/* Gets a pointer to the array of pointers to Door(). */
-template<WAL_A>
-TStack<TDoor<ISZ>, ISZ, ISY >* TWallDoors(TWall<WAL_P>* wall) {
-  return &wall->doors_;
-}
-
-/* Gets the Door from the Door at the given index. */
-template<WAL_A>
-TDoor<ISZ> TWallGetDoor(TWall<WAL_P>* wall, ISY index) { return 0; }
-
-/* Adds a Door to the slot.
-@return Returns nil if the Door is full and a pointer to the Door in the
-        socket upon success. */
-template<WAL_A>
-ISC TWallOpenDoor(TWall<WAL_P>* wall, TDoor<ISZ>* door) { return 0; }
-
-/* Deletes the Door from the Door at the given index. */
-template<WAL_A>
-BOL TWallCloseDoor(TWall<WAL_P>* wall, ISY index) { return false; }
 
 }  //< namespace _
 

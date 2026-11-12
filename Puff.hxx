@@ -220,21 +220,9 @@ const void* Binary32Pow10IntegralPortions() { return IEEE754Pow10F4; }
 
 const void* Binary64Pow10IntegralPortions() { return IEEE754Pow10F8; }
 
-BOL IsFinite(FPC value) {
-  return static_cast<BOL>(FPDIsFinite(static_cast<FPD>(value)));
-}
+FPD PuffCeiling(FPD value) { return ceil(value); }
 
-BOL IsFinite(FPD value) { return FPDIsFinite(value); }
-
-BOL IsInfinite(FPC value) {
-  return static_cast<BOL>(FPDIsInfinite(static_cast<FPD>(value)));
-}
-
-BOL IsInfinite(FPD value) { return FPDIsInfinite(value); }
-
-FPD Ceiling(FPD value) { return ceil(value); }
-
-FPC Ceiling(FPC value) {
+FPC PuffCeiling(FPC value) {
   return static_cast<FPC>(ceil(static_cast<FPD>(value)));
 }
 
